@@ -1,0 +1,39 @@
+{
+  "screen": "analytics",
+  "title": "AI Analytics",
+  "layout": "vertical",
+  "components": [
+    {
+      "type": "alarm_summary",
+      "filters": {
+        "severity": ["CRIT", "WARN"],
+        "age": "24h"
+      },
+      "columns": ["timestamp", "tag", "severity", "message"],
+      "auto_refresh": 60
+    },
+    {
+      "type": "anomaly_detector",
+      "algorithm": "zscore",
+      "threshold": 2.5,
+      "window": 100,
+      "tags": ["*"],
+      "output": {
+        "type": "table",
+        "show_confidence": true,
+        "show_trend": true
+      }
+    },
+    {
+      "type": "health_score",
+      "metrics": [
+        "Production/CommitRate",
+        "Quality/OpenPRs",
+        "Defects/OpenIssues",
+        "Workers/Contributors"
+      ],
+      "display": "gauge",
+      "range": [0, 100]
+    }
+  ]
+}

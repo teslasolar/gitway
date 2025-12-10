@@ -1,0 +1,40 @@
+{
+  "gateway": {
+    "name": "KONOMI",
+    "version": "8.3.0",
+    "mode": "development",
+    "poll_rate": 60000
+  },
+  "providers": [{
+    "name": "GitHub",
+    "type": "REST",
+    "endpoint": "https://api.github.com",
+    "rate_limit": 60,
+    "headers": {"Accept": "application/vnd.github.v3+json"}
+  }],
+  "devices": [{
+    "name": "Repo",
+    "provider": "GitHub",
+    "path": "repos/{owner}/{repo}",
+    "tags": {
+      "Production/CommitRate": "commits?per_page=100",
+      "Quality/OpenPRs": "pulls?state=open",
+      "Defects/OpenIssues": "issues?state=open",
+      "Workers/Contributors": "contributors",
+      "Equipment/Actions": "actions/runs",
+      "Inventory/Size": ""
+    }
+  }],
+  "ai": {
+    "model": "transformer",
+    "dims": 64,
+    "layers": 2,
+    "window": 100,
+    "threshold": 2.5
+  },
+  "alerts": [
+    {"tag": "Production/CommitRate", "op": "<", "val": 5, "severity": "WARN", "msg": "Slow development"},
+    {"tag": "Quality/OpenPRs", "op": ">", "val": 20, "severity": "WARN", "msg": "PR backlog"},
+    {"tag": "Defects/OpenIssues", "op": ">", "val": 50, "severity": "CRIT", "msg": "Issue overload"}
+  ]
+}

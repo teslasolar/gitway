@@ -1,0 +1,31 @@
+{
+  "screen": "tag_browser",
+  "title": "Tag Browser",
+  "layout": "tree",
+  "components": [
+    {
+      "type": "tag_tree",
+      "root": "[Repo]",
+      "expand_level": 2,
+      "show_values": true,
+      "show_quality": true,
+      "show_timestamp": true,
+      "filters": {
+        "quality": ["GOOD", "BAD"],
+        "search": ""
+      }
+    },
+    {
+      "type": "tag_details",
+      "selected_tag": null,
+      "show": {
+        "path": true,
+        "value": true,
+        "quality": true,
+        "timestamp": true,
+        "history": true,
+        "alarm_config": true
+      }
+    }
+  ]
+}

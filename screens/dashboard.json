@@ -1,0 +1,41 @@
+{
+  "screen": "dashboard",
+  "title": "Factory Dashboard",
+  "layout": "grid",
+  "components": [
+    {
+      "type": "numeric_display",
+      "tag": "[Repo]/Production/CommitRate",
+      "label": "Production Rate",
+      "unit": "commits/hr",
+      "format": "0.00",
+      "color": "#0f0",
+      "position": {"row": 0, "col": 0}
+    },
+    {
+      "type": "numeric_display",
+      "tag": "[Repo]/Quality/OpenPRs",
+      "label": "Quality Control",
+      "unit": "PRs",
+      "format": "0",
+      "color": "#fa0",
+      "position": {"row": 0, "col": 1}
+    },
+    {
+      "type": "numeric_display",
+      "tag": "[Repo]/Defects/OpenIssues",
+      "label": "Open Defects",
+      "unit": "issues",
+      "format": "0",
+      "color": "#f00",
+      "position": {"row": 0, "col": 2}
+    },
+    {
+      "type": "chart",
+      "tag": "[Repo]/Production/CommitRate",
+      "chart_type": "line",
+      "window": 100,
+      "position": {"row": 1, "col": 0, "span": 2}
+    }
+  ]
+}

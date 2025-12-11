@@ -1,0 +1,532 @@
+{
+  "id": "gitdb-manager",
+  "name": "GitDB Manager Template",
+  "description": "Database management using Git as storage backend",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "parameters": {
+    "dbName": {
+      "type": "string",
+      "required": true,
+      "description": "Database name",
+      "example": "production"
+    },
+    "collection": {
+      "type": "string",
+      "required": false,
+      "default": "default",
+      "description": "Default collection to display"
+    },
+    "driver": {
+      "type": "string",
+      "required": false,
+      "default": "mysql",
+      "description": "Database driver type",
+      "options": ["mysql", "postgresql", "sqlserver", "oracle", "mariadb"]
+    },
+    "pageSize": {
+      "type": "number",
+      "required": false,
+      "default": 25,
+      "description": "Records per page"
+    },
+    "enableWrite": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable write operations"
+    },
+    "autoCommit": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Auto-commit changes to Git"
+    },
+    "schema": {
+      "type": "object",
+      "required": false,
+      "description": "Schema definition for validation"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "GitDB: {{params.dbName}}",
+      "icon": "mdi-database-sync",
+      "style": {
+        "minWidth": "900px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": { "direction": "column", "gap": "20px" },
+        "children": [
+          {
+            "type": "controlBar",
+            "props": {
+              "style": {
+                "padding": "15px",
+                "background": "#f3f4f6",
+                "borderRadius": "8px"
+              }
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": { "gap": "15px", "align": "center" },
+                "children": [
+                  {
+                    "type": "select",
+                    "props": {
+                      "label": "Collection",
+                      "value": "{{selectedCollection || params.collection}}",
+                      "options": "{{gitdb.[params.dbName].collections}}",
+                      "onChange": {
+                        "action": "selectCollection"
+                      }
+                    }
+                  },
+                  {
+                    "type": "select",
+                    "props": {
+                      "label": "Driver",
+                      "value": "{{params.driver}}",
+                      "options": [
+                        { "value": "mysql", "label": "MySQL" },
+                        { "value": "postgresql", "label": "PostgreSQL" },
+                        { "value": "sqlserver", "label": "SQL Server" },
+                        { "value": "oracle", "label": "Oracle" },
+                        { "value": "mariadb", "label": "MariaDB" }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "searchBox",
+                    "props": {
+                      "placeholder": "Search records...",
+                      "binding": "{{searchQuery}}",
+                      "onSearch": {
+                        "action": "searchRecords"
+                      }
+                    }
+                  },
+                  {
+                    "type": "flex",
+                    "props": { "gap": "10px", "marginLeft": "auto" },
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "New Record",
+                          "icon": "mdi-plus",
+                          "primary": true,
+                          "onClick": {
+                            "action": "openRecordEditor",
+                            "params": { "mode": "create" }
+                          },
+                          "disabled": "{{!params.enableWrite}}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Import",
+                          "icon": "mdi-import",
+                          "onClick": {
+                            "action": "importData"
+                          }
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Export",
+                          "icon": "mdi-export",
+                          "onClick": {
+                            "action": "exportData"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "splitPanel",
+            "props": {
+              "split": "horizontal",
+              "defaultSize": "70%"
+            },
+            "children": [
+              {
+                "type": "dataGrid",
+                "props": {
+                  "data": "{{gitdb.[params.dbName].[selectedCollection].records}}",
+                  "columns": "{{gitdb.[params.dbName].[selectedCollection].schema.columns}}",
+                  "pageSize": "{{params.pageSize}}",
+                  "selectable": true,
+                  "editable": "{{params.enableWrite}}",
+                  "sortable": true,
+                  "filterable": true,
+                  "onCellEdit": {
+                    "action": "updateRecord",
+                    "params": {
+                      "db": "{{params.dbName}}",
+                      "collection": "{{selectedCollection}}"
+                    }
+                  },
+                  "rowActions": [
+                    {
+                      "label": "Edit",
+                      "icon": "mdi-pencil",
+                      "action": "openRecordEditor",
+                      "params": { "mode": "edit" }
+                    },
+                    {
+                      "label": "Clone",
+                      "icon": "mdi-content-copy",
+                      "action": "cloneRecord"
+                    },
+                    {
+                      "label": "Delete",
+                      "icon": "mdi-delete",
+                      "action": "deleteRecord",
+                      "confirm": true
+                    },
+                    {
+                      "label": "History",
+                      "icon": "mdi-history",
+                      "action": "showRecordHistory"
+                    }
+                  ],
+                  "bulkActions": [
+                    {
+                      "label": "Delete Selected",
+                      "action": "bulkDelete",
+                      "confirm": true
+                    },
+                    {
+                      "label": "Export Selected",
+                      "action": "exportSelected"
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "tabs",
+                "props": {
+                  "tabs": [
+                    { "id": "query", "label": "Query Builder", "icon": "mdi-database-search" },
+                    { "id": "sql", "label": "SQL Editor", "icon": "mdi-code-tags" },
+                    { "id": "info", "label": "Info", "icon": "mdi-information" }
+                  ]
+                },
+                "children": [
+                  {
+                    "type": "tabPanel",
+                    "props": { "tabId": "query" },
+                    "children": [
+                      {
+                        "type": "queryBuilder",
+                        "props": {
+                          "schema": "{{gitdb.[params.dbName].[selectedCollection].schema}}",
+                          "binding": "{{queryBuilder}}",
+                          "onExecute": {
+                            "action": "executeQuery",
+                            "params": {
+                              "db": "{{params.dbName}}",
+                              "collection": "{{selectedCollection}}"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "tabPanel",
+                    "props": { "tabId": "sql" },
+                    "children": [
+                      {
+                        "type": "codeEditor",
+                        "props": {
+                          "language": "sql",
+                          "binding": "{{sqlQuery}}",
+                          "height": "200px",
+                          "placeholder": "-- Enter SQL query here\nSELECT * FROM {{selectedCollection}} WHERE ...",
+                          "toolbar": [
+                            {
+                              "label": "Execute",
+                              "icon": "mdi-play",
+                              "action": "executeSql",
+                              "hotkey": "Ctrl+Enter"
+                            },
+                            {
+                              "label": "Format",
+                              "icon": "mdi-format-align-left",
+                              "action": "formatSql"
+                            },
+                            {
+                              "label": "Save Query",
+                              "icon": "mdi-content-save",
+                              "action": "saveQuery"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "queryResults",
+                        "props": {
+                          "results": "{{sqlResults}}",
+                          "style": { "marginTop": "10px" }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "tabPanel",
+                    "props": { "tabId": "info" },
+                    "children": [
+                      {
+                        "type": "infoPanel",
+                        "props": {
+                          "items": [
+                            {
+                              "label": "Total Records",
+                              "value": "{{gitdb.[params.dbName].[selectedCollection].count}}"
+                            },
+                            {
+                              "label": "Last Modified",
+                              "value": "{{gitdb.[params.dbName].[selectedCollection].lastModified}}"
+                            },
+                            {
+                              "label": "Size",
+                              "value": "{{gitdb.[params.dbName].[selectedCollection].size}}"
+                            },
+                            {
+                              "label": "Git Branch",
+                              "value": "{{gitdb.[params.dbName].branch}}"
+                            },
+                            {
+                              "label": "Commits Behind",
+                              "value": "{{gitdb.[params.dbName].behind}}"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "type": "schemaViewer",
+                        "props": {
+                          "schema": "{{gitdb.[params.dbName].[selectedCollection].schema}}",
+                          "editable": "{{params.enableWrite}}",
+                          "style": { "marginTop": "15px" }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "statusBar",
+            "props": {
+              "style": {
+                "padding": "10px",
+                "background": "#f9fafb",
+                "borderTop": "1px solid #e5e7eb"
+              }
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": { "justify": "space-between", "align": "center" },
+                "children": [
+                  {
+                    "type": "flex",
+                    "props": { "gap": "20px" },
+                    "children": [
+                      {
+                        "type": "statusIndicator",
+                        "props": {
+                          "status": "{{gitdb.[params.dbName].status}}",
+                          "label": "Connection"
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "props": {
+                          "value": "{{selectedRecords.length}} selected"
+                        }
+                      },
+                      {
+                        "type": "conditional",
+                        "props": {
+                          "condition": "{{params.autoCommit}}",
+                          "children": [
+                            {
+                              "type": "badge",
+                              "props": {
+                                "text": "Auto-Commit ON",
+                                "color": "green"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "flex",
+                    "props": { "gap": "10px" },
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Commit Changes",
+                          "icon": "mdi-git",
+                          "size": "small",
+                          "onClick": {
+                            "action": "commitChanges",
+                            "params": {
+                              "db": "{{params.dbName}}",
+                              "message": "Update {{selectedCollection}} records"
+                            }
+                          },
+                          "disabled": "{{params.autoCommit || !gitdb.[params.dbName].hasChanges}}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Sync",
+                          "icon": "mdi-sync",
+                          "size": "small",
+                          "onClick": {
+                            "action": "syncDatabase",
+                            "params": { "db": "{{params.dbName}}" }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "modals": {
+    "recordEditor": {
+      "title": "{{mode === 'create' ? 'New Record' : 'Edit Record'}}",
+      "width": 600,
+      "content": {
+        "type": "form",
+        "props": {
+          "schema": "{{gitdb.[params.dbName].[selectedCollection].schema}}",
+          "data": "{{selectedRecord}}",
+          "validation": "{{params.schema}}",
+          "onSubmit": {
+            "action": "saveRecord",
+            "params": {
+              "db": "{{params.dbName}}",
+              "collection": "{{selectedCollection}}",
+              "mode": "{{mode}}"
+            }
+          }
+        }
+      }
+    },
+    "importWizard": {
+      "title": "Import Data",
+      "width": 700,
+      "steps": [
+        {
+          "title": "Select Source",
+          "content": {
+            "type": "sourceSelector",
+            "props": {
+              "sources": ["CSV", "JSON", "SQL", "Excel", "Ignition Export"]
+            }
+          }
+        },
+        {
+          "title": "Map Fields",
+          "content": {
+            "type": "fieldMapper",
+            "props": {
+              "targetSchema": "{{gitdb.[params.dbName].[selectedCollection].schema}}"
+            }
+          }
+        },
+        {
+          "title": "Preview & Import",
+          "content": {
+            "type": "importPreview",
+            "props": {
+              "previewLimit": 10
+            }
+          }
+        }
+      ]
+    }
+  },
+  "actions": {
+    "selectCollection": {
+      "type": "setState",
+      "key": "selectedCollection"
+    },
+    "searchRecords": {
+      "type": "gitdb",
+      "command": "search",
+      "params": ["db", "collection", "query"]
+    },
+    "updateRecord": {
+      "type": "gitdb",
+      "command": "update",
+      "autoCommit": "{{params.autoCommit}}"
+    },
+    "deleteRecord": {
+      "type": "gitdb",
+      "command": "delete",
+      "confirm": true,
+      "autoCommit": "{{params.autoCommit}}"
+    },
+    "executeQuery": {
+      "type": "gitdb",
+      "command": "query",
+      "params": ["db", "collection", "query"]
+    },
+    "executeSql": {
+      "type": "gitdb",
+      "command": "sql",
+      "params": ["db", "sql", "driver"]
+    },
+    "commitChanges": {
+      "type": "git",
+      "command": "commit",
+      "params": ["message"]
+    },
+    "syncDatabase": {
+      "type": "sequence",
+      "steps": [
+        { "action": "gitPull" },
+        { "action": "refreshData" },
+        { "action": "gitPush" }
+      ]
+    }
+  },
+  "subscriptions": [
+    {
+      "type": "gitdb",
+      "database": "{{params.dbName}}",
+      "collection": "{{selectedCollection}}",
+      "events": ["insert", "update", "delete"],
+      "interval": 5000
+    }
+  ]
+}

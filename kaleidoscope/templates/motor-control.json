@@ -1,0 +1,358 @@
+{
+  "id": "motor-control",
+  "name": "Motor Control Panel Template",
+  "description": "Dynamic motor control interface with configurable parameters",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "parameters": {
+    "motorPath": {
+      "type": "string",
+      "required": true,
+      "description": "Base tag path for motor (e.g., [default]Motors/Motor1)",
+      "example": "[default]Motors/Motor1"
+    },
+    "motorName": {
+      "type": "string",
+      "required": false,
+      "default": "Motor",
+      "description": "Display name for the motor"
+    },
+    "enableInterlocks": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable safety interlocks"
+    },
+    "maxSpeed": {
+      "type": "number",
+      "required": false,
+      "default": 3600,
+      "description": "Maximum motor speed (RPM)"
+    },
+    "rampUpTime": {
+      "type": "number",
+      "required": false,
+      "default": 10,
+      "description": "Ramp up time in seconds"
+    },
+    "rampDownTime": {
+      "type": "number",
+      "required": false,
+      "default": 15,
+      "description": "Ramp down time in seconds"
+    },
+    "showAdvanced": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show advanced controls"
+    },
+    "enableRemoteControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow remote control operations"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.motorName}} Control",
+      "icon": "mdi-engine",
+      "style": {
+        "minWidth": "400px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "20px"
+        },
+        "children": [
+          {
+            "type": "motorIndicator",
+            "props": {
+              "status": "{{tags.[params.motorPath].status}}",
+              "speed": "{{tags.[params.motorPath].speed}}",
+              "maxSpeed": "{{params.maxSpeed}}",
+              "style": {
+                "height": "120px"
+              },
+              "states": {
+                "running": { "color": "#10b981", "animation": "rotate" },
+                "stopped": { "color": "#6b7280", "animation": "none" },
+                "fault": { "color": "#ef4444", "animation": "pulse" },
+                "starting": { "color": "#f59e0b", "animation": "fade" }
+              }
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 3,
+              "gap": "10px"
+            },
+            "children": [
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Speed",
+                  "value": "{{tags.[params.motorPath].speed}}",
+                  "units": "RPM",
+                  "format": "0,0"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Current",
+                  "value": "{{tags.[params.motorPath].current}}",
+                  "units": "A",
+                  "format": "0.0"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Power",
+                  "value": "{{tags.[params.motorPath].power}}",
+                  "units": "kW",
+                  "format": "0.00"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Temperature",
+                  "value": "{{tags.[params.motorPath].temperature}}",
+                  "units": "°C",
+                  "format": "0.0",
+                  "alert": "{{tags.[params.motorPath].temperature > 80}}"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Vibration",
+                  "value": "{{tags.[params.motorPath].vibration}}",
+                  "units": "mm/s",
+                  "format": "0.00"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Runtime",
+                  "value": "{{tags.[params.motorPath].runtime}}",
+                  "units": "hrs",
+                  "format": "0,0"
+                }
+              }
+            ]
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.enableRemoteControl}}",
+              "children": [
+                {
+                  "type": "controlPanel",
+                  "props": {
+                    "style": {
+                      "padding": "15px",
+                      "background": "#f3f4f6",
+                      "borderRadius": "8px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "flex",
+                      "props": {
+                        "gap": "10px",
+                        "justify": "center"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "START",
+                            "icon": "mdi-play",
+                            "color": "green",
+                            "size": "large",
+                            "onClick": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.motorPath}}.cmd.start",
+                                "value": true
+                              }
+                            },
+                            "disabled": "{{tags.[params.motorPath].status === 'running' || (params.enableInterlocks && tags.[params.motorPath].interlocks.active)}}"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "STOP",
+                            "icon": "mdi-stop",
+                            "color": "red",
+                            "size": "large",
+                            "onClick": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.motorPath}}.cmd.stop",
+                                "value": true
+                              }
+                            },
+                            "disabled": "{{tags.[params.motorPath].status === 'stopped'}}"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "RESET",
+                            "icon": "mdi-restart",
+                            "color": "orange",
+                            "onClick": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.motorPath}}.cmd.reset",
+                                "value": true
+                              }
+                            },
+                            "disabled": "{{tags.[params.motorPath].status !== 'fault'}}"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "slider",
+                      "props": {
+                        "label": "Speed Setpoint",
+                        "value": "{{tags.[params.motorPath].speedSetpoint}}",
+                        "min": 0,
+                        "max": "{{params.maxSpeed}}",
+                        "step": 50,
+                        "units": "RPM",
+                        "onChange": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.motorPath}}.speedSetpoint"
+                          }
+                        },
+                        "disabled": "{{tags.[params.motorPath].status !== 'running'}}",
+                        "style": { "marginTop": "15px" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.enableInterlocks}}",
+              "children": [
+                {
+                  "type": "interlockPanel",
+                  "props": {
+                    "title": "Interlocks",
+                    "interlocks": [
+                      {
+                        "name": "Oil Pressure OK",
+                        "value": "{{tags.[params.motorPath].interlocks.oilPressure}}",
+                        "required": true
+                      },
+                      {
+                        "name": "Cooling Water OK",
+                        "value": "{{tags.[params.motorPath].interlocks.coolingWater}}",
+                        "required": true
+                      },
+                      {
+                        "name": "Bearing Temp OK",
+                        "value": "{{tags.[params.motorPath].interlocks.bearingTemp}}",
+                        "required": true
+                      },
+                      {
+                        "name": "Emergency Stop",
+                        "value": "{{!tags.[params.motorPath].interlocks.eStop}}",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showAdvanced}}",
+              "children": [
+                {
+                  "type": "advancedPanel",
+                  "props": {
+                    "title": "Advanced Settings",
+                    "collapsible": true,
+                    "collapsed": true
+                  },
+                  "children": [
+                    {
+                      "type": "grid",
+                      "props": {
+                        "columns": 2,
+                        "gap": "10px"
+                      },
+                      "children": [
+                        {
+                          "type": "input",
+                          "props": {
+                            "label": "Ramp Up Time",
+                            "value": "{{params.rampUpTime}}",
+                            "type": "number",
+                            "units": "sec",
+                            "onChange": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.motorPath}}.config.rampUp"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "input",
+                          "props": {
+                            "label": "Ramp Down Time",
+                            "value": "{{params.rampDownTime}}",
+                            "type": "number",
+                            "units": "sec",
+                            "onChange": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.motorPath}}.config.rampDown"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "writeTag": {
+      "type": "gateway",
+      "method": "writeTag",
+      "confirm": "{{params.enableInterlocks && value > params.maxSpeed * 0.9}}",
+      "confirmMessage": "Speed setpoint is above 90% of maximum. Continue?"
+    }
+  }
+}

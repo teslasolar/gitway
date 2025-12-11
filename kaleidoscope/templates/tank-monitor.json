@@ -1,0 +1,206 @@
+{
+  "id": "tank-monitor",
+  "name": "Tank Monitor Template",
+  "description": "Dynamic tank monitoring display with configurable parameters",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "parameters": {
+    "tankId": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for tank (e.g., [default]Tanks/Tank1)",
+      "example": "[default]Tanks/Tank1"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Tank Monitor",
+      "description": "Display title for the tank"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "gallons",
+      "description": "Engineering units",
+      "options": ["gallons", "liters", "barrels", "m³"]
+    },
+    "maxValue": {
+      "type": "number",
+      "required": false,
+      "default": 1000,
+      "description": "Maximum tank capacity"
+    },
+    "alarmHigh": {
+      "type": "number",
+      "required": false,
+      "default": 900,
+      "description": "High level alarm threshold"
+    },
+    "alarmLow": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Low level alarm threshold"
+    },
+    "refreshRate": {
+      "type": "number",
+      "required": false,
+      "default": 1000,
+      "description": "Update interval in milliseconds"
+    },
+    "showTrend": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show historical trend"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "minWidth": "350px",
+        "maxWidth": "500px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "15px"
+        },
+        "children": [
+          {
+            "type": "gauge",
+            "props": {
+              "value": "{{tags.[params.tankId].level}}",
+              "min": 0,
+              "max": "{{params.maxValue}}",
+              "units": "{{params.units}}",
+              "style": {
+                "height": "200px"
+              },
+              "zones": [
+                {
+                  "min": 0,
+                  "max": "{{params.alarmLow}}",
+                  "color": "#ef4444",
+                  "label": "Low"
+                },
+                {
+                  "min": "{{params.alarmLow}}",
+                  "max": "{{params.alarmHigh}}",
+                  "color": "#10b981",
+                  "label": "Normal"
+                },
+                {
+                  "min": "{{params.alarmHigh}}",
+                  "max": "{{params.maxValue}}",
+                  "color": "#f59e0b",
+                  "label": "High"
+                }
+              ]
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 2,
+              "gap": "10px"
+            },
+            "children": [
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Current Level",
+                  "value": "{{tags.[params.tankId].level}}",
+                  "units": "{{params.units}}",
+                  "format": "0,0.0"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Percentage",
+                  "value": "{{(tags.[params.tankId].level / params.maxValue) * 100}}",
+                  "units": "%",
+                  "format": "0.0"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Temperature",
+                  "value": "{{tags.[params.tankId].temperature}}",
+                  "units": "°F",
+                  "format": "0.0"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Flow Rate",
+                  "value": "{{tags.[params.tankId].flowRate}}",
+                  "units": "gpm",
+                  "format": "0.00"
+                }
+              }
+            ]
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showTrend}}",
+              "children": [
+                {
+                  "type": "trend",
+                  "props": {
+                    "pens": [
+                      {
+                        "tagPath": "{{params.tankId}}.level",
+                        "color": "#667eea",
+                        "label": "Level"
+                      }
+                    ],
+                    "timeRange": "1h",
+                    "height": "150px",
+                    "refreshRate": "{{params.refreshRate}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "flex",
+            "props": {
+              "gap": "10px",
+              "justify": "space-between"
+            },
+            "children": [
+              {
+                "type": "statusBadge",
+                "props": {
+                  "value": "{{tags.[params.tankId].pumpStatus}}",
+                  "states": {
+                    "running": { "color": "green", "label": "Pump Running" },
+                    "stopped": { "color": "gray", "label": "Pump Stopped" },
+                    "fault": { "color": "red", "label": "Pump Fault" }
+                  }
+                }
+              },
+              {
+                "type": "timestamp",
+                "props": {
+                  "value": "{{tags.[params.tankId].lastUpdate}}",
+                  "format": "relative"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "name": "Integration",
+  "title": "Full Integration Test",
+  "description": "Test all GitWay components through Kaleidoscope",
+  "type": "flex",
+  "props": {
+    "direction": "column",
+    "style": {
+      "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "padding": "20px",
+      "minHeight": "100vh"
+    }
+  },
+  "children": [
+    {
+      "type": "label",
+      "props": {
+        "text": "🌐 GitWay Full Integration Test",
+        "style": {
+          "fontSize": "2em",
+          "textAlign": "center",
+          "color": "white",
+          "marginBottom": "20px"
+        }
+      }
+    },
+    {
+      "type": "flex",
+      "props": {
+        "wrap": "wrap",
+        "gap": "20px"
+      },
+      "children": [
+        {
+          "type": "card",
+          "props": {
+            "title": "GitHub API",
+            "icon": "mdi-github",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test GitHub",
+                "onClick": {
+                  "action": "testGitHub",
+                  "target": "github"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.github.status}",
+                "states": {
+                  "online": { "color": "green", "icon": "check" },
+                  "offline": { "color": "red", "icon": "close" },
+                  "pending": { "color": "yellow", "icon": "sync" }
+                }
+              }
+            },
+            {
+              "type": "log",
+              "props": {
+                "binding": "{gitway.test.github.log}",
+                "maxLines": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "GitHub Pages",
+            "icon": "mdi-web",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test Pages",
+                "onClick": {
+                  "action": "testPages",
+                  "target": "pages"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.pages.status}"
+              }
+            },
+            {
+              "type": "log",
+              "props": {
+                "binding": "{gitway.test.pages.log}",
+                "maxLines": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "Bridge Server",
+            "icon": "mdi-bridge",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test Bridge",
+                "onClick": {
+                  "action": "testBridge",
+                  "target": "bridge"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.bridge.status}"
+              }
+            },
+            {
+              "type": "log",
+              "props": {
+                "binding": "{gitway.test.bridge.log}",
+                "maxLines": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "Ignition Gateway",
+            "icon": "mdi-factory",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test Gateway",
+                "onClick": {
+                  "action": "testGateway",
+                  "target": "gateway"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.gateway.status}"
+              }
+            },
+            {
+              "type": "log",
+              "props": {
+                "binding": "{gitway.test.gateway.log}",
+                "maxLines": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "GitDB System",
+            "icon": "mdi-database",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test GitDB",
+                "onClick": {
+                  "action": "testGitDB",
+                  "target": "gitdb"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.gitdb.status}"
+              }
+            },
+            {
+              "type": "log",
+              "props": {
+                "binding": "{gitway.test.gitdb.log}",
+                "maxLines": 10
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "KonomiML States",
+            "icon": "mdi-state-machine",
+            "style": { "minWidth": "300px", "flex": 1 }
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "Test KonomiML",
+                "onClick": {
+                  "action": "testKonomiML",
+                  "target": "konomi"
+                }
+              }
+            },
+            {
+              "type": "statusIndicator",
+              "props": {
+                "binding": "{gitway.test.konomi.status}"
+              }
+            },
+            {
+              "type": "stateDisplay",
+              "props": {
+                "binding": "{gitway.test.konomi.currentState}",
+                "showEmoji": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "props": {
+        "title": "Full Integration Test",
+        "style": { "marginTop": "20px" }
+      },
+      "children": [
+        {
+          "type": "flex",
+          "props": {
+            "gap": "10px"
+          },
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "text": "🚀 Run Full Test",
+                "primary": true,
+                "onClick": {
+                  "action": "runFullIntegration"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "props": {
+                "text": "📊 Test Data Flow",
+                "onClick": {
+                  "action": "testDataFlow"
+                }
+              }
+            },
+            {
+              "type": "button",
+              "props": {
+                "text": "🔄 Clear Logs",
+                "onClick": {
+                  "action": "clearLogs"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "progressBar",
+          "props": {
+            "binding": "{gitway.test.progress}",
+            "style": { "marginTop": "10px" }
+          }
+        },
+        {
+          "type": "log",
+          "props": {
+            "binding": "{gitway.test.integration.log}",
+            "maxLines": 20,
+            "style": {
+              "marginTop": "10px",
+              "height": "200px"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "connectionDiagram",
+      "props": {
+        "nodes": [
+          { "id": "github", "label": "GitHub", "icon": "mdi-github" },
+          { "id": "pages", "label": "Pages", "icon": "mdi-web" },
+          { "id": "bridge", "label": "Bridge", "icon": "mdi-bridge" },
+          { "id": "gateway", "label": "Ignition", "icon": "mdi-factory" },
+          { "id": "gitdb", "label": "GitDB", "icon": "mdi-database" }
+        ],
+        "connections": [
+          { "from": "github", "to": "pages" },
+          { "from": "pages", "to": "bridge" },
+          { "from": "bridge", "to": "gateway" },
+          { "from": "gitdb", "to": "github" }
+        ],
+        "style": {
+          "marginTop": "20px",
+          "height": "200px"
+        }
+      }
+    }
+  ],
+  "scripts": {
+    "onStartup": "initializeTestEnvironment",
+    "actions": {
+      "testGitHub": "testGitHubConnection",
+      "testPages": "testGitHubPages",
+      "testBridge": "testBridgeServer",
+      "testGateway": "testIgnitionGateway",
+      "testGitDB": "testGitDBSystem",
+      "testKonomiML": "testKonomiMLEngine",
+      "runFullIntegration": "executeFullIntegrationTest",
+      "testDataFlow": "executeDataFlowTest",
+      "clearLogs": "clearAllLogs"
+    }
+  }
+}

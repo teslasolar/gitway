@@ -1,0 +1,700 @@
+{
+  "name": "Gateway",
+  "title": "Gateway Management Console",
+  "description": "Manage screens, templates, and gateway connections",
+  "type": "flex",
+  "props": {
+    "direction": "column",
+    "style": {
+      "background": "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
+      "padding": "0",
+      "minHeight": "100vh"
+    }
+  },
+  "children": [
+    {
+      "type": "header",
+      "props": {
+        "title": "🌐 GitWay Gateway Console",
+        "style": {
+          "background": "rgba(255,255,255,0.1)",
+          "backdropFilter": "blur(10px)",
+          "padding": "15px 30px",
+          "borderBottom": "1px solid rgba(255,255,255,0.2)"
+        }
+      }
+    },
+    {
+      "type": "tabs",
+      "props": {
+        "id": "gateway-tabs",
+        "tabs": [
+          {
+            "id": "kaleidoscope",
+            "label": "Kaleidoscope Screens",
+            "icon": "mdi-view-dashboard"
+          },
+          {
+            "id": "templates",
+            "label": "Dynamic Templates",
+            "icon": "mdi-file-tree"
+          },
+          {
+            "id": "connections",
+            "label": "Gateway Connections",
+            "icon": "mdi-lan-connect"
+          },
+          {
+            "id": "parameters",
+            "label": "Parameters",
+            "icon": "mdi-tune"
+          }
+        ],
+        "style": {
+          "background": "white",
+          "margin": "20px",
+          "borderRadius": "12px",
+          "boxShadow": "0 4px 20px rgba(0,0,0,0.1)"
+        }
+      },
+      "children": [
+        {
+          "type": "tabPanel",
+          "props": {
+            "tabId": "kaleidoscope",
+            "style": { "padding": "20px" }
+          },
+          "children": [
+            {
+              "type": "flex",
+              "props": {
+                "gap": "20px",
+                "direction": "column"
+              },
+              "children": [
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Active Screens",
+                    "icon": "mdi-monitor-multiple"
+                  },
+                  "children": [
+                    {
+                      "type": "grid",
+                      "props": {
+                        "columns": 3,
+                        "gap": "15px"
+                      },
+                      "children": [
+                        {
+                          "type": "screenCard",
+                          "props": {
+                            "binding": "{screens.dashboard}",
+                            "title": "Dashboard",
+                            "status": "active",
+                            "users": 5,
+                            "params": {
+                              "refreshRate": "{params.dashboard.refreshRate}",
+                              "theme": "{params.dashboard.theme}"
+                            },
+                            "actions": [
+                              { "label": "View", "action": "viewScreen", "target": "dashboard" },
+                              { "label": "Edit", "action": "editScreen", "target": "dashboard" },
+                              { "label": "Clone", "action": "cloneScreen", "target": "dashboard" }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "screenCard",
+                          "props": {
+                            "binding": "{screens.integration}",
+                            "title": "Integration Test",
+                            "status": "idle",
+                            "users": 0,
+                            "params": {
+                              "testMode": "{params.integration.testMode}",
+                              "endpoints": "{params.integration.endpoints}"
+                            },
+                            "actions": [
+                              { "label": "View", "action": "viewScreen", "target": "integration" },
+                              { "label": "Configure", "action": "configureScreen", "target": "integration" }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "screenCard",
+                          "props": {
+                            "binding": "{screens.alarms}",
+                            "title": "Alarm Display",
+                            "status": "active",
+                            "users": 2,
+                            "params": {
+                              "severity": "{params.alarms.severity}",
+                              "autoAck": "{params.alarms.autoAck}"
+                            },
+                            "actions": [
+                              { "label": "View", "action": "viewScreen", "target": "alarms" }
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider",
+                      "props": { "margin": "20px 0" }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Create New Screen",
+                        "icon": "mdi-plus",
+                        "primary": true,
+                        "onClick": {
+                          "action": "openScreenWizard"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Screen Sessions",
+                    "icon": "mdi-account-multiple"
+                  },
+                  "children": [
+                    {
+                      "type": "table",
+                      "props": {
+                        "binding": "{sessions.active}",
+                        "columns": [
+                          { "key": "sessionId", "label": "Session ID", "width": "150px" },
+                          { "key": "screen", "label": "Screen", "width": "150px" },
+                          { "key": "user", "label": "User", "width": "150px" },
+                          { "key": "duration", "label": "Duration", "width": "100px" },
+                          { "key": "lastActivity", "label": "Last Activity", "width": "150px" }
+                        ],
+                        "maxRows": 10
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tabPanel",
+          "props": {
+            "tabId": "templates",
+            "style": { "padding": "20px" }
+          },
+          "children": [
+            {
+              "type": "flex",
+              "props": {
+                "gap": "20px"
+              },
+              "children": [
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Template Library",
+                    "icon": "mdi-file-multiple",
+                    "style": { "flex": 1 }
+                  },
+                  "children": [
+                    {
+                      "type": "templateList",
+                      "props": {
+                        "templates": [
+                          {
+                            "id": "tank-monitor",
+                            "name": "Tank Monitor",
+                            "description": "Displays tank levels with dynamic parameters",
+                            "params": [
+                              { "name": "tankId", "type": "string", "required": true },
+                              { "name": "units", "type": "string", "default": "gallons" },
+                              { "name": "alarmThreshold", "type": "number", "default": 80 }
+                            ],
+                            "preview": {
+                              "type": "gauge",
+                              "value": "{tags.[params.tankId].level}",
+                              "max": 100,
+                              "units": "{params.units}",
+                              "alarmValue": "{params.alarmThreshold}"
+                            }
+                          },
+                          {
+                            "id": "motor-control",
+                            "name": "Motor Control Panel",
+                            "description": "Control and monitor motors",
+                            "params": [
+                              { "name": "motorTag", "type": "string", "required": true },
+                              { "name": "enableInterlocks", "type": "boolean", "default": true },
+                              { "name": "rampTime", "type": "number", "default": 5 }
+                            ],
+                            "preview": {
+                              "type": "motorControl",
+                              "statusTag": "{tags.[params.motorTag].status}",
+                              "speedTag": "{tags.[params.motorTag].speed}",
+                              "interlocks": "{params.enableInterlocks}",
+                              "ramp": "{params.rampTime}"
+                            }
+                          },
+                          {
+                            "id": "trend-display",
+                            "name": "Trend Display",
+                            "description": "Historical trend with configurable pens",
+                            "params": [
+                              { "name": "tagPaths", "type": "array", "required": true },
+                              { "name": "timeRange", "type": "string", "default": "1h" },
+                              { "name": "updateRate", "type": "number", "default": 1000 }
+                            ],
+                            "preview": {
+                              "type": "trend",
+                              "pens": "{params.tagPaths}",
+                              "range": "{params.timeRange}",
+                              "refresh": "{params.updateRate}"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "flex",
+                      "props": {
+                        "gap": "10px",
+                        "style": { "marginTop": "20px" }
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "Create Template",
+                            "icon": "mdi-plus",
+                            "onClick": { "action": "createTemplate" }
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "Import Template",
+                            "icon": "mdi-import",
+                            "onClick": { "action": "importTemplate" }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Template Editor",
+                    "icon": "mdi-code-json",
+                    "style": { "flex": 1 }
+                  },
+                  "children": [
+                    {
+                      "type": "codeEditor",
+                      "props": {
+                        "binding": "{selectedTemplate.json}",
+                        "language": "json",
+                        "height": "400px",
+                        "theme": "dark",
+                        "readOnly": false
+                      }
+                    },
+                    {
+                      "type": "parameterPanel",
+                      "props": {
+                        "title": "Template Parameters",
+                        "binding": "{selectedTemplate.params}",
+                        "style": { "marginTop": "15px" }
+                      }
+                    },
+                    {
+                      "type": "flex",
+                      "props": {
+                        "gap": "10px",
+                        "style": { "marginTop": "20px" }
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "Save Template",
+                            "primary": true,
+                            "onClick": { "action": "saveTemplate" }
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "Test Template",
+                            "onClick": { "action": "testTemplate" }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tabPanel",
+          "props": {
+            "tabId": "connections",
+            "style": { "padding": "20px" }
+          },
+          "children": [
+            {
+              "type": "grid",
+              "props": {
+                "columns": 2,
+                "gap": "20px"
+              },
+              "children": [
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Ignition Gateway",
+                    "icon": "mdi-factory"
+                  },
+                  "children": [
+                    {
+                      "type": "statusBadge",
+                      "props": {
+                        "binding": "{gateway.status}",
+                        "size": "large"
+                      }
+                    },
+                    {
+                      "type": "list",
+                      "props": {
+                        "items": [
+                          { "label": "Host", "value": "{gateway.host}" },
+                          { "label": "Port", "value": "{gateway.port}" },
+                          { "label": "Protocol", "value": "{gateway.protocol}" },
+                          { "label": "Version", "value": "{gateway.version}" },
+                          { "label": "Uptime", "value": "{gateway.uptime}" }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Reconnect",
+                        "onClick": { "action": "reconnectGateway" }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Bridge Server",
+                    "icon": "mdi-bridge"
+                  },
+                  "children": [
+                    {
+                      "type": "statusBadge",
+                      "props": {
+                        "binding": "{bridge.status}",
+                        "size": "large"
+                      }
+                    },
+                    {
+                      "type": "list",
+                      "props": {
+                        "items": [
+                          { "label": "URL", "value": "{bridge.url}" },
+                          { "label": "WebSocket", "value": "{bridge.wsUrl}" },
+                          { "label": "Connections", "value": "{bridge.connections}" },
+                          { "label": "Messages/sec", "value": "{bridge.messageRate}" }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Restart Bridge",
+                        "onClick": { "action": "restartBridge" }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "GitHub Repository",
+                    "icon": "mdi-github"
+                  },
+                  "children": [
+                    {
+                      "type": "statusBadge",
+                      "props": {
+                        "binding": "{github.status}",
+                        "size": "large"
+                      }
+                    },
+                    {
+                      "type": "list",
+                      "props": {
+                        "items": [
+                          { "label": "Repository", "value": "{github.repo}" },
+                          { "label": "Branch", "value": "{github.branch}" },
+                          { "label": "Last Sync", "value": "{github.lastSync}" },
+                          { "label": "Commits Ahead", "value": "{github.ahead}" }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Sync Now",
+                        "onClick": { "action": "syncGitHub" }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "GitDB Connection",
+                    "icon": "mdi-database"
+                  },
+                  "children": [
+                    {
+                      "type": "statusBadge",
+                      "props": {
+                        "binding": "{gitdb.status}",
+                        "size": "large"
+                      }
+                    },
+                    {
+                      "type": "list",
+                      "props": {
+                        "items": [
+                          { "label": "Collections", "value": "{gitdb.collections}" },
+                          { "label": "Records", "value": "{gitdb.totalRecords}" },
+                          { "label": "Size", "value": "{gitdb.size}" },
+                          { "label": "Last Write", "value": "{gitdb.lastWrite}" }
+                        ]
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Optimize",
+                        "onClick": { "action": "optimizeGitDB" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "tabPanel",
+          "props": {
+            "tabId": "parameters",
+            "style": { "padding": "20px" }
+          },
+          "children": [
+            {
+              "type": "card",
+              "props": {
+                "title": "Global Parameters",
+                "icon": "mdi-cog"
+              },
+              "children": [
+                {
+                  "type": "parameterEditor",
+                  "props": {
+                    "groups": [
+                      {
+                        "name": "System",
+                        "params": [
+                          {
+                            "key": "system.refreshRate",
+                            "label": "Global Refresh Rate",
+                            "type": "number",
+                            "value": "{params.system.refreshRate}",
+                            "min": 100,
+                            "max": 10000,
+                            "unit": "ms"
+                          },
+                          {
+                            "key": "system.theme",
+                            "label": "UI Theme",
+                            "type": "select",
+                            "value": "{params.system.theme}",
+                            "options": ["light", "dark", "auto"]
+                          },
+                          {
+                            "key": "system.locale",
+                            "label": "Locale",
+                            "type": "string",
+                            "value": "{params.system.locale}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Gateway",
+                        "params": [
+                          {
+                            "key": "gateway.host",
+                            "label": "Gateway Host",
+                            "type": "string",
+                            "value": "{params.gateway.host}",
+                            "placeholder": "pred"
+                          },
+                          {
+                            "key": "gateway.port",
+                            "label": "Gateway Port",
+                            "type": "number",
+                            "value": "{params.gateway.port}",
+                            "placeholder": "8088"
+                          },
+                          {
+                            "key": "gateway.timeout",
+                            "label": "Request Timeout",
+                            "type": "number",
+                            "value": "{params.gateway.timeout}",
+                            "unit": "ms"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Performance",
+                        "params": [
+                          {
+                            "key": "perf.maxConnections",
+                            "label": "Max WebSocket Connections",
+                            "type": "number",
+                            "value": "{params.perf.maxConnections}"
+                          },
+                          {
+                            "key": "perf.cacheEnabled",
+                            "label": "Enable Caching",
+                            "type": "boolean",
+                            "value": "{params.perf.cacheEnabled}"
+                          },
+                          {
+                            "key": "perf.compressionLevel",
+                            "label": "Compression Level",
+                            "type": "slider",
+                            "value": "{params.perf.compressionLevel}",
+                            "min": 0,
+                            "max": 9
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "flex",
+                  "props": {
+                    "gap": "10px",
+                    "justify": "flex-end",
+                    "style": { "marginTop": "20px" }
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Export Parameters",
+                        "icon": "mdi-export",
+                        "onClick": { "action": "exportParams" }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Import Parameters",
+                        "icon": "mdi-import",
+                        "onClick": { "action": "importParams" }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Apply Changes",
+                        "primary": true,
+                        "onClick": { "action": "applyParams" }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scripts": {
+    "onStartup": "initializeGatewayView",
+    "actions": {
+      "viewScreen": "navigateToScreen",
+      "editScreen": "openScreenEditor",
+      "cloneScreen": "cloneScreenWithParams",
+      "configureScreen": "openScreenConfig",
+      "openScreenWizard": "showScreenCreationWizard",
+      "createTemplate": "showTemplateCreator",
+      "importTemplate": "importTemplateFromFile",
+      "saveTemplate": "saveTemplateToLibrary",
+      "testTemplate": "testTemplateWithSampleData",
+      "reconnectGateway": "reconnectToIgnitionGateway",
+      "restartBridge": "restartBridgeServer",
+      "syncGitHub": "syncWithGitHubRepository",
+      "optimizeGitDB": "optimizeGitDatabase",
+      "exportParams": "exportParametersToFile",
+      "importParams": "importParametersFromFile",
+      "applyParams": "applyGlobalParameters"
+    }
+  },
+  "bindings": {
+    "screens": {
+      "source": "gateway",
+      "path": "/kaleidoscope/screens",
+      "refresh": 5000
+    },
+    "sessions": {
+      "source": "gateway",
+      "path": "/kaleidoscope/sessions",
+      "refresh": 1000
+    },
+    "gateway": {
+      "source": "bridge",
+      "path": "/api/gateway/status",
+      "refresh": 2000
+    },
+    "bridge": {
+      "source": "local",
+      "path": "bridgeStatus",
+      "refresh": 1000
+    },
+    "github": {
+      "source": "api",
+      "path": "/repos/teslasolar/gitway",
+      "refresh": 30000
+    },
+    "gitdb": {
+      "source": "gitdb",
+      "path": "/stats",
+      "refresh": 5000
+    },
+    "params": {
+      "source": "localStorage",
+      "path": "gatewayParams",
+      "persist": true
+    }
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "id": "alarm-display",
+  "name": "Alarm Display Template",
+  "description": "Dynamic alarm display with filtering and acknowledgment",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "parameters": {
+    "alarmSource": {
+      "type": "string",
+      "required": false,
+      "default": "*",
+      "description": "Alarm source filter (use * for all)",
+      "example": "[default]Alarms/*"
+    },
+    "displayName": {
+      "type": "string",
+      "required": false,
+      "default": "Active Alarms",
+      "description": "Display title"
+    },
+    "maxAlarms": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Maximum alarms to display"
+    },
+    "severityFilter": {
+      "type": "array",
+      "required": false,
+      "default": ["critical", "high", "medium", "low"],
+      "description": "Severity levels to show",
+      "options": ["critical", "high", "medium", "low", "diagnostic"]
+    },
+    "autoAcknowledge": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Auto-acknowledge cleared alarms"
+    },
+    "showAcknowledged": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show acknowledged alarms"
+    },
+    "refreshInterval": {
+      "type": "number",
+      "required": false,
+      "default": 2000,
+      "description": "Refresh interval in milliseconds"
+    },
+    "enableSound": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable alarm sounds"
+    },
+    "groupByArea": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Group alarms by area"
+    },
+    "compactMode": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Use compact display mode"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.displayName}}",
+      "icon": "mdi-alarm-light",
+      "style": {
+        "minWidth": "600px",
+        "maxHeight": "800px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "15px",
+          "style": { "height": "100%" }
+        },
+        "children": [
+          {
+            "type": "alarmSummary",
+            "props": {
+              "source": "{{params.alarmSource}}",
+              "style": {
+                "padding": "10px",
+                "background": "#f3f4f6",
+                "borderRadius": "8px"
+              }
+            },
+            "children": [
+              {
+                "type": "grid",
+                "props": {
+                  "columns": 5,
+                  "gap": "10px"
+                },
+                "children": [
+                  {
+                    "type": "summaryBadge",
+                    "props": {
+                      "label": "Critical",
+                      "count": "{{alarms.filter(a => a.source.match(params.alarmSource) && a.severity === 'critical').length}}",
+                      "color": "#ef4444",
+                      "pulse": true
+                    }
+                  },
+                  {
+                    "type": "summaryBadge",
+                    "props": {
+                      "label": "High",
+                      "count": "{{alarms.filter(a => a.source.match(params.alarmSource) && a.severity === 'high').length}}",
+                      "color": "#f59e0b"
+                    }
+                  },
+                  {
+                    "type": "summaryBadge",
+                    "props": {
+                      "label": "Medium",
+                      "count": "{{alarms.filter(a => a.source.match(params.alarmSource) && a.severity === 'medium').length}}",
+                      "color": "#eab308"
+                    }
+                  },
+                  {
+                    "type": "summaryBadge",
+                    "props": {
+                      "label": "Low",
+                      "count": "{{alarms.filter(a => a.source.match(params.alarmSource) && a.severity === 'low').length}}",
+                      "color": "#3b82f6"
+                    }
+                  },
+                  {
+                    "type": "summaryBadge",
+                    "props": {
+                      "label": "Unacked",
+                      "count": "{{alarms.filter(a => a.source.match(params.alarmSource) && !a.acknowledged).length}}",
+                      "color": "#8b5cf6"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "filterBar",
+            "props": {
+              "filters": [
+                {
+                  "type": "multiSelect",
+                  "id": "severityFilter",
+                  "label": "Severity",
+                  "options": "{{params.severityFilter}}",
+                  "value": "{{filters.severity}}"
+                },
+                {
+                  "type": "toggle",
+                  "id": "showAcked",
+                  "label": "Show Acknowledged",
+                  "value": "{{params.showAcknowledged}}"
+                },
+                {
+                  "type": "search",
+                  "id": "searchFilter",
+                  "placeholder": "Search alarms...",
+                  "value": "{{filters.search}}"
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{!params.compactMode}}",
+              "children": [
+                {
+                  "type": "alarmTable",
+                  "props": {
+                    "dataSource": "{{alarms.filter(a => a.source.match(params.alarmSource) && params.severityFilter.includes(a.severity) && (params.showAcknowledged || !a.acknowledged)).slice(0, params.maxAlarms)}}",
+                    "columns": [
+                      {
+                        "key": "severity",
+                        "label": "Severity",
+                        "width": "80px",
+                        "renderer": "severity"
+                      },
+                      {
+                        "key": "timestamp",
+                        "label": "Time",
+                        "width": "150px",
+                        "format": "MM/DD HH:mm:ss"
+                      },
+                      {
+                        "key": "source",
+                        "label": "Source",
+                        "width": "200px"
+                      },
+                      {
+                        "key": "displayPath",
+                        "label": "Display Path",
+                        "width": "250px"
+                      },
+                      {
+                        "key": "label",
+                        "label": "Message",
+                        "flex": true
+                      },
+                      {
+                        "key": "state",
+                        "label": "State",
+                        "width": "100px",
+                        "renderer": "state"
+                      },
+                      {
+                        "key": "acknowledged",
+                        "label": "Ack",
+                        "width": "60px",
+                        "renderer": "checkbox"
+                      }
+                    ],
+                    "rowActions": [
+                      {
+                        "label": "Acknowledge",
+                        "action": "acknowledgeAlarm",
+                        "condition": "{{!row.acknowledged}}",
+                        "icon": "mdi-check"
+                      },
+                      {
+                        "label": "Details",
+                        "action": "showAlarmDetails",
+                        "icon": "mdi-information"
+                      },
+                      {
+                        "label": "Shelve",
+                        "action": "shelveAlarm",
+                        "icon": "mdi-clock"
+                      }
+                    ],
+                    "selectable": true,
+                    "multiSelect": true,
+                    "refreshRate": "{{params.refreshInterval}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.compactMode}}",
+              "children": [
+                {
+                  "type": "alarmList",
+                  "props": {
+                    "dataSource": "{{alarms.filter(a => a.source.match(params.alarmSource) && params.severityFilter.includes(a.severity) && (params.showAcknowledged || !a.acknowledged)).slice(0, params.maxAlarms)}}",
+                    "compact": true,
+                    "groupBy": "{{params.groupByArea ? 'area' : null}}",
+                    "itemRenderer": {
+                      "type": "alarmCard",
+                      "props": {
+                        "severity": "{{item.severity}}",
+                        "timestamp": "{{item.timestamp}}",
+                        "message": "{{item.label}}",
+                        "source": "{{item.displayPath}}",
+                        "acknowledged": "{{item.acknowledged}}",
+                        "onClick": {
+                          "action": "showAlarmDetails",
+                          "params": { "alarmId": "{{item.id}}" }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "actionBar",
+            "props": {
+              "style": {
+                "borderTop": "1px solid #e5e7eb",
+                "paddingTop": "10px",
+                "marginTop": "auto"
+              }
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": {
+                  "gap": "10px",
+                  "justify": "space-between"
+                },
+                "children": [
+                  {
+                    "type": "flex",
+                    "props": { "gap": "10px" },
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Acknowledge All",
+                          "icon": "mdi-check-all",
+                          "onClick": {
+                            "action": "acknowledgeAll",
+                            "params": {
+                              "filter": "{{params.alarmSource}}"
+                            }
+                          },
+                          "disabled": "{{alarms.filter(a => !a.acknowledged).length === 0}}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Shelve Selected",
+                          "icon": "mdi-clock-outline",
+                          "onClick": {
+                            "action": "shelveSelected"
+                          },
+                          "disabled": "{{!hasSelection}}"
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Export",
+                          "icon": "mdi-download",
+                          "onClick": {
+                            "action": "exportAlarms"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "flex",
+                    "props": { "gap": "10px", "align": "center" },
+                    "children": [
+                      {
+                        "type": "toggle",
+                        "props": {
+                          "label": "Sound",
+                          "value": "{{params.enableSound}}",
+                          "onChange": {
+                            "action": "toggleSound"
+                          }
+                        }
+                      },
+                      {
+                        "type": "timestamp",
+                        "props": {
+                          "label": "Last Update:",
+                          "value": "{{lastUpdate}}",
+                          "format": "HH:mm:ss"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "acknowledgeAlarm": {
+      "type": "gateway",
+      "method": "acknowledgeAlarm",
+      "params": ["alarmId", "notes"]
+    },
+    "acknowledgeAll": {
+      "type": "gateway",
+      "method": "acknowledgeAlarms",
+      "confirm": true,
+      "confirmMessage": "Acknowledge all unacknowledged alarms?"
+    },
+    "shelveAlarm": {
+      "type": "modal",
+      "title": "Shelve Alarm",
+      "fields": [
+        {
+          "name": "duration",
+          "label": "Duration (minutes)",
+          "type": "number",
+          "default": 60
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ]
+    },
+    "showAlarmDetails": {
+      "type": "popup",
+      "component": "alarmDetailsPopup",
+      "width": 600,
+      "height": 400
+    },
+    "exportAlarms": {
+      "type": "export",
+      "format": "csv",
+      "filename": "alarms_{{timestamp}}.csv"
+    },
+    "toggleSound": {
+      "type": "localStorage",
+      "key": "alarmSound",
+      "toggle": true
+    }
+  },
+  "subscriptions": [
+    {
+      "type": "alarms",
+      "source": "{{params.alarmSource}}",
+      "interval": "{{params.refreshInterval}}"
+    }
+  ],
+  "sounds": {
+    "critical": {
+      "file": "/sounds/critical-alarm.wav",
+      "repeat": true,
+      "condition": "{{params.enableSound && hasNewCritical}}"
+    },
+    "high": {
+      "file": "/sounds/high-alarm.wav",
+      "repeat": false,
+      "condition": "{{params.enableSound && hasNewHigh}}"
+    }
+  }
+}

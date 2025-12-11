@@ -1,0 +1,659 @@
+{
+  "id": "repo-control",
+  "name": "Repository Control Template",
+  "description": "Complete Git repository management interface",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "parameters": {
+    "repoPath": {
+      "type": "string",
+      "required": true,
+      "description": "Repository path or name",
+      "example": "gitway"
+    },
+    "remoteUrl": {
+      "type": "string",
+      "required": false,
+      "default": "https://github.com/{{params.owner}}/{{params.repo}}",
+      "description": "Remote repository URL"
+    },
+    "owner": {
+      "type": "string",
+      "required": false,
+      "default": "teslasolar",
+      "description": "Repository owner"
+    },
+    "repo": {
+      "type": "string",
+      "required": false,
+      "default": "gitway",
+      "description": "Repository name"
+    },
+    "branch": {
+      "type": "string",
+      "required": false,
+      "default": "main",
+      "description": "Default branch"
+    },
+    "autoSync": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable automatic sync"
+    },
+    "syncInterval": {
+      "type": "number",
+      "required": false,
+      "default": 300000,
+      "description": "Sync interval in ms (5 min default)"
+    },
+    "showAdvanced": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show advanced Git operations"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "Repository: {{params.repo}}",
+      "icon": "mdi-git",
+      "style": {
+        "minWidth": "800px"
+      }
+    },
+    "children": [
+      {
+        "type": "tabs",
+        "props": {
+          "tabs": [
+            { "id": "status", "label": "Status", "icon": "mdi-information" },
+            { "id": "commits", "label": "Commits", "icon": "mdi-history" },
+            { "id": "branches", "label": "Branches", "icon": "mdi-source-branch" },
+            { "id": "operations", "label": "Operations", "icon": "mdi-cog" }
+          ]
+        },
+        "children": [
+          {
+            "type": "tabPanel",
+            "props": { "tabId": "status" },
+            "children": [
+              {
+                "type": "flex",
+                "props": { "direction": "column", "gap": "15px" },
+                "children": [
+                  {
+                    "type": "statusPanel",
+                    "props": {
+                      "title": "Repository Status",
+                      "style": {
+                        "padding": "15px",
+                        "background": "#f3f4f6",
+                        "borderRadius": "8px"
+                      }
+                    },
+                    "children": [
+                      {
+                        "type": "grid",
+                        "props": { "columns": 3, "gap": "15px" },
+                        "children": [
+                          {
+                            "type": "metric",
+                            "props": {
+                              "label": "Current Branch",
+                              "value": "{{git.[params.repoPath].branch}}",
+                              "icon": "mdi-source-branch"
+                            }
+                          },
+                          {
+                            "type": "metric",
+                            "props": {
+                              "label": "Uncommitted Changes",
+                              "value": "{{git.[params.repoPath].changes.length}}",
+                              "icon": "mdi-file-edit",
+                              "alert": "{{git.[params.repoPath].changes.length > 0}}"
+                            }
+                          },
+                          {
+                            "type": "metric",
+                            "props": {
+                              "label": "Behind/Ahead",
+                              "value": "↓{{git.[params.repoPath].behind}} ↑{{git.[params.repoPath].ahead}}",
+                              "icon": "mdi-sync"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "card",
+                    "props": { "title": "Modified Files" },
+                    "children": [
+                      {
+                        "type": "fileList",
+                        "props": {
+                          "files": "{{git.[params.repoPath].changes}}",
+                          "showStatus": true,
+                          "selectable": true,
+                          "actions": [
+                            {
+                              "label": "Stage",
+                              "action": "stageFile",
+                              "icon": "mdi-plus"
+                            },
+                            {
+                              "label": "Discard",
+                              "action": "discardChanges",
+                              "icon": "mdi-undo",
+                              "confirm": true
+                            },
+                            {
+                              "label": "Diff",
+                              "action": "showDiff",
+                              "icon": "mdi-compare"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tabPanel",
+            "props": { "tabId": "commits" },
+            "children": [
+              {
+                "type": "flex",
+                "props": { "direction": "column", "gap": "15px" },
+                "children": [
+                  {
+                    "type": "commitPanel",
+                    "props": {
+                      "style": {
+                        "padding": "15px",
+                        "background": "#e0f2fe",
+                        "borderRadius": "8px"
+                      }
+                    },
+                    "children": [
+                      {
+                        "type": "flex",
+                        "props": { "gap": "10px" },
+                        "children": [
+                          {
+                            "type": "textarea",
+                            "props": {
+                              "placeholder": "Commit message...",
+                              "binding": "{{commitMessage}}",
+                              "rows": 3,
+                              "style": { "flex": 1 }
+                            }
+                          },
+                          {
+                            "type": "flex",
+                            "props": { "direction": "column", "gap": "5px" },
+                            "children": [
+                              {
+                                "type": "button",
+                                "props": {
+                                  "text": "Commit",
+                                  "icon": "mdi-check",
+                                  "primary": true,
+                                  "onClick": {
+                                    "action": "createCommit",
+                                    "params": {
+                                      "repo": "{{params.repoPath}}",
+                                      "message": "{{commitMessage}}"
+                                    }
+                                  },
+                                  "disabled": "{{!commitMessage || git.[params.repoPath].staged.length === 0}}"
+                                }
+                              },
+                              {
+                                "type": "button",
+                                "props": {
+                                  "text": "Commit & Push",
+                                  "icon": "mdi-upload",
+                                  "onClick": {
+                                    "action": "commitAndPush",
+                                    "params": {
+                                      "repo": "{{params.repoPath}}",
+                                      "message": "{{commitMessage}}"
+                                    }
+                                  },
+                                  "disabled": "{{!commitMessage || git.[params.repoPath].staged.length === 0}}"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "stagedFiles",
+                        "props": {
+                          "files": "{{git.[params.repoPath].staged}}",
+                          "title": "Staged Files",
+                          "style": { "marginTop": "10px" }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "commitHistory",
+                    "props": {
+                      "commits": "{{git.[params.repoPath].commits}}",
+                      "limit": 20,
+                      "columns": [
+                        { "key": "hash", "label": "SHA", "width": "80px" },
+                        { "key": "message", "label": "Message", "flex": true },
+                        { "key": "author", "label": "Author", "width": "150px" },
+                        { "key": "date", "label": "Date", "width": "150px" }
+                      ],
+                      "actions": [
+                        {
+                          "label": "Cherry-pick",
+                          "action": "cherryPick",
+                          "icon": "mdi-source-commit"
+                        },
+                        {
+                          "label": "Revert",
+                          "action": "revertCommit",
+                          "icon": "mdi-undo"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tabPanel",
+            "props": { "tabId": "branches" },
+            "children": [
+              {
+                "type": "flex",
+                "props": { "direction": "column", "gap": "15px" },
+                "children": [
+                  {
+                    "type": "branchSelector",
+                    "props": {
+                      "current": "{{git.[params.repoPath].branch}}",
+                      "branches": "{{git.[params.repoPath].branches}}",
+                      "onChange": {
+                        "action": "switchBranch",
+                        "params": { "repo": "{{params.repoPath}}" }
+                      }
+                    }
+                  },
+                  {
+                    "type": "flex",
+                    "props": { "gap": "10px" },
+                    "children": [
+                      {
+                        "type": "input",
+                        "props": {
+                          "placeholder": "New branch name...",
+                          "binding": "{{newBranchName}}",
+                          "style": { "flex": 1 }
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Create Branch",
+                          "icon": "mdi-plus",
+                          "onClick": {
+                            "action": "createBranch",
+                            "params": {
+                              "repo": "{{params.repoPath}}",
+                              "name": "{{newBranchName}}"
+                            }
+                          },
+                          "disabled": "{{!newBranchName}}"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "branchList",
+                    "props": {
+                      "branches": "{{git.[params.repoPath].branches}}",
+                      "current": "{{git.[params.repoPath].branch}}",
+                      "remote": "{{git.[params.repoPath].remoteBranches}}",
+                      "actions": [
+                        {
+                          "label": "Checkout",
+                          "action": "checkoutBranch",
+                          "icon": "mdi-source-branch-check"
+                        },
+                        {
+                          "label": "Merge",
+                          "action": "mergeBranch",
+                          "icon": "mdi-source-merge",
+                          "confirm": true
+                        },
+                        {
+                          "label": "Delete",
+                          "action": "deleteBranch",
+                          "icon": "mdi-delete",
+                          "confirm": true
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tabPanel",
+            "props": { "tabId": "operations" },
+            "children": [
+              {
+                "type": "grid",
+                "props": { "columns": 2, "gap": "20px" },
+                "children": [
+                  {
+                    "type": "card",
+                    "props": { "title": "Remote Operations", "icon": "mdi-cloud" },
+                    "children": [
+                      {
+                        "type": "flex",
+                        "props": { "direction": "column", "gap": "10px" },
+                        "children": [
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Pull",
+                              "icon": "mdi-download",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "gitPull",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              }
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Push",
+                              "icon": "mdi-upload",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "gitPush",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              },
+                              "disabled": "{{git.[params.repoPath].ahead === 0}}"
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Fetch",
+                              "icon": "mdi-sync",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "gitFetch",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "card",
+                    "props": { "title": "Local Operations", "icon": "mdi-folder" },
+                    "children": [
+                      {
+                        "type": "flex",
+                        "props": { "direction": "column", "gap": "10px" },
+                        "children": [
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Stage All",
+                              "icon": "mdi-plus-box-multiple",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "stageAll",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              }
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Unstage All",
+                              "icon": "mdi-minus-box-multiple",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "unstageAll",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              }
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Stash Changes",
+                              "icon": "mdi-archive",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "stashChanges",
+                                "params": { "repo": "{{params.repoPath}}" }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "conditional",
+                    "props": {
+                      "condition": "{{params.showAdvanced}}",
+                      "children": [
+                        {
+                          "type": "card",
+                          "props": { "title": "Advanced", "icon": "mdi-wrench" },
+                          "children": [
+                            {
+                              "type": "flex",
+                              "props": { "direction": "column", "gap": "10px" },
+                              "children": [
+                                {
+                                  "type": "button",
+                                  "props": {
+                                    "text": "Rebase",
+                                    "icon": "mdi-source-branch-sync",
+                                    "fullWidth": true,
+                                    "onClick": {
+                                      "action": "gitRebase",
+                                      "params": { "repo": "{{params.repoPath}}" }
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "button",
+                                  "props": {
+                                    "text": "Reset Hard",
+                                    "icon": "mdi-backup-restore",
+                                    "fullWidth": true,
+                                    "color": "red",
+                                    "onClick": {
+                                      "action": "gitResetHard",
+                                      "params": { "repo": "{{params.repoPath}}" }
+                                    },
+                                    "confirm": true,
+                                    "confirmMessage": "This will discard all local changes!"
+                                  }
+                                },
+                                {
+                                  "type": "button",
+                                  "props": {
+                                    "text": "Clean",
+                                    "icon": "mdi-broom",
+                                    "fullWidth": true,
+                                    "onClick": {
+                                      "action": "gitClean",
+                                      "params": { "repo": "{{params.repoPath}}" }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "card",
+                    "props": { "title": "GitHub Integration", "icon": "mdi-github" },
+                    "children": [
+                      {
+                        "type": "flex",
+                        "props": { "direction": "column", "gap": "10px" },
+                        "children": [
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Create PR",
+                              "icon": "mdi-source-pull",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "createPullRequest",
+                                "params": {
+                                  "repo": "{{params.repo}}",
+                                  "owner": "{{params.owner}}"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "View Issues",
+                              "icon": "mdi-alert-circle",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "viewIssues",
+                                "params": {
+                                  "repo": "{{params.repo}}",
+                                  "owner": "{{params.owner}}"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "button",
+                            "props": {
+                              "text": "Deploy to Pages",
+                              "icon": "mdi-rocket-launch",
+                              "fullWidth": true,
+                              "onClick": {
+                                "action": "deployToPages",
+                                "params": {
+                                  "repo": "{{params.repo}}",
+                                  "owner": "{{params.owner}}"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "createCommit": {
+      "type": "git",
+      "command": "commit",
+      "params": ["repo", "message"]
+    },
+    "commitAndPush": {
+      "type": "sequence",
+      "steps": [
+        { "action": "createCommit" },
+        { "action": "gitPush" }
+      ]
+    },
+    "gitPull": {
+      "type": "git",
+      "command": "pull",
+      "showProgress": true
+    },
+    "gitPush": {
+      "type": "git",
+      "command": "push",
+      "showProgress": true
+    },
+    "gitFetch": {
+      "type": "git",
+      "command": "fetch"
+    },
+    "stageFile": {
+      "type": "git",
+      "command": "add",
+      "params": ["file"]
+    },
+    "stageAll": {
+      "type": "git",
+      "command": "add",
+      "params": { "all": true }
+    },
+    "unstageAll": {
+      "type": "git",
+      "command": "reset"
+    },
+    "switchBranch": {
+      "type": "git",
+      "command": "checkout",
+      "params": ["branch"]
+    },
+    "createBranch": {
+      "type": "git",
+      "command": "branch",
+      "params": ["name"]
+    },
+    "mergeBranch": {
+      "type": "git",
+      "command": "merge",
+      "params": ["branch"],
+      "confirm": true
+    },
+    "createPullRequest": {
+      "type": "github",
+      "command": "createPR",
+      "modal": true
+    },
+    "deployToPages": {
+      "type": "github",
+      "command": "deployPages",
+      "showProgress": true
+    }
+  },
+  "subscriptions": [
+    {
+      "type": "git",
+      "path": "{{params.repoPath}}",
+      "events": ["status", "commits", "branches"],
+      "interval": "{{params.autoSync ? params.syncInterval : null}}"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Sequence",
+  "typeId": "Process/Sequence",
+  "description": "Sequential control with step and transition logic",
+  "parameters": {
+    "SequenceID": {"dataType": "String", "value": "SEQ001"},
+    "MaxSteps": {"dataType": "Int4", "value": 16}
+  },
+  "tags": {
+    "Active": {"dataType": "Boolean", "doc": "Sequence is active"},
+    "CurrentStep": {
+      "Index": {"dataType": "Int4", "value": 0},
+      "Name": {"dataType": "String", "value": ""},
+      "Timer": {"dataType": "Float4", "engUnit": "s"},
+      "Done": {"dataType": "Boolean"}
+    },
+    "Transition": {
+      "Ready": {"dataType": "Boolean", "doc": "Conditions met for next step"},
+      "TimeDelay": {"dataType": "Float4", "value": 0.0, "engUnit": "s"}
+    },
+    "Mode": {
+      "dataType": "Int4",
+      "doc": "0=Stop, 1=SingleStep, 2=Auto",
+      "value": 0
+    },
+    "Cmd": {
+      "Start": {"dataType": "Boolean"},
+      "Stop": {"dataType": "Boolean"},
+      "Next": {"dataType": "Boolean", "doc": "Advance to next step"},
+      "Reset": {"dataType": "Boolean"}
+    },
+    "Status": {
+      "Complete": {"dataType": "Boolean"},
+      "Fault": {"dataType": "Boolean"}
+    }
+  }
+}

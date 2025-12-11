@@ -1,0 +1,32 @@
+{
+  "name": "Pump",
+  "typeId": "Equipment/Pump",
+  "parameters": {
+    "PumpID": {"dataType": "String", "value": "PMP001"},
+    "MaxFlow": {"dataType": "Float4", "value": 100.0}
+  },
+  "tags": {
+    "Status": {"dataType": "Int4", "doc": "0=Off, 1=On, 2=Fault"},
+    "Cmd": {
+      "Start": {"dataType": "Boolean"},
+      "Stop": {"dataType": "Boolean"}
+    },
+    "Flow": {
+      "Rate": {"dataType": "Float4", "engUnit": "GPM"},
+      "Total": {"dataType": "Float8", "engUnit": "gal"}
+    },
+    "Pressure": {
+      "Inlet": {"dataType": "Float4", "engUnit": "PSI"},
+      "Outlet": {"dataType": "Float4", "engUnit": "PSI"}
+    },
+    "VFD": {
+      "Speed": {"dataType": "Float4", "engUnit": "%"},
+      "Frequency": {"dataType": "Float4", "engUnit": "Hz"}
+    },
+    "Alarms": {
+      "LowFlow": {"dataType": "Boolean"},
+      "HighPressure": {"dataType": "Boolean"},
+      "Cavitation": {"dataType": "Boolean"}
+    }
+  }
+}

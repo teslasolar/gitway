@@ -1,0 +1,36 @@
+{
+  "name": "Conveyor",
+  "typeId": "Equipment/Conveyor",
+  "description": "Conveyor belt with speed control and load monitoring",
+  "parameters": {
+    "ConveyorID": {"dataType": "String", "value": "CNV001"},
+    "Length": {"dataType": "Float4", "value": 10.0}
+  },
+  "tags": {
+    "Status": {
+      "dataType": "Int4",
+      "doc": "0=Stopped, 1=Running, 2=Faulted, 3=Jammed",
+      "alarms": [
+        {"name": "Fault", "setpointA": 2, "enabled": true},
+        {"name": "Jammed", "setpointA": 3, "enabled": true}
+      ]
+    },
+    "Cmd": {
+      "Start": {"dataType": "Boolean", "doc": "Start command"},
+      "Stop": {"dataType": "Boolean", "doc": "Stop command"},
+      "Reset": {"dataType": "Boolean", "doc": "Reset fault"}
+    },
+    "Speed": {
+      "Actual": {"dataType": "Float4", "engUnit": "m/min"},
+      "Setpoint": {"dataType": "Float4", "engUnit": "m/min"}
+    },
+    "Load": {
+      "Current": {"dataType": "Float4", "engUnit": "A"},
+      "Weight": {"dataType": "Float4", "engUnit": "kg"}
+    },
+    "Interlocks": {
+      "EStop": {"dataType": "Boolean"},
+      "PhotoEye": {"dataType": "Boolean"}
+    }
+  }
+}

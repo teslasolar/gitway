@@ -1,0 +1,31 @@
+{
+  "name": "AlarmStats",
+  "typeId": "Metrics/AlarmStats",
+  "description": "Alarm statistics and counts",
+  "parameters": {
+    "AreaID": {"dataType": "String", "value": "AREA001"}
+  },
+  "tags": {
+    "Active": {
+      "Total": {"dataType": "Int4", "doc": "Total active alarms"},
+      "Critical": {"dataType": "Int4"},
+      "High": {"dataType": "Int4"},
+      "Medium": {"dataType": "Int4"},
+      "Low": {"dataType": "Int4"}
+    },
+    "Historical": {
+      "Today": {"dataType": "Int4", "doc": "Alarms today"},
+      "Week": {"dataType": "Int4"},
+      "Month": {"dataType": "Int4"}
+    },
+    "Response": {
+      "AvgAckTime": {"dataType": "Float4", "engUnit": "sec", "doc": "Average acknowledgment time"},
+      "AvgClearTime": {"dataType": "Float4", "engUnit": "min"}
+    },
+    "TopAlarm": {
+      "Name": {"dataType": "String"},
+      "Count": {"dataType": "Int4"},
+      "Priority": {"dataType": "String"}
+    }
+  }
+}

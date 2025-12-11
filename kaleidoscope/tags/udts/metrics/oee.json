@@ -1,0 +1,30 @@
+{
+  "name": "OEE",
+  "typeId": "Metrics/OEE",
+  "description": "Overall Equipment Effectiveness metrics",
+  "parameters": {
+    "AssetID": {"dataType": "String", "value": "ASSET001"}
+  },
+  "tags": {
+    "Availability": {
+      "Percent": {"dataType": "Float4", "engUnit": "%", "doc": "Uptime percentage"},
+      "PlannedTime": {"dataType": "Float4", "engUnit": "min"},
+      "Downtime": {"dataType": "Float4", "engUnit": "min"}
+    },
+    "Performance": {
+      "Percent": {"dataType": "Float4", "engUnit": "%", "doc": "Speed efficiency"},
+      "IdealCycleTime": {"dataType": "Float4", "engUnit": "sec"},
+      "ActualCycleTime": {"dataType": "Float4", "engUnit": "sec"}
+    },
+    "Quality": {
+      "Percent": {"dataType": "Float4", "engUnit": "%", "doc": "Good parts ratio"},
+      "GoodCount": {"dataType": "Int4"},
+      "TotalCount": {"dataType": "Int4"}
+    },
+    "Overall": {
+      "OEE": {"dataType": "Float4", "engUnit": "%", "doc": "Overall OEE"},
+      "Target": {"dataType": "Float4", "engUnit": "%"},
+      "LastCalculated": {"dataType": "DateTime"}
+    }
+  }
+}

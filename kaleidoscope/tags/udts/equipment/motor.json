@@ -1,0 +1,34 @@
+{
+  "name": "Motor",
+  "typeId": "Equipment/Motor",
+  "description": "Standard motor UDT",
+  "parameters": {
+    "MotorID": {"dataType": "String", "value": "MTR001"},
+    "RatedHP": {"dataType": "Float4", "value": 10.0}
+  },
+  "tags": {
+    "Status": {
+      "dataType": "Int4",
+      "doc": "0=Stopped, 1=Running, 2=Faulted",
+      "alarms": [
+        {"name": "Fault", "setpointA": 2, "enabled": true}
+      ]
+    },
+    "Cmd": {
+      "Start": {"dataType": "Boolean", "doc": "Start command"},
+      "Stop": {"dataType": "Boolean", "doc": "Stop command"},
+      "Reset": {"dataType": "Boolean", "doc": "Reset fault"}
+    },
+    "Speed": {
+      "Actual": {"dataType": "Float4", "engUnit": "RPM"},
+      "Setpoint": {"dataType": "Float4", "engUnit": "RPM"}
+    },
+    "Current": {"dataType": "Float4", "engUnit": "A"},
+    "Runtime": {"dataType": "Float8", "engUnit": "hours"},
+    "Interlocks": {
+      "EStop": {"dataType": "Boolean"},
+      "Remote": {"dataType": "Boolean"},
+      "Overload": {"dataType": "Boolean"}
+    }
+  }
+}

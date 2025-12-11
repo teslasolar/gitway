@@ -1,0 +1,35 @@
+{
+  "name": "Heater",
+  "typeId": "Equipment/Heater",
+  "description": "Heater/cooler with PID temperature control",
+  "parameters": {
+    "HeaterID": {"dataType": "String", "value": "HTR001"},
+    "MaxPower": {"dataType": "Float4", "value": 50.0}
+  },
+  "tags": {
+    "Status": {
+      "dataType": "Int4",
+      "doc": "0=Off, 1=Heating, 2=Cooling, 3=Faulted"
+    },
+    "Cmd": {
+      "Enable": {"dataType": "Boolean", "doc": "Enable control"},
+      "Disable": {"dataType": "Boolean", "doc": "Disable control"},
+      "Reset": {"dataType": "Boolean", "doc": "Reset fault"}
+    },
+    "Temperature": {
+      "Actual": {"dataType": "Float4", "engUnit": "C"},
+      "Setpoint": {"dataType": "Float4", "engUnit": "C"},
+      "alarms": [
+        {"name": "DevHigh", "setpointA": 10, "enabled": true},
+        {"name": "TempHigh", "setpointA": 100, "enabled": true}
+      ]
+    },
+    "PID": {
+      "Output": {"dataType": "Float4", "engUnit": "%"},
+      "Kp": {"dataType": "Float4", "value": 1.0},
+      "Ki": {"dataType": "Float4", "value": 0.1},
+      "Kd": {"dataType": "Float4", "value": 0.05}
+    },
+    "Power": {"dataType": "Float4", "engUnit": "kW"}
+  }
+}

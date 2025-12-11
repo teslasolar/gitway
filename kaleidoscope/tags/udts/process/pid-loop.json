@@ -1,0 +1,33 @@
+{
+  "name": "PIDLoop",
+  "typeId": "Process/PIDLoop",
+  "description": "PID control loop for process variable regulation",
+  "parameters": {
+    "LoopID": {"dataType": "String", "value": "PID001"},
+    "PVEngUnit": {"dataType": "String", "value": ""}
+  },
+  "tags": {
+    "PV": {"dataType": "Float4", "doc": "Process variable"},
+    "SP": {"dataType": "Float4", "doc": "Setpoint"},
+    "CV": {"dataType": "Float4", "doc": "Control variable output"},
+    "Mode": {
+      "dataType": "Int4",
+      "doc": "0=Manual, 1=Auto, 2=Cascade",
+      "value": 0
+    },
+    "Tuning": {
+      "Kp": {"dataType": "Float4", "value": 1.0, "doc": "Proportional gain"},
+      "Ki": {"dataType": "Float4", "value": 0.1, "doc": "Integral gain"},
+      "Kd": {"dataType": "Float4", "value": 0.0, "doc": "Derivative gain"}
+    },
+    "Limits": {
+      "CVMin": {"dataType": "Float4", "value": 0.0},
+      "CVMax": {"dataType": "Float4", "value": 100.0}
+    },
+    "Status": {
+      "InAuto": {"dataType": "Boolean"},
+      "Tracking": {"dataType": "Boolean"},
+      "Error": {"dataType": "Float4", "doc": "SP - PV"}
+    }
+  }
+}

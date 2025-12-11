@@ -1,0 +1,31 @@
+{
+  "name": "Valve",
+  "typeId": "Equipment/Valve",
+  "description": "Standard valve UDT with position control",
+  "parameters": {
+    "ValveID": {"dataType": "String", "value": "VLV001"},
+    "ValveType": {"dataType": "String", "value": "Control"}
+  },
+  "tags": {
+    "Status": {
+      "dataType": "Int4",
+      "doc": "0=Closed, 1=Open, 2=Partial, 3=Faulted"
+    },
+    "Cmd": {
+      "Open": {"dataType": "Boolean", "doc": "Open command"},
+      "Close": {"dataType": "Boolean", "doc": "Close command"},
+      "Reset": {"dataType": "Boolean", "doc": "Reset fault"}
+    },
+    "Position": {
+      "Actual": {"dataType": "Float4", "engUnit": "%"},
+      "Setpoint": {"dataType": "Float4", "engUnit": "%"},
+      "Feedback": {"dataType": "Float4", "engUnit": "%"}
+    },
+    "Interlocks": {
+      "PermissiveOK": {"dataType": "Boolean"},
+      "EmergencyClose": {"dataType": "Boolean"},
+      "ManualMode": {"dataType": "Boolean"}
+    },
+    "TravelTime": {"dataType": "Float4", "engUnit": "seconds"}
+  }
+}

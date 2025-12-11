@@ -1,0 +1,37 @@
+{
+  "name": "Batch",
+  "typeId": "Process/Batch",
+  "description": "Batch process control with recipe execution",
+  "parameters": {
+    "BatchID": {"dataType": "String", "value": "BATCH001"},
+    "UnitID": {"dataType": "String", "value": ""}
+  },
+  "tags": {
+    "Recipe": {
+      "Name": {"dataType": "String", "value": ""},
+      "Version": {"dataType": "String", "value": "1.0"},
+      "ID": {"dataType": "Int4", "value": 0}
+    },
+    "Phase": {
+      "Current": {"dataType": "String", "doc": "Current phase name"},
+      "Index": {"dataType": "Int4", "value": 0},
+      "Complete": {"dataType": "Boolean"}
+    },
+    "Step": {
+      "Current": {"dataType": "String", "doc": "Current step name"},
+      "Index": {"dataType": "Int4", "value": 0},
+      "ElapsedTime": {"dataType": "Float4", "engUnit": "s"}
+    },
+    "State": {
+      "dataType": "Int4",
+      "doc": "0=Idle, 1=Running, 2=Paused, 3=Complete, 4=Aborted",
+      "value": 0
+    },
+    "Cmd": {
+      "Start": {"dataType": "Boolean"},
+      "Pause": {"dataType": "Boolean"},
+      "Resume": {"dataType": "Boolean"},
+      "Abort": {"dataType": "Boolean"}
+    }
+  }
+}

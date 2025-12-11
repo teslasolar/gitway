@@ -1,0 +1,39 @@
+{
+  "name": "Interlock",
+  "typeId": "Process/Interlock",
+  "description": "Safety interlock group with permissive logic",
+  "parameters": {
+    "InterlockID": {"dataType": "String", "value": "ILK001"},
+    "GroupName": {"dataType": "String", "value": ""}
+  },
+  "tags": {
+    "Permissive": {
+      "dataType": "Boolean",
+      "doc": "All conditions met for operation",
+      "alarms": [
+        {"name": "NotReady", "setpointA": 0, "enabled": true}
+      ]
+    },
+    "Conditions": {
+      "C1": {"dataType": "Boolean", "doc": "Condition 1 met"},
+      "C2": {"dataType": "Boolean", "doc": "Condition 2 met"},
+      "C3": {"dataType": "Boolean", "doc": "Condition 3 met"},
+      "C4": {"dataType": "Boolean", "doc": "Condition 4 met"}
+    },
+    "Override": {
+      "Active": {"dataType": "Boolean"},
+      "Enabled": {"dataType": "Boolean", "value": false},
+      "Reason": {"dataType": "String", "value": ""}
+    },
+    "Bypass": {
+      "C1": {"dataType": "Boolean"},
+      "C2": {"dataType": "Boolean"},
+      "C3": {"dataType": "Boolean"},
+      "C4": {"dataType": "Boolean"}
+    },
+    "Status": {
+      "Locked": {"dataType": "Boolean"},
+      "FaultCount": {"dataType": "Int4", "value": 0}
+    }
+  }
+}

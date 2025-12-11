@@ -1,0 +1,33 @@
+{
+  "name": "Tank",
+  "typeId": "Equipment/Tank",
+  "description": "Process tank with level, temperature, and agitator",
+  "parameters": {
+    "TankID": {"dataType": "String", "value": "TNK001"},
+    "Capacity": {"dataType": "Float4", "value": 1000.0}
+  },
+  "tags": {
+    "Level": {
+      "Actual": {"dataType": "Float4", "engUnit": "%"},
+      "Volume": {"dataType": "Float4", "engUnit": "L"},
+      "alarms": [
+        {"name": "HighHigh", "setpointA": 95, "enabled": true},
+        {"name": "High", "setpointA": 85, "enabled": true},
+        {"name": "Low", "setpointA": 15, "enabled": true}
+      ]
+    },
+    "Temperature": {
+      "Actual": {"dataType": "Float4", "engUnit": "C"},
+      "Setpoint": {"dataType": "Float4", "engUnit": "C"},
+      "alarms": [
+        {"name": "HighTemp", "setpointA": 90, "enabled": true}
+      ]
+    },
+    "Agitator": {
+      "Running": {"dataType": "Boolean"},
+      "Speed": {"dataType": "Float4", "engUnit": "RPM"},
+      "Cmd": {"dataType": "Boolean"}
+    },
+    "Pressure": {"dataType": "Float4", "engUnit": "bar"}
+  }
+}

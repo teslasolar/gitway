@@ -1,0 +1,33 @@
+{
+  "name": "KPI",
+  "typeId": "Metrics/KPI",
+  "description": "Generic Key Performance Indicator",
+  "parameters": {
+    "KPIID": {"dataType": "String", "value": "KPI001"},
+    "Name": {"dataType": "String", "value": "Performance"}
+  },
+  "tags": {
+    "Value": {
+      "Current": {"dataType": "Float4", "doc": "Current KPI value"},
+      "Previous": {"dataType": "Float4"},
+      "Average": {"dataType": "Float4"},
+      "Min": {"dataType": "Float4"},
+      "Max": {"dataType": "Float4"}
+    },
+    "Target": {
+      "Value": {"dataType": "Float4"},
+      "Upper": {"dataType": "Float4", "doc": "Upper threshold"},
+      "Lower": {"dataType": "Float4", "doc": "Lower threshold"},
+      "Achievement": {"dataType": "Float4", "engUnit": "%"}
+    },
+    "Trend": {
+      "Direction": {"dataType": "Int4", "doc": "-1=Down, 0=Stable, 1=Up"},
+      "ChangePercent": {"dataType": "Float4", "engUnit": "%"},
+      "LastUpdated": {"dataType": "DateTime"}
+    },
+    "Status": {
+      "InRange": {"dataType": "Boolean"},
+      "Alert": {"dataType": "Boolean"}
+    }
+  }
+}

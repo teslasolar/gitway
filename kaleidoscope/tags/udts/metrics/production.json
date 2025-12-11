@@ -1,0 +1,31 @@
+{
+  "name": "Production",
+  "typeId": "Metrics/Production",
+  "description": "Production metrics and counters",
+  "parameters": {
+    "LineID": {"dataType": "String", "value": "LINE001"}
+  },
+  "tags": {
+    "Rate": {
+      "Current": {"dataType": "Float4", "engUnit": "units/min", "doc": "Current production rate"},
+      "Average": {"dataType": "Float4", "engUnit": "units/min"},
+      "Target": {"dataType": "Float4", "engUnit": "units/min"}
+    },
+    "Count": {
+      "Total": {"dataType": "Int4", "doc": "Total units produced"},
+      "Good": {"dataType": "Int4"},
+      "Shift": {"dataType": "Int4"}
+    },
+    "Rejects": {
+      "Total": {"dataType": "Int4"},
+      "Rate": {"dataType": "Float4", "engUnit": "%"},
+      "LastReason": {"dataType": "String"}
+    },
+    "Downtime": {
+      "Total": {"dataType": "Float4", "engUnit": "min"},
+      "Planned": {"dataType": "Float4", "engUnit": "min"},
+      "Unplanned": {"dataType": "Float4", "engUnit": "min"},
+      "LastEvent": {"dataType": "String"}
+    }
+  }
+}

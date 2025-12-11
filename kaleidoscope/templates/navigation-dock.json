@@ -1,0 +1,197 @@
+{
+  "id": "navigation-dock",
+  "name": "Navigation Dock",
+  "description": "West navigation dock with tree-style menu",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Dock",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Navigation",
+      "description": "Navigation title"
+    },
+    "expandAll": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Expand all navigation items by default"
+    },
+    "showIcons": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show icons in navigation"
+    },
+    "items": {
+      "type": "array",
+      "required": false,
+      "default": [
+        {
+          "label": "Dashboard",
+          "icon": "mdi-view-dashboard",
+          "path": "/dashboard",
+          "children": []
+        },
+        {
+          "label": "Process",
+          "icon": "mdi-factory",
+          "children": [
+            { "label": "Overview", "icon": "mdi-chart-line", "path": "/process/overview" },
+            { "label": "Control", "icon": "mdi-tune", "path": "/process/control" },
+            { "label": "Alarms", "icon": "mdi-alert", "path": "/process/alarms" }
+          ]
+        },
+        {
+          "label": "Equipment",
+          "icon": "mdi-engine",
+          "children": [
+            { "label": "Motors", "icon": "mdi-engine", "path": "/equipment/motors" },
+            { "label": "Pumps", "icon": "mdi-water-pump", "path": "/equipment/pumps" },
+            { "label": "Valves", "icon": "mdi-valve", "path": "/equipment/valves" },
+            { "label": "Tanks", "icon": "mdi-storage-tank", "path": "/equipment/tanks" }
+          ]
+        },
+        {
+          "label": "Reports",
+          "icon": "mdi-file-chart",
+          "children": [
+            { "label": "Production", "icon": "mdi-chart-bar", "path": "/reports/production" },
+            { "label": "Quality", "icon": "mdi-quality-high", "path": "/reports/quality" },
+            { "label": "Maintenance", "icon": "mdi-wrench", "path": "/reports/maintenance" }
+          ]
+        },
+        {
+          "label": "Administration",
+          "icon": "mdi-cog",
+          "children": [
+            { "label": "Users", "icon": "mdi-account-group", "path": "/admin/users" },
+            { "label": "Roles", "icon": "mdi-shield-account", "path": "/admin/roles" },
+            { "label": "Settings", "icon": "mdi-settings", "path": "/admin/settings" }
+          ]
+        }
+      ],
+      "description": "Navigation menu items"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column"
+      }
+    },
+    "children": [
+      {
+        "type": "header",
+        "props": {
+          "style": {
+            "padding": "15px",
+            "borderBottom": "1px solid #e5e7eb",
+            "background": "white"
+          }
+        },
+        "children": [
+          {
+            "type": "label",
+            "props": {
+              "text": "{{params.title}}",
+              "style": {
+                "fontSize": "16px",
+                "fontWeight": "bold",
+                "color": "#334155"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "flex": 1,
+            "overflowY": "auto",
+            "padding": "10px"
+          }
+        },
+        "children": [
+          {
+            "type": "navigationTree",
+            "props": {
+              "items": "{{params.items}}",
+              "expandAll": "{{params.expandAll}}",
+              "showIcons": "{{params.showIcons}}",
+              "activeItemStyle": {
+                "background": "linear-gradient(90deg, #10b981 0%, #059669 100%)",
+                "color": "white",
+                "borderRadius": "6px"
+              },
+              "itemStyle": {
+                "padding": "8px 12px",
+                "cursor": "pointer",
+                "borderRadius": "6px",
+                "marginBottom": "4px",
+                "transition": "all 0.2s"
+              },
+              "hoverStyle": {
+                "background": "#f3f4f6"
+              },
+              "onSelect": {
+                "action": "navigateToPath"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "footer",
+        "props": {
+          "style": {
+            "padding": "15px",
+            "borderTop": "1px solid #e5e7eb",
+            "background": "#f9fafb"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "direction": "column",
+              "gap": "5px"
+            },
+            "children": [
+              {
+                "type": "label",
+                "props": {
+                  "text": "🔗 Connected",
+                  "style": {
+                    "fontSize": "12px",
+                    "color": "#10b981"
+                  }
+                }
+              },
+              {
+                "type": "label",
+                "props": {
+                  "text": "Gateway: {{gateway.status}}",
+                  "style": {
+                    "fontSize": "11px",
+                    "color": "#6b7280"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "actions": {
+      "navigateToPath": "function(path) { window.kaleidoscope.navigate(path); }"
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "id": "label",
+  "name": "Label",
+  "description": "Configurable text label with formatting, alignment, and dynamic styles",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Optional tag path for dynamic text value",
+      "example": "[default]Process/Status"
+    },
+    "text": {
+      "type": "string",
+      "required": false,
+      "default": "Label",
+      "description": "Static text or default value"
+    },
+    "fontSize": {
+      "type": "number",
+      "required": false,
+      "default": 16,
+      "description": "Font size in pixels"
+    },
+    "fontWeight": {
+      "type": "string",
+      "required": false,
+      "default": "normal",
+      "description": "Font weight",
+      "options": ["normal", "bold", "lighter", "bolder", "100", "200", "300", "400", "500", "600", "700", "800", "900"]
+    },
+    "textAlign": {
+      "type": "string",
+      "required": false,
+      "default": "left",
+      "description": "Text alignment",
+      "options": ["left", "center", "right", "justify"]
+    },
+    "color": {
+      "type": "string",
+      "required": false,
+      "default": "#333333",
+      "description": "Text color"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Background color"
+    },
+    "padding": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Padding around text"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Border radius"
+    },
+    "enableConditionalColor": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable conditional color formatting based on value"
+    },
+    "goodColor": {
+      "type": "string",
+      "required": false,
+      "default": "#00aa00",
+      "description": "Color for good/running state"
+    },
+    "warningColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ff9900",
+      "description": "Color for warning state"
+    },
+    "errorColor": {
+      "type": "string",
+      "required": false,
+      "default": "#cc0000",
+      "description": "Color for error/fault state"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "{{params.textAlign}}"
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.tagPath ? tags.[params.tagPath] : params.text}}",
+          "style": {
+            "fontSize": "{{params.fontSize}}px",
+            "fontWeight": "{{params.fontWeight}}",
+            "textAlign": "{{params.textAlign}}",
+            "color": "{{params.enableConditionalColor ? (tags.[params.tagPath] === 'Running' || tags.[params.tagPath] === 'Good' || tags.[params.tagPath] > 0 ? params.goodColor : tags.[params.tagPath] === 'Warning' ? params.warningColor : params.errorColor) : params.color}}",
+            "backgroundColor": "{{params.backgroundColor}}",
+            "padding": "{{params.padding}}",
+            "borderRadius": "{{params.borderRadius}}",
+            "transition": "color 0.3s ease"
+          }
+        },
+        "bindings": [
+          {
+            "type": "property",
+            "property": "value",
+            "binding": {
+              "type": "tag",
+              "tagPath": "{{params.tagPath}}",
+              "fallback": "{{params.text}}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

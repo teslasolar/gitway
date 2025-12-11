@@ -1,0 +1,329 @@
+{
+  "id": "table",
+  "name": "Perspective Table",
+  "description": "Perspective Table component - displays database data in tabular form with sorting, filtering, paging, and editing capabilities",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "ignitionComponent": "perspective.table",
+  "parameters": {
+    "data": {
+      "type": "array",
+      "required": true,
+      "description": "Table data as array of objects or dataset",
+      "example": [
+        {"id": 1, "name": "Item 1", "value": 100, "status": true},
+        {"id": 2, "name": "Item 2", "value": 250, "status": false},
+        {"id": 3, "name": "Item 3", "value": 500, "status": true}
+      ]
+    },
+    "columns": {
+      "type": "array",
+      "required": true,
+      "description": "Column configurations",
+      "example": [
+        {
+          "field": "id",
+          "header": {"title": "ID"},
+          "visible": true,
+          "width": 80,
+          "sortable": true
+        },
+        {
+          "field": "name",
+          "header": {"title": "Name"},
+          "visible": true,
+          "width": 200,
+          "sortable": true,
+          "editable": true
+        },
+        {
+          "field": "value",
+          "header": {"title": "Value"},
+          "visible": true,
+          "width": 150,
+          "render": "number",
+          "numberFormat": "number"
+        }
+      ]
+    },
+    "selectionMode": {
+      "type": "string",
+      "required": false,
+      "default": "single",
+      "enum": ["single", "single interval", "multiple interval", "none"],
+      "description": "Row selection mode"
+    },
+    "enableRowSelection": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable row selection"
+    },
+    "enableColumnSelection": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable column selection"
+    },
+    "enablePaging": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable pagination"
+    },
+    "pageSize": {
+      "type": "number",
+      "required": false,
+      "default": 25,
+      "description": "Rows per page when paging enabled"
+    },
+    "pagerOptions": {
+      "type": "array",
+      "required": false,
+      "default": [10, 25, 50],
+      "description": "Page size options"
+    },
+    "pagerTop": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show pager at top"
+    },
+    "pagerBottom": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show pager at bottom"
+    },
+    "enableFiltering": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable column filtering"
+    },
+    "enableHeader": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show table header"
+    },
+    "enableFooter": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show table footer"
+    },
+    "enableStriping": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable row striping"
+    },
+    "enableRowHighlight": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable row hover highlight"
+    },
+    "rowHeight": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Row height (auto or numeric)"
+    },
+    "resizeMode": {
+      "type": "string",
+      "required": false,
+      "default": "fill",
+      "enum": ["fill", "fixed"],
+      "description": "Column resize mode"
+    },
+    "virtualized": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable virtualization for large datasets"
+    },
+    "dragOrderable": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable drag to reorder columns"
+    },
+    "allowEditOn": {
+      "type": "string",
+      "required": false,
+      "default": "double click",
+      "enum": ["single click", "double click", "long press"],
+      "description": "Cell edit trigger"
+    },
+    "enableSubviews": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable expandable subviews per row"
+    },
+    "subviewPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Path to subview when subviews enabled"
+    },
+    "subviewExpansionMode": {
+      "type": "string",
+      "required": false,
+      "default": "multiple",
+      "enum": ["single", "multiple"],
+      "description": "Subview expansion mode"
+    }
+  },
+  "view": {
+    "type": "table",
+    "props": {
+      "style": {
+        "width": "100%",
+        "height": "400px"
+      },
+      "data": "{{params.data}}",
+      "columns": "{{params.columns}}",
+      "selection": {
+        "mode": "{{params.selectionMode}}",
+        "enableRowSelection": "{{params.enableRowSelection}}",
+        "enableColumnSelection": "{{params.enableColumnSelection}}",
+        "selectedColumn": null,
+        "selectedRow": null,
+        "data": [],
+        "style": {
+          "backgroundColor": "#e3f2fd",
+          "color": "#1976d2"
+        }
+      },
+      "pager": {
+        "options": "{{params.pagerOptions}}",
+        "activeOption": "{{params.pageSize}}",
+        "top": "{{params.pagerTop}}",
+        "bottom": "{{params.pagerBottom}}",
+        "activePage": 1,
+        "style": {
+          "backgroundColor": "#f5f5f5",
+          "borderTop": "1px solid #e0e0e0",
+          "padding": "8px"
+        }
+      },
+      "filter": {
+        "enabled": "{{params.enableFiltering}}",
+        "text": "",
+        "results": {
+          "enabled": false,
+          "data": []
+        },
+        "style": {}
+      },
+      "rows": {
+        "height": "{{params.rowHeight}}",
+        "subviewExpansionMode": "{{params.subviewExpansionMode}}",
+        "subview": {
+          "enabled": "{{params.enableSubviews}}",
+          "viewPath": "{{params.subviewPath}}",
+          "viewParams": {}
+        },
+        "striped": {
+          "enabled": "{{params.enableStriping}}",
+          "color": {
+            "even": "#ffffff",
+            "odd": "#f9f9f9"
+          }
+        },
+        "highlight": {
+          "enabled": "{{params.enableRowHighlight}}",
+          "color": "#f5f5f5"
+        },
+        "style": {}
+      },
+      "cells": {
+        "allowEditOn": "{{params.allowEditOn}}",
+        "style": {
+          "padding": "8px",
+          "fontSize": "14px"
+        }
+      },
+      "editingCell": {
+        "column": null,
+        "row": null
+      },
+      "enableHeader": "{{params.enableHeader}}",
+      "enableFooter": "{{params.enableFooter}}",
+      "enableHeaderGroups": false,
+      "enableFooterGroups": false,
+      "headerGroups": [],
+      "footerGroups": [],
+      "resizeMode": "{{params.resizeMode}}",
+      "virtualized": "{{params.virtualized}}",
+      "dragOrderable": "{{params.dragOrderable}}",
+      "sortOrder": [],
+      "nullFormat": {
+        "includeNullStrings": false,
+        "strict": false,
+        "nullFormatValue": "blank"
+      },
+      "emptyMessage": {
+        "noData": {
+          "text": "No data available",
+          "textStyle": {
+            "color": "#999999",
+            "fontSize": "14px"
+          },
+          "icon": {
+            "path": "table_view",
+            "color": "#cccccc",
+            "size": "48px"
+          }
+        },
+        "noFilterResults": {
+          "text": "No results match the current filter",
+          "textStyle": {
+            "color": "#999999",
+            "fontSize": "14px"
+          },
+          "icon": {
+            "path": "filter_alt_off",
+            "color": "#cccccc",
+            "size": "48px"
+          }
+        }
+      },
+      "headerStyle": {
+        "backgroundColor": "#f5f5f5",
+        "color": "#333333",
+        "fontWeight": "600",
+        "fontSize": "14px",
+        "borderBottom": "2px solid #e0e0e0"
+      },
+      "bodyStyle": {
+        "backgroundColor": "#ffffff"
+      },
+      "footerStyle": {
+        "backgroundColor": "#f5f5f5",
+        "borderTop": "2px solid #e0e0e0",
+        "fontWeight": "600"
+      },
+      "headerGroupStyle": {},
+      "footerGroupStyle": {},
+      "events": {
+        "onSelectionChange": {
+          "script": ""
+        },
+        "onEditCellCommit": {
+          "script": ""
+        },
+        "onEditCellStart": {
+          "script": ""
+        },
+        "onRowDoubleClick": {
+          "script": ""
+        }
+      }
+    }
+  }
+}

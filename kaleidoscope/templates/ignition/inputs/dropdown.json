@@ -1,0 +1,270 @@
+{
+  "id": "dropdown",
+  "name": "Dropdown Select",
+  "description": "Dropdown select with options list and multi-select support",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Input",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for selected value(s)",
+      "example": "[default]Controls/ModeSelection"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "Select Option",
+      "description": "Dropdown label"
+    },
+    "labelPosition": {
+      "type": "string",
+      "required": false,
+      "default": "top",
+      "enum": ["top", "left"],
+      "description": "Label position"
+    },
+    "options": {
+      "type": "array",
+      "required": true,
+      "default": [
+        { "label": "Option 1", "value": 1 },
+        { "label": "Option 2", "value": 2 },
+        { "label": "Option 3", "value": 3 }
+      ],
+      "description": "Array of options with label and value properties"
+    },
+    "placeholder": {
+      "type": "string",
+      "required": false,
+      "default": "Select an option...",
+      "description": "Placeholder text when no option is selected"
+    },
+    "multiSelect": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable multi-select mode"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable or disable dropdown"
+    },
+    "searchable": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable search/filter functionality"
+    },
+    "clearable": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show clear button to reset selection"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "250px",
+      "description": "Dropdown width"
+    },
+    "maxHeight": {
+      "type": "string",
+      "required": false,
+      "default": "300px",
+      "description": "Maximum height of dropdown menu"
+    },
+    "showIcons": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show icons in options (if provided)"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "{{params.labelPosition === 'top' ? 'column' : 'row'}}",
+      "align": "{{params.labelPosition === 'top' ? 'flex-start' : 'center'}}",
+      "gap": "8px",
+      "style": {
+        "width": "auto",
+        "position": "relative"
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.label}}",
+          "style": {
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "color": "#374151",
+            "marginBottom": "{{params.labelPosition === 'top' ? '4px' : '0'}}",
+            "minWidth": "{{params.labelPosition === 'left' ? '100px' : 'auto'}}"
+          }
+        }
+      },
+      {
+        "type": "dropdown",
+        "props": {
+          "value": "{{tags.[params.tagPath]}}",
+          "options": "{{params.options}}",
+          "enabled": "{{params.enabled}}",
+          "placeholder": "{{params.placeholder}}",
+          "multiSelect": "{{params.multiSelect}}",
+          "searchable": "{{params.searchable}}",
+          "clearable": "{{params.clearable}}",
+          "style": {
+            "width": "{{params.width}}",
+            "height": "40px",
+            "border": "1px solid #d1d5db",
+            "borderRadius": "4px",
+            "backgroundColor": "{{params.enabled ? '#ffffff' : '#f3f4f6'}}",
+            "padding": "0 12px",
+            "fontSize": "14px",
+            "color": "#1f2937",
+            "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+            "position": "relative",
+            "display": "flex",
+            "alignItems": "center",
+            "justifyContent": "space-between",
+            "transition": "border-color 0.2s ease"
+          },
+          "focusStyle": {
+            "borderColor": "#3b82f6",
+            "boxShadow": "0 0 0 3px rgba(59, 130, 246, 0.1)",
+            "outline": "none"
+          },
+          "dropdownStyle": {
+            "position": "absolute",
+            "top": "calc(100% + 4px)",
+            "left": "0",
+            "width": "100%",
+            "maxHeight": "{{params.maxHeight}}",
+            "backgroundColor": "#ffffff",
+            "border": "1px solid #d1d5db",
+            "borderRadius": "4px",
+            "boxShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+            "overflowY": "auto",
+            "zIndex": "1000"
+          },
+          "optionStyle": {
+            "padding": "10px 12px",
+            "fontSize": "14px",
+            "color": "#1f2937",
+            "cursor": "pointer",
+            "display": "flex",
+            "alignItems": "center",
+            "gap": "8px",
+            "transition": "background-color 0.15s ease"
+          },
+          "optionHoverStyle": {
+            "backgroundColor": "#f3f4f6"
+          },
+          "optionSelectedStyle": {
+            "backgroundColor": "#dbeafe",
+            "color": "#1e40af",
+            "fontWeight": "500"
+          },
+          "searchInputStyle": {
+            "width": "calc(100% - 24px)",
+            "margin": "8px 12px",
+            "padding": "8px",
+            "border": "1px solid #d1d5db",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "outline": "none"
+          },
+          "events": {
+            "onChange": {
+              "tagWrite": {
+                "path": "{{params.tagPath}}",
+                "value": "{{event.value}}"
+              }
+            }
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "direction": "row",
+              "align": "center",
+              "justify": "space-between",
+              "style": {
+                "width": "100%"
+              }
+            },
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "value": "{{tags.[params.tagPath] !== null && tags.[params.tagPath] !== undefined ? (params.multiSelect ? tags.[params.tagPath].length + ' selected' : params.options.find(o => o.value === tags.[params.tagPath])?.label || params.placeholder) : params.placeholder}}",
+                  "style": {
+                    "flex": "1",
+                    "color": "{{tags.[params.tagPath] !== null && tags.[params.tagPath] !== undefined ? '#1f2937' : '#9ca3af'}}",
+                    "fontSize": "14px",
+                    "whiteSpace": "nowrap",
+                    "overflow": "hidden",
+                    "textOverflow": "ellipsis"
+                  }
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "direction": "row",
+                  "align": "center",
+                  "gap": "4px"
+                },
+                "children": [
+                  {
+                    "type": "icon",
+                    "props": {
+                      "name": "close",
+                      "size": "16px",
+                      "style": {
+                        "display": "{{params.clearable && tags.[params.tagPath] !== null && tags.[params.tagPath] !== undefined ? 'block' : 'none'}}",
+                        "color": "#6b7280",
+                        "cursor": "pointer",
+                        "padding": "2px"
+                      },
+                      "hoverStyle": {
+                        "color": "#374151"
+                      },
+                      "events": {
+                        "onClick": {
+                          "tagWrite": {
+                            "path": "{{params.tagPath}}",
+                            "value": null
+                          },
+                          "stopPropagation": true
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "icon",
+                    "props": {
+                      "name": "expand_more",
+                      "size": "20px",
+                      "style": {
+                        "color": "#6b7280",
+                        "transition": "transform 0.2s ease"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

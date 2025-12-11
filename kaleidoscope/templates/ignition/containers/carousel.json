@@ -1,0 +1,544 @@
+{
+  "id": "carousel",
+  "name": "Carousel Container",
+  "description": "Carousel/slideshow container with navigation and auto-play",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "slides": {
+      "type": "array",
+      "required": true,
+      "default": [
+        {
+          "id": "slide1",
+          "title": "Slide 1",
+          "template": "",
+          "params": {}
+        }
+      ],
+      "description": "Array of slide definitions"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "100%",
+      "description": "Container width"
+    },
+    "height": {
+      "type": "string",
+      "required": false,
+      "default": "500px",
+      "description": "Container height"
+    },
+    "autoPlay": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Auto-advance slides"
+    },
+    "autoPlayInterval": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Auto-play interval in milliseconds"
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Pause auto-play on hover"
+    },
+    "loop": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Loop back to first slide after last"
+    },
+    "showNavigation": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show previous/next navigation arrows"
+    },
+    "showIndicators": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show slide position indicators"
+    },
+    "indicatorPosition": {
+      "type": "string",
+      "required": false,
+      "default": "bottom",
+      "description": "Indicator position (top, bottom, left, right)"
+    },
+    "showThumbnails": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show thumbnail navigation"
+    },
+    "thumbnailSize": {
+      "type": "string",
+      "required": false,
+      "default": "80px",
+      "description": "Thumbnail size"
+    },
+    "transition": {
+      "type": "string",
+      "required": false,
+      "default": "slide",
+      "description": "Transition effect (slide, fade, zoom, none)"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "required": false,
+      "default": "0.5s",
+      "description": "Transition duration"
+    },
+    "swipeable": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable touch/mouse swipe navigation"
+    },
+    "background": {
+      "type": "string",
+      "required": false,
+      "default": "#000000",
+      "description": "Container background"
+    },
+    "slideBackground": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Individual slide background"
+    },
+    "slidePadding": {
+      "type": "string",
+      "required": false,
+      "default": "20px",
+      "description": "Slide content padding"
+    },
+    "navigationColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Navigation arrow color"
+    },
+    "navigationBackground": {
+      "type": "string",
+      "required": false,
+      "default": "rgba(0, 0, 0, 0.5)",
+      "description": "Navigation arrow background"
+    },
+    "indicatorColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Active indicator color"
+    },
+    "indicatorInactiveColor": {
+      "type": "string",
+      "required": false,
+      "default": "rgba(255, 255, 255, 0.5)",
+      "description": "Inactive indicator color"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "none",
+      "description": "Container border"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Border radius"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "position": "relative",
+        "width": "{{params.width}}",
+        "height": "{{params.height}}",
+        "background": "{{params.background}}",
+        "border": "{{params.border}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "overflow": "hidden",
+        "boxSizing": "border-box"
+      },
+      "onMouseEnter": "{{() => params.pauseOnHover && setState({isPaused: true})}}",
+      "onMouseLeave": "{{() => params.pauseOnHover && setState({isPaused: false})}}"
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "className": "carousel-track",
+          "style": {
+            "display": "flex",
+            "width": "100%",
+            "height": "100%",
+            "position": "relative",
+            "transition": "{{params.transition !== 'none' && !state.isDragging ? `transform ${params.transitionDuration} ease-in-out` : 'none'}}",
+            "transform": "{{params.transition === 'slide' ? `translateX(-${state.currentSlide * 100}%)` : 'none'}}"
+          },
+          "onMouseDown": "{{(e) => params.swipeable && startDrag(e)}}",
+          "onTouchStart": "{{(e) => params.swipeable && startDrag(e)}}"
+        },
+        "children": [
+          {
+            "type": "repeat",
+            "props": {
+              "items": "{{params.slides}}",
+              "itemKey": "id",
+              "children": [
+                {
+                  "type": "container",
+                  "props": {
+                    "className": "carousel-slide",
+                    "style": {
+                      "minWidth": "100%",
+                      "height": "100%",
+                      "display": "flex",
+                      "alignItems": "center",
+                      "justifyContent": "center",
+                      "background": "{{params.slideBackground}}",
+                      "padding": "{{params.slidePadding}}",
+                      "opacity": "{{params.transition === 'fade' ? (state.currentSlide === index ? 1 : 0) : 1}}",
+                      "transform": "{{params.transition === 'zoom' ? (state.currentSlide === index ? 'scale(1)' : 'scale(0.8)') : 'none'}}",
+                      "transition": "{{params.transition === 'fade' || params.transition === 'zoom' ? `all ${params.transitionDuration} ease-in-out` : 'none'}}",
+                      "position": "{{params.transition === 'fade' || params.transition === 'zoom' ? 'absolute' : 'relative'}}",
+                      "left": "{{params.transition === 'fade' || params.transition === 'zoom' ? 0 : 'auto'}}",
+                      "top": "{{params.transition === 'fade' || params.transition === 'zoom' ? 0 : 'auto'}}",
+                      "width": "{{params.transition === 'fade' || params.transition === 'zoom' ? '100%' : 'auto'}}"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "container",
+                      "props": {
+                        "style": {
+                          "width": "100%",
+                          "height": "100%",
+                          "display": "flex",
+                          "flexDirection": "column",
+                          "alignItems": "center",
+                          "justifyContent": "center"
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "conditional",
+                          "props": {
+                            "condition": "{{item.title}}",
+                            "children": [
+                              {
+                                "type": "text",
+                                "props": {
+                                  "value": "{{item.title}}",
+                                  "style": {
+                                    "fontSize": "32px",
+                                    "fontWeight": "bold",
+                                    "color": "#ffffff",
+                                    "marginBottom": "20px",
+                                    "textAlign": "center"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "conditional",
+                          "props": {
+                            "condition": "{{item.template}}",
+                            "children": [
+                              {
+                                "type": "templateInstance",
+                                "props": {
+                                  "template": "{{item.template}}",
+                                  "params": "{{item.params}}"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "conditional",
+                          "props": {
+                            "condition": "{{item.content}}",
+                            "children": [
+                              {
+                                "type": "html",
+                                "props": {
+                                  "content": "{{item.content}}"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showNavigation && params.slides.length > 1}}",
+          "children": [
+            {
+              "type": "button",
+              "props": {
+                "onClick": "{{() => previousSlide()}}",
+                "className": "carousel-prev",
+                "style": {
+                  "position": "absolute",
+                  "left": "10px",
+                  "top": "50%",
+                  "transform": "translateY(-50%)",
+                  "background": "{{params.navigationBackground}}",
+                  "color": "{{params.navigationColor}}",
+                  "border": "none",
+                  "borderRadius": "50%",
+                  "width": "48px",
+                  "height": "48px",
+                  "display": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "cursor": "pointer",
+                  "zIndex": 10,
+                  "transition": "all 0.2s ease",
+                  "opacity": "{{(!params.loop && state.currentSlide === 0) ? 0.3 : 1}}"
+                }
+              },
+              "children": [
+                {
+                  "type": "icon",
+                  "props": {
+                    "name": "chevron-left",
+                    "size": 24
+                  }
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "props": {
+                "onClick": "{{() => nextSlide()}}",
+                "className": "carousel-next",
+                "style": {
+                  "position": "absolute",
+                  "right": "10px",
+                  "top": "50%",
+                  "transform": "translateY(-50%)",
+                  "background": "{{params.navigationBackground}}",
+                  "color": "{{params.navigationColor}}",
+                  "border": "none",
+                  "borderRadius": "50%",
+                  "width": "48px",
+                  "height": "48px",
+                  "display": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "cursor": "pointer",
+                  "zIndex": 10,
+                  "transition": "all 0.2s ease",
+                  "opacity": "{{(!params.loop && state.currentSlide === params.slides.length - 1) ? 0.3 : 1}}"
+                }
+              },
+              "children": [
+                {
+                  "type": "icon",
+                  "props": {
+                    "name": "chevron-right",
+                    "size": 24
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showIndicators && params.slides.length > 1}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "carousel-indicators",
+                "style": {
+                  "position": "absolute",
+                  "left": "{{params.indicatorPosition === 'left' || params.indicatorPosition === 'right' ? '10px' : '50%'}}",
+                  "right": "{{params.indicatorPosition === 'right' ? '10px' : 'auto'}}",
+                  "top": "{{params.indicatorPosition === 'top' ? '10px' : params.indicatorPosition === 'left' || params.indicatorPosition === 'right' ? '50%' : 'auto'}}",
+                  "bottom": "{{params.indicatorPosition === 'bottom' ? '10px' : 'auto'}}",
+                  "transform": "{{params.indicatorPosition === 'left' || params.indicatorPosition === 'right' ? 'translateY(-50%)' : params.indicatorPosition === 'top' || params.indicatorPosition === 'bottom' ? 'translateX(-50%)' : 'none'}}",
+                  "display": "flex",
+                  "flexDirection": "{{params.indicatorPosition === 'left' || params.indicatorPosition === 'right' ? 'column' : 'row'}}",
+                  "gap": "8px",
+                  "zIndex": 10
+                }
+              },
+              "children": [
+                {
+                  "type": "repeat",
+                  "props": {
+                    "items": "{{params.slides}}",
+                    "itemKey": "id",
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "onClick": "{{() => goToSlide(index)}}",
+                          "style": {
+                            "width": "{{params.indicatorPosition === 'left' || params.indicatorPosition === 'right' ? '4px' : state.currentSlide === index ? '24px' : '8px'}}",
+                            "height": "{{params.indicatorPosition === 'top' || params.indicatorPosition === 'bottom' ? '4px' : state.currentSlide === index ? '24px' : '8px'}}",
+                            "borderRadius": "4px",
+                            "background": "{{state.currentSlide === index ? params.indicatorColor : params.indicatorInactiveColor}}",
+                            "border": "none",
+                            "cursor": "pointer",
+                            "transition": "all 0.3s ease",
+                            "padding": 0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showThumbnails && params.slides.length > 1}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "carousel-thumbnails",
+                "style": {
+                  "position": "absolute",
+                  "bottom": "10px",
+                  "left": "50%",
+                  "transform": "translateX(-50%)",
+                  "display": "flex",
+                  "gap": "8px",
+                  "padding": "8px",
+                  "background": "{{params.navigationBackground}}",
+                  "borderRadius": "8px",
+                  "overflowX": "auto",
+                  "maxWidth": "90%",
+                  "zIndex": 10
+                }
+              },
+              "children": [
+                {
+                  "type": "repeat",
+                  "props": {
+                    "items": "{{params.slides}}",
+                    "itemKey": "id",
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "onClick": "{{() => goToSlide(index)}}",
+                          "style": {
+                            "width": "{{params.thumbnailSize}}",
+                            "height": "{{params.thumbnailSize}}",
+                            "border": "{{state.currentSlide === index ? `3px solid ${params.indicatorColor}` : '2px solid transparent'}}",
+                            "borderRadius": "4px",
+                            "cursor": "pointer",
+                            "padding": "4px",
+                            "background": "{{params.slideBackground}}",
+                            "transition": "all 0.2s ease",
+                            "opacity": "{{state.currentSlide === index ? 1 : 0.6}}",
+                            "flexShrink": 0
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.thumbnail}}",
+                              "children": [
+                                {
+                                  "type": "image",
+                                  "props": {
+                                    "src": "{{item.thumbnail}}",
+                                    "style": {
+                                      "width": "100%",
+                                      "height": "100%",
+                                      "objectFit": "cover",
+                                      "borderRadius": "2px"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{!item.thumbnail && item.title}}",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "props": {
+                                    "value": "{{item.title}}",
+                                    "style": {
+                                      "fontSize": "10px",
+                                      "color": "#ffffff",
+                                      "textAlign": "center"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "state": {
+    "currentSlide": 0,
+    "isDragging": false,
+    "isPaused": false,
+    "dragStartX": 0,
+    "dragStartY": 0
+  },
+  "methods": {
+    "nextSlide": "function() { const maxSlide = params.slides.length - 1; if (state.currentSlide < maxSlide) { this.setState({ currentSlide: state.currentSlide + 1 }); } else if (params.loop) { this.setState({ currentSlide: 0 }); } }",
+    "previousSlide": "function() { if (state.currentSlide > 0) { this.setState({ currentSlide: state.currentSlide - 1 }); } else if (params.loop) { this.setState({ currentSlide: params.slides.length - 1 }); } }",
+    "goToSlide": "function(index) { this.setState({ currentSlide: index }); }",
+    "startDrag": "function(e) { const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; this.setState({ isDragging: true, dragStartX: clientX, dragStartY: clientY }); document.addEventListener('mousemove', this.handleDrag); document.addEventListener('touchmove', this.handleDrag); document.addEventListener('mouseup', this.endDrag); document.addEventListener('touchend', this.endDrag); }",
+    "handleDrag": "function(e) { if (!state.isDragging) return; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const deltaX = clientX - state.dragStartX; if (Math.abs(deltaX) > 50) { if (deltaX > 0) { this.previousSlide(); } else { this.nextSlide(); } this.endDrag(); } }",
+    "endDrag": "function() { this.setState({ isDragging: false }); document.removeEventListener('mousemove', this.handleDrag); document.removeEventListener('touchmove', this.handleDrag); document.removeEventListener('mouseup', this.endDrag); document.removeEventListener('touchend', this.endDrag); }"
+  },
+  "lifecycle": {
+    "onMount": "if (params.autoPlay) { this.autoPlayTimer = setInterval(() => { if (!state.isPaused) { this.nextSlide(); } }, params.autoPlayInterval); }",
+    "onUnmount": "if (this.autoPlayTimer) { clearInterval(this.autoPlayTimer); }"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "id": "button",
+  "name": "Button",
+  "description": "Standard button with primary/secondary styles, icons, and onClick actions",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Input",
+  "parameters": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "default": "Click Me",
+      "description": "Button text label"
+    },
+    "style": {
+      "type": "string",
+      "required": false,
+      "default": "primary",
+      "enum": ["primary", "secondary", "success", "warning", "danger", "link"],
+      "description": "Button style variant"
+    },
+    "icon": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Material icon name (e.g., 'play_arrow', 'stop', 'settings')"
+    },
+    "iconPosition": {
+      "type": "string",
+      "required": false,
+      "default": "left",
+      "enum": ["left", "right"],
+      "description": "Icon position relative to text"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable or disable the button"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Button width (e.g., '120px', 'auto', '100%')"
+    },
+    "tagPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Tag path to write on click (optional)"
+    },
+    "writeValue": {
+      "type": "any",
+      "required": false,
+      "default": true,
+      "description": "Value to write to tag on click"
+    },
+    "onClick": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Custom script action on click"
+    }
+  },
+  "view": {
+    "type": "button",
+    "props": {
+      "text": "{{params.text}}",
+      "enabled": "{{params.enabled}}",
+      "style": {
+        "width": "{{params.width}}",
+        "height": "40px",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "borderRadius": "4px",
+        "border": "{{params.style === 'primary' ? 'none' : params.style === 'secondary' ? '1px solid #d1d5db' : params.style === 'success' ? 'none' : params.style === 'warning' ? 'none' : params.style === 'danger' ? 'none' : 'none'}}",
+        "backgroundColor": "{{params.style === 'primary' ? '#3b82f6' : params.style === 'secondary' ? '#ffffff' : params.style === 'success' ? '#10b981' : params.style === 'warning' ? '#f59e0b' : params.style === 'danger' ? '#ef4444' : 'transparent'}}",
+        "color": "{{params.style === 'primary' ? '#ffffff' : params.style === 'secondary' ? '#374151' : params.style === 'success' ? '#ffffff' : params.style === 'warning' ? '#ffffff' : params.style === 'danger' ? '#ffffff' : '#3b82f6'}}",
+        "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+        "opacity": "{{params.enabled ? '1' : '0.5'}}",
+        "transition": "all 0.2s ease",
+        "padding": "0 16px",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "gap": "8px"
+      },
+      "hoverStyle": {
+        "backgroundColor": "{{params.enabled && params.style === 'primary' ? '#2563eb' : params.enabled && params.style === 'secondary' ? '#f9fafb' : params.enabled && params.style === 'success' ? '#059669' : params.enabled && params.style === 'warning' ? '#d97706' : params.enabled && params.style === 'danger' ? '#dc2626' : 'transparent'}}",
+        "transform": "{{params.enabled ? 'translateY(-1px)' : 'none'}}",
+        "boxShadow": "{{params.enabled ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'}}"
+      },
+      "activeStyle": {
+        "transform": "{{params.enabled ? 'translateY(0)' : 'none'}}",
+        "boxShadow": "{{params.enabled ? '0 1px 2px rgba(0,0,0,0.1)' : 'none'}}"
+      },
+      "events": {
+        "onClick": {
+          "script": "{{params.onClick}}",
+          "tagWrite": {
+            "enabled": "{{params.tagPath !== ''}}",
+            "path": "{{params.tagPath}}",
+            "value": "{{params.writeValue}}"
+          }
+        }
+      }
+    },
+    "children": [
+      {
+        "type": "icon",
+        "props": {
+          "name": "{{params.icon}}",
+          "size": "20px",
+          "style": {
+            "display": "{{params.icon !== '' && params.iconPosition === 'left' ? 'block' : 'none'}}",
+            "order": "1"
+          }
+        }
+      },
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.text}}",
+          "style": {
+            "order": "2",
+            "whiteSpace": "nowrap"
+          }
+        }
+      },
+      {
+        "type": "icon",
+        "props": {
+          "name": "{{params.icon}}",
+          "size": "20px",
+          "style": {
+            "display": "{{params.icon !== '' && params.iconPosition === 'right' ? 'block' : 'none'}}",
+            "order": "3"
+          }
+        }
+      }
+    ]
+  }
+}

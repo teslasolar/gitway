@@ -1,0 +1,475 @@
+{
+  "id": "map",
+  "name": "Map",
+  "description": "Perspective Map component - interactive mobile-friendly map based on Leaflet with layers, markers, and GeoJSON support",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "initialLat": {
+      "type": "number",
+      "required": false,
+      "default": 39.8283,
+      "description": "Initial map center latitude",
+      "example": 37.7749
+    },
+    "initialLng": {
+      "type": "number",
+      "required": false,
+      "default": -98.5795,
+      "description": "Initial map center longitude",
+      "example": -122.4194
+    },
+    "initialZoom": {
+      "type": "number",
+      "required": false,
+      "default": 13,
+      "description": "Initial zoom level (1-100)",
+      "min": 1,
+      "max": 100
+    },
+    "tileUrl": {
+      "type": "string",
+      "required": false,
+      "default": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "description": "Tile layer URL template (defaults to OpenStreetMap)"
+    },
+    "tileAttribution": {
+      "type": "string",
+      "required": false,
+      "default": "&copy; OpenStreetMap contributors",
+      "description": "Attribution text for tile provider"
+    },
+    "showAttribution": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show attribution control"
+    },
+    "closePopupsOnClick": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Automatically close popups when map is clicked"
+    },
+    "trackResize": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Automatically handle browser resize events"
+    },
+    "keyboardNav": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable keyboard navigation (arrow keys, +/-)"
+    },
+    "keyboardPanDelta": {
+      "type": "number",
+      "required": false,
+      "default": 80,
+      "description": "Pixels to pan per arrow key press"
+    },
+    "dragging": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable mouse/touch dragging"
+    },
+    "zoomControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show zoom controls"
+    },
+    "zoomOnDoubleClick": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable zoom on double-click"
+    },
+    "zoomOnScrollWheel": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable zoom on scroll wheel"
+    },
+    "zoomOnBoxZoom": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable box zoom (shift-drag rectangle)"
+    },
+    "zoomSnap": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Snap zoom to integer levels"
+    },
+    "zoomDelta": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Zoom level change per zoom operation"
+    },
+    "minZoom": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum zoom level"
+    },
+    "maxZoom": {
+      "type": "number",
+      "required": false,
+      "default": 18,
+      "description": "Maximum zoom level"
+    },
+    "fadeAnimation": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable tile fade animation"
+    },
+    "enableGeolocation": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable geolocation tracking"
+    },
+    "showHeadingIndicator": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show device heading indicator when geolocation enabled"
+    },
+    "markers": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of map markers",
+      "itemSchema": {
+        "name": "string (unique identifier)",
+        "enabled": "boolean (default: true)",
+        "lat": "number",
+        "lng": "number",
+        "opacity": "number (0-1)",
+        "icon": {
+          "path": "string (optional custom icon)",
+          "color": "string (fill color)",
+          "size": {"width": "number", "height": "number"},
+          "rotate": "string (degrees, 8.1.21+)"
+        },
+        "tooltip": "object (optional)"
+      }
+    },
+    "polygons": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of polygon layers",
+      "itemSchema": {
+        "name": "string (unique identifier)",
+        "properties": "object",
+        "points": "array of {lat: number, lng: number}"
+      }
+    },
+    "polylines": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of polyline layers"
+    },
+    "rectangles": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of rectangle layers",
+      "itemSchema": {
+        "name": "string",
+        "corner1": "{lat: number, lng: number}",
+        "corner2": "{lat: number, lng: number}"
+      }
+    },
+    "circles": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of circle layers",
+      "itemSchema": {
+        "name": "string",
+        "lat": "number",
+        "lng": "number",
+        "radius": "number (pixels)"
+      }
+    },
+    "popups": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of popup configurations",
+      "itemSchema": {
+        "enabled": "boolean (default: false, 8.1.16+)",
+        "lat": "number",
+        "lng": "number",
+        "content": {
+          "text": "string or number",
+          "view": {"path": "string", "params": "object"}
+        },
+        "width": "number",
+        "height": "number"
+      }
+    },
+    "viewLayers": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of embedded view layers",
+      "itemSchema": {
+        "path": "string (view path)",
+        "params": "object",
+        "lat": "number",
+        "lng": "number",
+        "transparentBackground": "boolean (default: false)",
+        "shadow": "boolean (default: true)"
+      }
+    },
+    "geoJSON": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "GeoJSON FeatureCollection objects (8.1.6+)"
+    },
+    "hideViewMarkersOnZoom": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Hide view markers when zooming (8.1.16+)"
+    },
+    "tileOpacity": {
+      "type": "number",
+      "required": false,
+      "default": 1.0,
+      "description": "Tile layer opacity (0-1)",
+      "min": 0,
+      "max": 1
+    },
+    "tileZIndex": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Tile layer z-index"
+    },
+    "detectRetina": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Use higher resolution tiles on retina displays"
+    },
+    "polygonStrokeEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable stroke on polygon layers"
+    },
+    "polygonStrokeColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3388ff",
+      "description": "Polygon stroke color"
+    },
+    "polygonStrokeWeight": {
+      "type": "number",
+      "required": false,
+      "default": 3,
+      "description": "Polygon stroke width in pixels"
+    },
+    "polygonStrokeOpacity": {
+      "type": "number",
+      "required": false,
+      "default": 1.0,
+      "description": "Polygon stroke opacity (0-1)"
+    },
+    "polygonFillEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable fill on polygon layers"
+    },
+    "polygonFillColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3388ff",
+      "description": "Polygon fill color"
+    },
+    "polygonFillOpacity": {
+      "type": "number",
+      "required": false,
+      "default": 0.2,
+      "description": "Polygon fill opacity (0-1)"
+    },
+    "smoothFactor": {
+      "type": "number",
+      "required": false,
+      "default": 1.0,
+      "description": "Polygon/polyline simplification level"
+    }
+  },
+  "view": {
+    "type": "map",
+    "props": {
+      "init": {
+        "center": {
+          "lat": "{{params.initialLat}}",
+          "lng": "{{params.initialLng}}"
+        },
+        "zoom": "{{params.initialZoom}}"
+      },
+      "location": {
+        "enabled": "{{params.enableGeolocation}}",
+        "showHeadingIndicator": "{{params.showHeadingIndicator}}"
+      },
+      "zoom": {
+        "controls": "{{params.zoomControl}}",
+        "delta": "{{params.zoomDelta}}",
+        "onBoxZoom": "{{params.zoomOnBoxZoom}}",
+        "onDoubleClick": "{{params.zoomOnDoubleClick}}",
+        "onScrollWheel": "{{params.zoomOnScrollWheel}}",
+        "snap": "{{params.zoomSnap}}",
+        "max": "{{params.maxZoom}}",
+        "min": "{{params.minZoom}}",
+        "animation": true
+      },
+      "attribution": "{{params.showAttribution}}",
+      "closePopupsOnClick": "{{params.closePopupsOnClick}}",
+      "trackResize": "{{params.trackResize}}",
+      "keyboardNav": "{{params.keyboardNav}}",
+      "keyboardPanDelta": "{{params.keyboardPanDelta}}",
+      "dragging": "{{params.dragging}}",
+      "fadeAnimation": "{{params.fadeAnimation}}",
+      "layers": {
+        "raster": {
+          "tile": {
+            "url": "{{params.tileUrl}}",
+            "options": {
+              "attribution": "{{params.tileAttribution}}",
+              "opacity": "{{params.tileOpacity}}",
+              "zIndex": "{{params.tileZIndex}}",
+              "detectRetina": "{{params.detectRetina}}"
+            }
+          }
+        },
+        "vector": {
+          "polygons": "{{params.polygons}}",
+          "polylines": "{{params.polylines}}",
+          "rectangles": "{{params.rectangles}}",
+          "circles": "{{params.circles}}",
+          "stroke": {
+            "enabled": "{{params.polygonStrokeEnabled}}",
+            "color": "{{params.polygonStrokeColor}}",
+            "weight": "{{params.polygonStrokeWeight}}",
+            "opacity": "{{params.polygonStrokeOpacity}}"
+          },
+          "fill": {
+            "enabled": "{{params.polygonFillEnabled}}",
+            "color": "{{params.polygonFillColor}}",
+            "opacity": "{{params.polygonFillOpacity}}"
+          },
+          "smoothFactor": "{{params.smoothFactor}}"
+        },
+        "ui": {
+          "markers": "{{params.markers}}",
+          "popups": "{{params.popups}}",
+          "viewLayers": "{{params.viewLayers}}"
+        },
+        "other": {
+          "geoJSON": "{{params.geoJSON}}"
+        },
+        "hideViewMarkersOnZoom": "{{params.hideViewMarkersOnZoom}}"
+      },
+      "style": {
+        "width": "100%",
+        "height": "100%"
+      }
+    },
+    "metadata": {
+      "notes": [
+        "Based on Leaflet open-source JavaScript library",
+        "Mobile-friendly interactive map with touch and gesture support",
+        "Supports multiple tile providers (OpenStreetMap default)",
+        "Requires API keys for most commercial tile providers",
+        "GeoJSON support added in 8.1.6",
+        "Marker enabled property added in 8.1.16",
+        "Icon rotation added in 8.1.21",
+        "HTTP tile URLs automatically upgraded to HTTPS"
+      ],
+      "layerTypes": {
+        "raster": [
+          "Tile layers (template URLs or WMS)",
+          "Image overlays"
+        ],
+        "vector": [
+          "Polygons (closed shapes with fill)",
+          "Polylines (connected line segments)",
+          "Rectangles (four-corner shapes)",
+          "Circles (radius-based shapes)"
+        ],
+        "ui": [
+          "Markers (point locations with icons)",
+          "Popups (info windows at coordinates)",
+          "View layers (embedded Perspective views)"
+        ],
+        "other": [
+          "GeoJSON FeatureCollections"
+        ]
+      },
+      "zoomControls": [
+        "Shift-drag rectangle for box zoom",
+        "Double-click to zoom in",
+        "Shift-double-click to zoom out",
+        "Scroll wheel zoom",
+        "+/- keys for zoom",
+        "Touch pinch gestures"
+      ],
+      "panControls": [
+        "Arrow keys",
+        "Click and drag",
+        "Touch drag"
+      ],
+      "scriptingMethods": [
+        "setZoom(delta) - Increase/decrease zoom by delta",
+        "panTo(center) - Pan map to coordinates",
+        "setView(center, zoom) - Set view with animation",
+        "fitBounds(bounds) - Fit map to bounds",
+        "invalidateSize() - Refresh after container resize"
+      ],
+      "events": [
+        "onMarkerClick - Returns marker name",
+        "onMapClick - Returns lat/lng coordinates",
+        "onMouseMove - Fires during mouse movement",
+        "onZoomEnd - Fires after zoom completes",
+        "onMoveEnd - Fires after pan completes"
+      ],
+      "tileProviders": {
+        "OpenStreetMap": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "Stamen Terrain": "https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg",
+        "Stamen Toner": "https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png",
+        "Note": "Most providers require API keys and have usage limits"
+      },
+      "geoJSONFormat": "FeatureCollection objects - visit http://geojson.org/ for format specification",
+      "performanceNotes": [
+        "Large number of markers can impact performance",
+        "Complex GeoJSON features may slow rendering",
+        "Consider marker clustering for many points",
+        "Use hideViewMarkersOnZoom to improve zoom performance"
+      ],
+      "commonUseCases": [
+        "Asset tracking and location monitoring",
+        "Geographic data visualization",
+        "Facility and site maps",
+        "Route planning and navigation",
+        "Territory and zone management",
+        "Weather and environmental monitoring"
+      ]
+    }
+  }
+}

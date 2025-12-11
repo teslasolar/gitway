@@ -1,0 +1,400 @@
+{
+  "id": "tab-container",
+  "name": "Tab Container",
+  "description": "Tabbed container with multiple switchable panels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "tabs": {
+      "type": "array",
+      "required": true,
+      "default": [
+        {
+          "id": "tab1",
+          "label": "Tab 1",
+          "icon": "",
+          "template": "",
+          "params": {}
+        }
+      ],
+      "description": "Array of tab definitions with content"
+    },
+    "activeTab": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "ID of initially active tab (defaults to first tab)"
+    },
+    "tabPosition": {
+      "type": "string",
+      "required": false,
+      "default": "top",
+      "description": "Tab bar position (top, bottom, left, right)"
+    },
+    "tabStyle": {
+      "type": "string",
+      "required": false,
+      "default": "default",
+      "description": "Tab style (default, pills, minimal)"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "100%",
+      "description": "Container width"
+    },
+    "height": {
+      "type": "string",
+      "required": false,
+      "default": "500px",
+      "description": "Container height"
+    },
+    "tabBarBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#f9fafb",
+      "description": "Tab bar background color"
+    },
+    "activeTabColor": {
+      "type": "string",
+      "required": false,
+      "default": "#0f766e",
+      "description": "Active tab color"
+    },
+    "inactiveTabColor": {
+      "type": "string",
+      "required": false,
+      "default": "#6b7280",
+      "description": "Inactive tab color"
+    },
+    "contentPadding": {
+      "type": "string",
+      "required": false,
+      "default": "20px",
+      "description": "Content area padding"
+    },
+    "contentBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Content area background"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "1px solid #e5e7eb",
+      "description": "Container border"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Border radius"
+    },
+    "closeable": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Allow closing tabs"
+    },
+    "scrollable": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable scrolling for tab bar when tabs overflow"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "flex",
+        "flexDirection": "{{params.tabPosition === 'top' || params.tabPosition === 'bottom' ? 'column' : 'row'}}",
+        "width": "{{params.width}}",
+        "height": "{{params.height}}",
+        "border": "{{params.border}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "overflow": "hidden",
+        "boxSizing": "border-box"
+      }
+    },
+    "children": [
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.tabPosition === 'top' || params.tabPosition === 'left'}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "tab-bar",
+                "style": {
+                  "display": "flex",
+                  "flexDirection": "{{params.tabPosition === 'top' || params.tabPosition === 'bottom' ? 'row' : 'column'}}",
+                  "background": "{{params.tabBarBackground}}",
+                  "borderBottom": "{{params.tabPosition === 'top' ? '2px solid #e5e7eb' : 'none'}}",
+                  "borderRight": "{{params.tabPosition === 'left' ? '2px solid #e5e7eb' : 'none'}}",
+                  "overflowX": "{{params.scrollable && (params.tabPosition === 'top' || params.tabPosition === 'bottom') ? 'auto' : 'hidden'}}",
+                  "overflowY": "{{params.scrollable && (params.tabPosition === 'left' || params.tabPosition === 'right') ? 'auto' : 'hidden'}}",
+                  "flexShrink": 0
+                }
+              },
+              "children": [
+                {
+                  "type": "repeat",
+                  "props": {
+                    "items": "{{params.tabs}}",
+                    "itemKey": "id",
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "onClick": "{{() => setState({activeTab: item.id})}}",
+                          "style": {
+                            "display": "flex",
+                            "alignItems": "center",
+                            "gap": "8px",
+                            "padding": "{{params.tabStyle === 'minimal' ? '8px 16px' : '12px 20px'}}",
+                            "background": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? params.contentBackground : 'transparent'}}",
+                            "color": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? params.activeTabColor : params.inactiveTabColor}}",
+                            "border": "none",
+                            "borderBottom": "{{params.tabStyle === 'minimal' && (state.activeTab === item.id || (!state.activeTab && index === 0)) ? `3px solid ${params.activeTabColor}` : 'none'}}",
+                            "borderRadius": "{{params.tabStyle === 'pills' ? '20px' : params.tabStyle === 'minimal' ? '0' : '8px 8px 0 0'}}",
+                            "cursor": "pointer",
+                            "fontWeight": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? '600' : '400'}}",
+                            "fontSize": "14px",
+                            "transition": "all 0.2s ease",
+                            "whiteSpace": "nowrap"
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.icon}}",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "props": {
+                                    "name": "{{item.icon}}",
+                                    "size": 16
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "text",
+                            "props": {
+                              "value": "{{item.label}}"
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{params.closeable && params.tabs.length > 1}}",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "props": {
+                                    "name": "close",
+                                    "size": 14,
+                                    "onClick": "{{(e) => {e.stopPropagation(); removeTab(item.id)}}}",
+                                    "style": {
+                                      "marginLeft": "8px",
+                                      "opacity": 0.6,
+                                      "cursor": "pointer"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "container",
+        "props": {
+          "className": "tab-content",
+          "style": {
+            "flex": 1,
+            "padding": "{{params.contentPadding}}",
+            "background": "{{params.contentBackground}}",
+            "overflow": "auto",
+            "position": "relative"
+          }
+        },
+        "children": [
+          {
+            "type": "repeat",
+            "props": {
+              "items": "{{params.tabs}}",
+              "itemKey": "id",
+              "children": [
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{state.activeTab === item.id || (!state.activeTab && index === 0)}}",
+                    "children": [
+                      {
+                        "type": "container",
+                        "props": {
+                          "style": {
+                            "width": "100%",
+                            "height": "100%",
+                            "animation": "fadeIn 0.3s ease-in"
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.template}}",
+                              "children": [
+                                {
+                                  "type": "templateInstance",
+                                  "props": {
+                                    "template": "{{item.template}}",
+                                    "params": "{{item.params}}"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.content}}",
+                              "children": [
+                                {
+                                  "type": "html",
+                                  "props": {
+                                    "content": "{{item.content}}"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.tabPosition === 'bottom' || params.tabPosition === 'right'}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "tab-bar",
+                "style": {
+                  "display": "flex",
+                  "flexDirection": "{{params.tabPosition === 'top' || params.tabPosition === 'bottom' ? 'row' : 'column'}}",
+                  "background": "{{params.tabBarBackground}}",
+                  "borderTop": "{{params.tabPosition === 'bottom' ? '2px solid #e5e7eb' : 'none'}}",
+                  "borderLeft": "{{params.tabPosition === 'right' ? '2px solid #e5e7eb' : 'none'}}",
+                  "overflowX": "{{params.scrollable && (params.tabPosition === 'top' || params.tabPosition === 'bottom') ? 'auto' : 'hidden'}}",
+                  "overflowY": "{{params.scrollable && (params.tabPosition === 'left' || params.tabPosition === 'right') ? 'auto' : 'hidden'}}",
+                  "flexShrink": 0
+                }
+              },
+              "children": [
+                {
+                  "type": "repeat",
+                  "props": {
+                    "items": "{{params.tabs}}",
+                    "itemKey": "id",
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "onClick": "{{() => setState({activeTab: item.id})}}",
+                          "style": {
+                            "display": "flex",
+                            "alignItems": "center",
+                            "gap": "8px",
+                            "padding": "{{params.tabStyle === 'minimal' ? '8px 16px' : '12px 20px'}}",
+                            "background": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? params.contentBackground : 'transparent'}}",
+                            "color": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? params.activeTabColor : params.inactiveTabColor}}",
+                            "border": "none",
+                            "borderTop": "{{params.tabStyle === 'minimal' && params.tabPosition === 'bottom' && (state.activeTab === item.id || (!state.activeTab && index === 0)) ? `3px solid ${params.activeTabColor}` : 'none'}}",
+                            "borderRadius": "{{params.tabStyle === 'pills' ? '20px' : params.tabStyle === 'minimal' ? '0' : params.tabPosition === 'bottom' ? '0 0 8px 8px' : '8px'}}",
+                            "cursor": "pointer",
+                            "fontWeight": "{{state.activeTab === item.id || (!state.activeTab && index === 0) ? '600' : '400'}}",
+                            "fontSize": "14px",
+                            "transition": "all 0.2s ease",
+                            "whiteSpace": "nowrap"
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.icon}}",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "props": {
+                                    "name": "{{item.icon}}",
+                                    "size": 16
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "text",
+                            "props": {
+                              "value": "{{item.label}}"
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{params.closeable && params.tabs.length > 1}}",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "props": {
+                                    "name": "close",
+                                    "size": 14,
+                                    "onClick": "{{(e) => {e.stopPropagation(); removeTab(item.id)}}}",
+                                    "style": {
+                                      "marginLeft": "8px",
+                                      "opacity": 0.6,
+                                      "cursor": "pointer"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

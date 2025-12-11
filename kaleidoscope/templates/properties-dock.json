@@ -1,0 +1,408 @@
+{
+  "id": "properties-dock",
+  "name": "Properties Dock",
+  "description": "East dock for properties panel and component configuration",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Dock",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Properties",
+      "description": "Panel title"
+    },
+    "selectedComponent": {
+      "type": "object",
+      "required": false,
+      "default": null,
+      "description": "Currently selected component"
+    },
+    "showSearch": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show property search bar"
+    },
+    "showCategories": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Group properties by category"
+    },
+    "expandAll": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Expand all property categories by default"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+        "background": "#ffffff"
+      }
+    },
+    "children": [
+      {
+        "type": "header",
+        "props": {
+          "style": {
+            "padding": "15px",
+            "borderBottom": "1px solid #e5e7eb",
+            "background": "#f9fafb"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "direction": "column",
+              "gap": "10px"
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": {
+                  "justify": "space-between",
+                  "align": "center"
+                },
+                "children": [
+                  {
+                    "type": "label",
+                    "props": {
+                      "text": "{{params.title}}",
+                      "style": {
+                        "fontSize": "16px",
+                        "fontWeight": "bold",
+                        "color": "#334155"
+                      }
+                    }
+                  },
+                  {
+                    "type": "button",
+                    "props": {
+                      "icon": "mdi-close",
+                      "variant": "text",
+                      "size": "small",
+                      "onClick": {
+                        "action": "closeDock"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "conditional",
+                "props": {
+                  "condition": "{{params.showSearch}}",
+                  "children": [
+                    {
+                      "type": "searchInput",
+                      "props": {
+                        "placeholder": "Search properties...",
+                        "style": {
+                          "width": "100%",
+                          "padding": "6px 10px",
+                          "borderRadius": "4px",
+                          "border": "1px solid #d1d5db",
+                          "fontSize": "13px"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "flex": 1,
+            "overflowY": "auto",
+            "padding": "15px"
+          }
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.selectedComponent}}",
+              "children": [
+                {
+                  "type": "propertyGroups",
+                  "props": {
+                    "groups": [
+                      {
+                        "name": "Basic",
+                        "expanded": "{{params.expandAll}}",
+                        "icon": "mdi-format-list-bulleted",
+                        "properties": [
+                          {
+                            "name": "id",
+                            "label": "Component ID",
+                            "type": "text",
+                            "value": "{{params.selectedComponent.id}}",
+                            "readonly": true
+                          },
+                          {
+                            "name": "type",
+                            "label": "Component Type",
+                            "type": "text",
+                            "value": "{{params.selectedComponent.type}}",
+                            "readonly": true
+                          },
+                          {
+                            "name": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "value": "{{params.selectedComponent.name}}"
+                          },
+                          {
+                            "name": "visible",
+                            "label": "Visible",
+                            "type": "boolean",
+                            "value": "{{params.selectedComponent.visible}}"
+                          },
+                          {
+                            "name": "enabled",
+                            "label": "Enabled",
+                            "type": "boolean",
+                            "value": "{{params.selectedComponent.enabled}}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Position",
+                        "expanded": "{{params.expandAll}}",
+                        "icon": "mdi-move-resize",
+                        "properties": [
+                          {
+                            "name": "x",
+                            "label": "X Position",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.position.x}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "y",
+                            "label": "Y Position",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.position.y}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "width",
+                            "label": "Width",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.position.width}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "height",
+                            "label": "Height",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.position.height}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "rotation",
+                            "label": "Rotation",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.position.rotation}}",
+                            "unit": "deg",
+                            "min": 0,
+                            "max": 360
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Style",
+                        "expanded": "{{params.expandAll}}",
+                        "icon": "mdi-palette",
+                        "properties": [
+                          {
+                            "name": "backgroundColor",
+                            "label": "Background",
+                            "type": "color",
+                            "value": "{{params.selectedComponent.style.backgroundColor}}"
+                          },
+                          {
+                            "name": "color",
+                            "label": "Text Color",
+                            "type": "color",
+                            "value": "{{params.selectedComponent.style.color}}"
+                          },
+                          {
+                            "name": "fontSize",
+                            "label": "Font Size",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.style.fontSize}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "borderWidth",
+                            "label": "Border Width",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.style.borderWidth}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "borderColor",
+                            "label": "Border Color",
+                            "type": "color",
+                            "value": "{{params.selectedComponent.style.borderColor}}"
+                          },
+                          {
+                            "name": "borderRadius",
+                            "label": "Border Radius",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.style.borderRadius}}",
+                            "unit": "px"
+                          },
+                          {
+                            "name": "opacity",
+                            "label": "Opacity",
+                            "type": "slider",
+                            "value": "{{params.selectedComponent.style.opacity}}",
+                            "min": 0,
+                            "max": 1,
+                            "step": 0.1
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Data",
+                        "expanded": "{{params.expandAll}}",
+                        "icon": "mdi-database",
+                        "properties": [
+                          {
+                            "name": "tagPath",
+                            "label": "Tag Path",
+                            "type": "tagSelector",
+                            "value": "{{params.selectedComponent.data.tagPath}}"
+                          },
+                          {
+                            "name": "dataSource",
+                            "label": "Data Source",
+                            "type": "dropdown",
+                            "value": "{{params.selectedComponent.data.dataSource}}",
+                            "options": ["tag", "database", "expression", "script"]
+                          },
+                          {
+                            "name": "updateRate",
+                            "label": "Update Rate",
+                            "type": "number",
+                            "value": "{{params.selectedComponent.data.updateRate}}",
+                            "unit": "ms"
+                          },
+                          {
+                            "name": "historical",
+                            "label": "Historical",
+                            "type": "boolean",
+                            "value": "{{params.selectedComponent.data.historical}}"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Events",
+                        "expanded": false,
+                        "icon": "mdi-lightning-bolt",
+                        "properties": [
+                          {
+                            "name": "onClick",
+                            "label": "On Click",
+                            "type": "script",
+                            "value": "{{params.selectedComponent.events.onClick}}"
+                          },
+                          {
+                            "name": "onChange",
+                            "label": "On Change",
+                            "type": "script",
+                            "value": "{{params.selectedComponent.events.onChange}}"
+                          },
+                          {
+                            "name": "onLoad",
+                            "label": "On Load",
+                            "type": "script",
+                            "value": "{{params.selectedComponent.events.onLoad}}"
+                          }
+                        ]
+                      }
+                    ],
+                    "showCategories": "{{params.showCategories}}"
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "type": "emptyState",
+                  "props": {
+                    "icon": "mdi-cursor-default-click",
+                    "title": "No Selection",
+                    "message": "Select a component to view and edit its properties",
+                    "style": {
+                      "textAlign": "center",
+                      "padding": "40px 20px",
+                      "color": "#9ca3af"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "footer",
+        "props": {
+          "style": {
+            "padding": "10px 15px",
+            "borderTop": "1px solid #e5e7eb",
+            "background": "#f9fafb"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "justify": "space-between",
+              "align": "center"
+            },
+            "children": [
+              {
+                "type": "button",
+                "props": {
+                  "text": "Reset",
+                  "variant": "secondary",
+                  "size": "small",
+                  "onClick": {
+                    "action": "resetProperties"
+                  }
+                }
+              },
+              {
+                "type": "button",
+                "props": {
+                  "text": "Apply",
+                  "variant": "primary",
+                  "size": "small",
+                  "onClick": {
+                    "action": "applyProperties"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

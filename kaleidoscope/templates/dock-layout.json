@@ -1,0 +1,265 @@
+{
+  "id": "dock-layout",
+  "name": "Dock Layout Template",
+  "description": "Standard page template with east/north/south/west docking areas",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Layout",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Kaleidoscope View",
+      "description": "Page title"
+    },
+    "showNorth": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show north dock area"
+    },
+    "showSouth": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show south dock area"
+    },
+    "showEast": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show east dock area"
+    },
+    "showWest": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show west dock area"
+    },
+    "northContent": {
+      "type": "object",
+      "required": false,
+      "default": {"template": "header-dock"},
+      "description": "North dock content"
+    },
+    "southContent": {
+      "type": "object",
+      "required": false,
+      "default": {"template": "status-dock"},
+      "description": "South dock content"
+    },
+    "eastContent": {
+      "type": "object",
+      "required": false,
+      "default": {"template": "properties-dock"},
+      "description": "East dock content"
+    },
+    "westContent": {
+      "type": "object",
+      "required": false,
+      "default": {"template": "navigation-dock"},
+      "description": "West dock content"
+    },
+    "mainContent": {
+      "type": "object",
+      "required": true,
+      "description": "Main content area"
+    },
+    "northHeight": {
+      "type": "number",
+      "required": false,
+      "default": 80,
+      "description": "Height of north dock in pixels"
+    },
+    "southHeight": {
+      "type": "number",
+      "required": false,
+      "default": 40,
+      "description": "Height of south dock in pixels"
+    },
+    "eastWidth": {
+      "type": "number",
+      "required": false,
+      "default": 300,
+      "description": "Width of east dock in pixels"
+    },
+    "westWidth": {
+      "type": "number",
+      "required": false,
+      "default": 250,
+      "description": "Width of west dock in pixels"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "flex",
+        "flexDirection": "column",
+        "height": "100vh",
+        "overflow": "hidden"
+      }
+    },
+    "children": [
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showNorth}}",
+          "children": [
+            {
+              "type": "dock",
+              "props": {
+                "position": "north",
+                "height": "{{params.northHeight}}",
+                "style": {
+                  "borderBottom": "1px solid #e5e7eb",
+                  "background": "linear-gradient(135deg, #0f766e 0%, #134e4a 100%)",
+                  "zIndex": 100
+                }
+              },
+              "children": [
+                {
+                  "type": "templateInstance",
+                  "props": {
+                    "template": "{{params.northContent.template}}",
+                    "params": "{{params.northContent.params}}"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "display": "flex",
+            "flex": 1,
+            "overflow": "hidden"
+          }
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showWest}}",
+              "children": [
+                {
+                  "type": "dock",
+                  "props": {
+                    "position": "west",
+                    "width": "{{params.westWidth}}",
+                    "style": {
+                      "borderRight": "1px solid #e5e7eb",
+                      "background": "#f9fafb",
+                      "overflowY": "auto"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "templateInstance",
+                      "props": {
+                        "template": "{{params.westContent.template}}",
+                        "params": "{{params.westContent.params}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "container",
+            "props": {
+              "style": {
+                "flex": 1,
+                "display": "flex",
+                "flexDirection": "column",
+                "overflow": "hidden"
+              }
+            },
+            "children": [
+              {
+                "type": "main",
+                "props": {
+                  "style": {
+                    "flex": 1,
+                    "overflow": "auto",
+                    "padding": "20px"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "templateInstance",
+                    "props": {
+                      "template": "{{params.mainContent.template}}",
+                      "params": "{{params.mainContent.params}}"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showEast}}",
+              "children": [
+                {
+                  "type": "dock",
+                  "props": {
+                    "position": "east",
+                    "width": "{{params.eastWidth}}",
+                    "style": {
+                      "borderLeft": "1px solid #e5e7eb",
+                      "background": "#f9fafb",
+                      "overflowY": "auto"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "templateInstance",
+                      "props": {
+                        "template": "{{params.eastContent.template}}",
+                        "params": "{{params.eastContent.params}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showSouth}}",
+          "children": [
+            {
+              "type": "dock",
+              "props": {
+                "position": "south",
+                "height": "{{params.southHeight}}",
+                "style": {
+                  "borderTop": "1px solid #e5e7eb",
+                  "background": "#f3f4f6"
+                }
+              },
+              "children": [
+                {
+                  "type": "templateInstance",
+                  "props": {
+                    "template": "{{params.southContent.template}}",
+                    "params": "{{params.southContent.params}}"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

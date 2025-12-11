@@ -1,0 +1,84 @@
+{
+  "id": "image",
+  "name": "Image",
+  "description": "Perspective Image component - displays raster or vector images (JPEG, PNG, GIF, SVG) with flexible sizing and tinting options",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "source": {
+      "type": "string",
+      "required": true,
+      "default": "",
+      "description": "Image URL, Image Management path (/system/images/<path>), or Base64 encoded image",
+      "example": "/system/images/Builtin/icons/16/about.png"
+    },
+    "altText": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Alternate text when image fails to load or for accessibility/screen readers"
+    },
+    "fitMode": {
+      "type": "string",
+      "required": false,
+      "default": "contain",
+      "enum": ["none", "fill", "contain", "cover", "percent", "absolute"],
+      "description": "Image sizing behavior - none: no resize, fill: stretch to container, contain: scale maintaining aspect ratio, cover: fill container (may crop), percent: size by percentage, absolute: pixel dimensions"
+    },
+    "fitWidth": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Width in pixels (absolute mode) or percentage (percent mode)"
+    },
+    "fitHeight": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Height in pixels (absolute mode) or percentage (percent mode)"
+    },
+    "fitScroll": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable scrolling when content exceeds bounds"
+    },
+    "tintEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable color tint filter for entire image"
+    },
+    "tintColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Tint color (hex, rgb, or named color)"
+    }
+  },
+  "view": {
+    "type": "image",
+    "props": {
+      "source": "{{params.source}}",
+      "altText": "{{params.altText}}",
+      "fit": {
+        "mode": "{{params.fitMode}}",
+        "width": "{{params.fitWidth}}",
+        "height": "{{params.fitHeight}}",
+        "scroll": "{{params.fitScroll}}"
+      },
+      "tint": {
+        "enabled": "{{params.tintEnabled}}",
+        "color": "{{params.tintColor}}"
+      },
+      "style": {
+        "width": "{{params.fitMode === 'fill' || params.fitMode === 'cover' ? '100%' : params.fitMode === 'absolute' ? params.fitWidth + 'px' : params.fitMode === 'percent' ? params.fitWidth + '%' : 'auto'}}",
+        "height": "{{params.fitMode === 'fill' || params.fitMode === 'cover' ? '100%' : params.fitMode === 'absolute' ? params.fitHeight + 'px' : params.fitMode === 'percent' ? params.fitHeight + '%' : 'auto'}}",
+        "objectFit": "{{params.fitMode === 'fill' ? 'fill' : params.fitMode === 'contain' ? 'contain' : params.fitMode === 'cover' ? 'cover' : params.fitMode === 'none' ? 'none' : 'scale-down'}}",
+        "overflow": "{{params.fitScroll ? 'auto' : 'hidden'}}",
+        "filter": "{{params.tintEnabled ? 'sepia(100%) saturate(300%) brightness(70%) hue-rotate(' + params.tintColor + ')' : 'none'}}"
+      }
+    }
+  }
+}

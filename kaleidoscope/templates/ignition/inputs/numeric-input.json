@@ -1,0 +1,255 @@
+{
+  "id": "numeric-input",
+  "name": "Numeric Input",
+  "description": "Numeric input with min/max validation, step controls, and format options",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Input",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for numeric value",
+      "example": "[default]Setpoints/Temperature"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "Value",
+      "description": "Input label"
+    },
+    "labelPosition": {
+      "type": "string",
+      "required": false,
+      "default": "top",
+      "enum": ["top", "left"],
+      "description": "Label position"
+    },
+    "min": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum allowed value"
+    },
+    "max": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum allowed value"
+    },
+    "step": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Increment/decrement step size"
+    },
+    "precision": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Decimal places to display"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering units (e.g., 'degC', 'PSI', 'GPM')"
+    },
+    "placeholder": {
+      "type": "string",
+      "required": false,
+      "default": "Enter value",
+      "description": "Placeholder text"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable or disable input"
+    },
+    "showSteppers": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show increment/decrement buttons"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "200px",
+      "description": "Input width"
+    },
+    "validateOnChange": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Validate min/max on every change"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "{{params.labelPosition === 'top' ? 'column' : 'row'}}",
+      "align": "{{params.labelPosition === 'top' ? 'flex-start' : 'center'}}",
+      "gap": "8px",
+      "style": {
+        "width": "auto"
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.label}}",
+          "style": {
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "color": "#374151",
+            "marginBottom": "{{params.labelPosition === 'top' ? '4px' : '0'}}",
+            "minWidth": "{{params.labelPosition === 'left' ? '100px' : 'auto'}}"
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "direction": "row",
+          "align": "center",
+          "gap": "0",
+          "style": {
+            "width": "{{params.width}}",
+            "height": "40px",
+            "border": "1px solid #d1d5db",
+            "borderRadius": "4px",
+            "backgroundColor": "{{params.enabled ? '#ffffff' : '#f3f4f6'}}",
+            "overflow": "hidden",
+            "transition": "border-color 0.2s ease"
+          },
+          "focusStyle": {
+            "borderColor": "#3b82f6",
+            "boxShadow": "0 0 0 3px rgba(59, 130, 246, 0.1)"
+          }
+        },
+        "children": [
+          {
+            "type": "button",
+            "props": {
+              "text": "-",
+              "enabled": "{{params.enabled && params.showSteppers}}",
+              "style": {
+                "width": "{{params.showSteppers ? '36px' : '0'}}",
+                "height": "100%",
+                "border": "none",
+                "borderRight": "{{params.showSteppers ? '1px solid #d1d5db' : 'none'}}",
+                "backgroundColor": "#f9fafb",
+                "color": "#374151",
+                "fontSize": "18px",
+                "fontWeight": "bold",
+                "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+                "display": "{{params.showSteppers ? 'flex' : 'none'}}",
+                "alignItems": "center",
+                "justifyContent": "center",
+                "transition": "background-color 0.2s ease"
+              },
+              "hoverStyle": {
+                "backgroundColor": "{{params.enabled ? '#e5e7eb' : '#f9fafb'}}"
+              },
+              "events": {
+                "onClick": {
+                  "script": "var currentValue = {{tags.[params.tagPath]}}; var newValue = Math.max({{params.min}}, currentValue - {{params.step}}); system.tag.writeBlocking(['{{params.tagPath}}'], [newValue]);"
+                }
+              }
+            }
+          },
+          {
+            "type": "numericInput",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "enabled": "{{params.enabled}}",
+              "placeholder": "{{params.placeholder}}",
+              "min": "{{params.min}}",
+              "max": "{{params.max}}",
+              "step": "{{params.step}}",
+              "precision": "{{params.precision}}",
+              "style": {
+                "flex": "1",
+                "height": "100%",
+                "border": "none",
+                "outline": "none",
+                "padding": "0 12px",
+                "fontSize": "14px",
+                "color": "#1f2937",
+                "backgroundColor": "transparent",
+                "textAlign": "right"
+              },
+              "events": {
+                "onChange": {
+                  "script": "var value = event.value; if ({{params.validateOnChange}}) { value = Math.min({{params.max}}, Math.max({{params.min}}, value)); } system.tag.writeBlocking(['{{params.tagPath}}'], [value]);"
+                },
+                "onBlur": {
+                  "script": "var value = {{tags.[params.tagPath]}}; value = Math.min({{params.max}}, Math.max({{params.min}}, value)); system.tag.writeBlocking(['{{params.tagPath}}'], [value]);"
+                }
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "value": "{{params.units}}",
+              "style": {
+                "padding": "0 12px",
+                "fontSize": "12px",
+                "color": "#6b7280",
+                "display": "{{params.units !== '' ? 'block' : 'none'}}",
+                "borderLeft": "{{params.units !== '' ? '1px solid #e5e7eb' : 'none'}}",
+                "minWidth": "40px",
+                "textAlign": "center"
+              }
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "text": "+",
+              "enabled": "{{params.enabled && params.showSteppers}}",
+              "style": {
+                "width": "{{params.showSteppers ? '36px' : '0'}}",
+                "height": "100%",
+                "border": "none",
+                "borderLeft": "{{params.showSteppers ? '1px solid #d1d5db' : 'none'}}",
+                "backgroundColor": "#f9fafb",
+                "color": "#374151",
+                "fontSize": "18px",
+                "fontWeight": "bold",
+                "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+                "display": "{{params.showSteppers ? 'flex' : 'none'}}",
+                "alignItems": "center",
+                "justifyContent": "center",
+                "transition": "background-color 0.2s ease"
+              },
+              "hoverStyle": {
+                "backgroundColor": "{{params.enabled ? '#e5e7eb' : '#f9fafb'}}"
+              },
+              "events": {
+                "onClick": {
+                  "script": "var currentValue = {{tags.[params.tagPath]}}; var newValue = Math.min({{params.max}}, currentValue + {{params.step}}); system.tag.writeBlocking(['{{params.tagPath}}'], [newValue]);"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "props": {
+          "value": "Range: {{params.min}} - {{params.max}}",
+          "style": {
+            "fontSize": "11px",
+            "color": "#9ca3af",
+            "marginTop": "4px"
+          }
+        }
+      }
+    ]
+  }
+}

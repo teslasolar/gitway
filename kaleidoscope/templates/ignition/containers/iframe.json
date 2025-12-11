@@ -1,0 +1,84 @@
+{
+  "id": "iframe",
+  "name": "Inline Frame",
+  "description": "Perspective Inline Frame component - embeds external webpages using Chromium instance with security controls",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "src": {
+      "type": "string",
+      "required": true,
+      "default": "",
+      "description": "Source URL of the webpage to embed (HTTP auto-upgraded to HTTPS)",
+      "example": "https://www.example.com"
+    },
+    "allowFullScreen": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Allow embedded webpage to display in fullscreen mode"
+    },
+    "referrerPolicy": {
+      "type": "string",
+      "required": false,
+      "default": "no-referrer-when-downgrade",
+      "enum": [
+        "no-referrer",
+        "no-referrer-when-downgrade",
+        "origin",
+        "origin-when-cross-origin",
+        "unsafe-url"
+      ],
+      "description": "Governs what referral information accompanies requests to the embedded page"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "unset",
+      "description": "Border property for embedded webpage content (overridden by component borderStyle)"
+    }
+  },
+  "view": {
+    "type": "iframe",
+    "props": {
+      "src": "{{params.src}}",
+      "allowFullScreen": "{{params.allowFullScreen}}",
+      "referrerPolicy": "{{params.referrerPolicy}}",
+      "border": "{{params.border}}",
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "border": "{{params.border === 'unset' ? 'none' : params.border}}",
+        "borderRadius": "0px",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "metadata": {
+      "notes": [
+        "Many websites block embedding via x-frame-options HTTP header (DENY or SAMEORIGIN)",
+        "x-frame-options prevents Clickjacking security attacks",
+        "Uses Chromium embedded browser for HTTP GET requests",
+        "Be aware of browser cache - same filename may not update content",
+        "Avoid embedding views with iFrame components (focus stealing, performance impact)",
+        "Static content prints via Request Print action",
+        "Dynamic content (charts, real-time data) may print incompletely due to loading delays",
+        "HTTP URLs automatically upgraded to HTTPS",
+        "Content inside iframe can make requests to any domain on internet"
+      ],
+      "referrerPolicies": {
+        "no-referrer": "No referrer information sent",
+        "no-referrer-when-downgrade": "Referrer sent for HTTPS, not for HTTP (default)",
+        "origin": "Only origin (protocol, host, port) sent",
+        "origin-when-cross-origin": "Full URL for same-origin, origin only for cross-origin",
+        "unsafe-url": "Always send full URL (least secure)"
+      },
+      "securityWarnings": [
+        "Websites may refuse rendering if x-frame-options header is DENY or SAMEORIGIN",
+        "Browser security prevents clickjacking attacks",
+        "Content has access to Chromium browser features",
+        "Cache behavior may cause stale content display"
+      ]
+    }
+  }
+}

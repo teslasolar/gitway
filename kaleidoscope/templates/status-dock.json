@@ -1,0 +1,205 @@
+{
+  "id": "status-dock",
+  "name": "Status Dock",
+  "description": "South dock for status bar with system information",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Dock",
+  "parameters": {
+    "showClock": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show current time"
+    },
+    "showGatewayStatus": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show gateway connection status"
+    },
+    "showCpuUsage": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show CPU usage"
+    },
+    "showMemoryUsage": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show memory usage"
+    },
+    "showTagCount": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show active tag count"
+    },
+    "showVersion": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show GitWay version"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "row",
+      "align": "center",
+      "justify": "space-between",
+      "style": {
+        "height": "100%",
+        "padding": "0 15px",
+        "background": "#f9fafb",
+        "borderTop": "1px solid #e5e7eb",
+        "fontSize": "12px",
+        "color": "#6b7280"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "gap": "20px",
+          "align": "center"
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showGatewayStatus}}",
+              "children": [
+                {
+                  "type": "statusIndicator",
+                  "props": {
+                    "icon": "mdi-server",
+                    "text": "Gateway: {{gateway.status || 'Disconnected'}}",
+                    "color": "{{gateway.connected ? '#10b981' : '#ef4444'}}",
+                    "style": {
+                      "display": "flex",
+                      "alignItems": "center",
+                      "gap": "5px"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showTagCount}}",
+              "children": [
+                {
+                  "type": "label",
+                  "props": {
+                    "text": "Tags: {{system.tagCount || 0}}",
+                    "style": {
+                      "display": "flex",
+                      "alignItems": "center",
+                      "gap": "5px"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showCpuUsage}}",
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "icon": "mdi-chip",
+                    "label": "CPU",
+                    "value": "{{system.cpu.usage || 0}}",
+                    "unit": "%",
+                    "color": "{{system.cpu.usage > 80 ? '#ef4444' : system.cpu.usage > 60 ? '#f59e0b' : '#10b981'}}",
+                    "style": {
+                      "display": "flex",
+                      "alignItems": "center",
+                      "gap": "5px"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showMemoryUsage}}",
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "icon": "mdi-memory",
+                    "label": "Memory",
+                    "value": "{{system.memory.usage || 0}}",
+                    "unit": "%",
+                    "color": "{{system.memory.usage > 80 ? '#ef4444' : system.memory.usage > 60 ? '#f59e0b' : '#10b981'}}",
+                    "style": {
+                      "display": "flex",
+                      "alignItems": "center",
+                      "gap": "5px"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "flex",
+        "props": {
+          "gap": "20px",
+          "align": "center"
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showVersion}}",
+              "children": [
+                {
+                  "type": "label",
+                  "props": {
+                    "text": "GitWay v1.0.0",
+                    "style": {
+                      "opacity": 0.7
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showClock}}",
+              "children": [
+                {
+                  "type": "clock",
+                  "props": {
+                    "format": "HH:mm:ss",
+                    "updateInterval": 1000,
+                    "style": {
+                      "fontFamily": "monospace",
+                      "fontSize": "13px",
+                      "color": "#374151"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

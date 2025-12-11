@@ -1,0 +1,239 @@
+{
+  "id": "header-dock",
+  "name": "Header Dock",
+  "description": "Standard header with Konomi Gitway branding and navigation",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Dock",
+  "parameters": {
+    "logoText": {
+      "type": "string",
+      "required": false,
+      "default": "🌺 Konomi GitWay",
+      "description": "Logo text with emoji"
+    },
+    "currentScope": {
+      "type": "string",
+      "required": false,
+      "default": "Gateway",
+      "description": "Current scope (Gateway, Kaleidoscope, etc.)"
+    },
+    "showUserMenu": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show user menu"
+    },
+    "showSearch": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show search bar"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "row",
+      "align": "center",
+      "justify": "space-between",
+      "style": {
+        "height": "100%",
+        "padding": "0 20px",
+        "background": "rgba(255,255,255,0.1)",
+        "backdropFilter": "blur(10px)"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "0",
+          "style": {
+            "alignItems": "flex-start"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "align": "center",
+              "gap": "10px"
+            },
+            "children": [
+              {
+                "type": "label",
+                "props": {
+                  "text": "{{params.logoText}}",
+                  "style": {
+                    "fontSize": "24px",
+                    "fontWeight": "bold",
+                    "color": "white",
+                    "textShadow": "2px 2px 4px rgba(0,0,0,0.3)",
+                    "cursor": "pointer"
+                  },
+                  "onClick": {
+                    "action": "navigateHome"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "gap": "20px",
+              "style": {
+                "marginLeft": "35px",
+                "marginTop": "5px"
+              }
+            },
+            "children": [
+              {
+                "type": "navLink",
+                "props": {
+                  "text": "Gateway",
+                  "icon": "mdi-server",
+                  "active": "{{params.currentScope === 'Gateway'}}",
+                  "style": {
+                    "color": "{{params.currentScope === 'Gateway' ? '#10b981' : '#cbd5e1'}}",
+                    "fontSize": "14px",
+                    "fontWeight": "{{params.currentScope === 'Gateway' ? 'bold' : 'normal'}}",
+                    "textDecoration": "none",
+                    "cursor": "pointer"
+                  },
+                  "onClick": {
+                    "action": "navigateToGateway"
+                  }
+                }
+              },
+              {
+                "type": "navLink",
+                "props": {
+                  "text": "Kaleidoscope",
+                  "icon": "mdi-view-dashboard",
+                  "active": "{{params.currentScope === 'Kaleidoscope'}}",
+                  "style": {
+                    "color": "{{params.currentScope === 'Kaleidoscope' ? '#10b981' : '#cbd5e1'}}",
+                    "fontSize": "14px",
+                    "fontWeight": "{{params.currentScope === 'Kaleidoscope' ? 'bold' : 'normal'}}",
+                    "textDecoration": "none",
+                    "cursor": "pointer"
+                  },
+                  "onClick": {
+                    "action": "navigateToKaleidoscope"
+                  }
+                }
+              },
+              {
+                "type": "navLink",
+                "props": {
+                  "text": "GitDB",
+                  "icon": "mdi-database",
+                  "active": "{{params.currentScope === 'GitDB'}}",
+                  "style": {
+                    "color": "{{params.currentScope === 'GitDB' ? '#10b981' : '#cbd5e1'}}",
+                    "fontSize": "14px",
+                    "fontWeight": "{{params.currentScope === 'GitDB' ? 'bold' : 'normal'}}",
+                    "textDecoration": "none",
+                    "cursor": "pointer"
+                  },
+                  "onClick": {
+                    "action": "navigateToGitDB"
+                  }
+                }
+              },
+              {
+                "type": "navLink",
+                "props": {
+                  "text": "Tags",
+                  "icon": "mdi-tag",
+                  "active": "{{params.currentScope === 'Tags'}}",
+                  "style": {
+                    "color": "{{params.currentScope === 'Tags' ? '#10b981' : '#cbd5e1'}}",
+                    "fontSize": "14px",
+                    "fontWeight": "{{params.currentScope === 'Tags' ? 'bold' : 'normal'}}",
+                    "textDecoration": "none",
+                    "cursor": "pointer"
+                  },
+                  "onClick": {
+                    "action": "navigateToTags"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "flex",
+        "props": {
+          "align": "center",
+          "gap": "20px"
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showSearch}}",
+              "children": [
+                {
+                  "type": "searchBar",
+                  "props": {
+                    "placeholder": "Search...",
+                    "style": {
+                      "width": "300px",
+                      "padding": "8px 15px",
+                      "borderRadius": "20px",
+                      "border": "1px solid rgba(255,255,255,0.3)",
+                      "background": "rgba(255,255,255,0.1)",
+                      "color": "white"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showUserMenu}}",
+              "children": [
+                {
+                  "type": "dropdown",
+                  "props": {
+                    "trigger": {
+                      "type": "button",
+                      "icon": "mdi-account-circle",
+                      "style": {
+                        "color": "white",
+                        "fontSize": "28px"
+                      }
+                    },
+                    "items": [
+                      { "text": "Profile", "icon": "mdi-account" },
+                      { "text": "Settings", "icon": "mdi-cog" },
+                      { "text": "Help", "icon": "mdi-help-circle" },
+                      { "divider": true },
+                      { "text": "Logout", "icon": "mdi-logout" }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "actions": {
+      "navigateHome": "window.kaleidoscope.navigate('/')",
+      "navigateToGateway": "window.kaleidoscope.navigate('/gateway')",
+      "navigateToKaleidoscope": "window.kaleidoscope.navigate('/kaleidoscope')",
+      "navigateToGitDB": "window.kaleidoscope.navigate('/gitdb')",
+      "navigateToTags": "window.kaleidoscope.navigate('/tags')"
+    }
+  }
+}

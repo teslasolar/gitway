@@ -1,0 +1,236 @@
+{
+  "id": "report-viewer",
+  "name": "Report Viewer",
+  "description": "Perspective Report Viewer component - embeds reports from Reporting Module with PDF export and pagination",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "source": {
+      "type": "string",
+      "required": true,
+      "default": "",
+      "description": "Path of the report (case sensitive) from Reporting Module to display",
+      "example": "Reports/Production/DailyReport"
+    },
+    "params": {
+      "type": "object",
+      "required": false,
+      "default": {},
+      "description": "Report parameters object - parameter names must match exactly to override defaults"
+    },
+    "page": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Current page number displayed (updates as pages are viewed)"
+    },
+    "zoomLevel": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Zoom level as percentage of report width",
+      "min": 10,
+      "max": 500
+    },
+    "allowDownload": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show download icon in control bar for PDF export"
+    },
+    "downloadFilename": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Custom filename for downloaded reports (defaults to report name if empty)"
+    },
+    "allowOpenInTab": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show icon to open PDF in new browser tab"
+    },
+    "showZoomControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show zoom control in toolbar"
+    },
+    "showPager": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show page navigation controls"
+    },
+    "controlBarBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#f3f4f6",
+      "description": "Background color for control bar"
+    },
+    "controlBarColor": {
+      "type": "string",
+      "required": false,
+      "default": "#1f2937",
+      "description": "Text/icon color for control bar"
+    },
+    "controlBarBorder": {
+      "type": "string",
+      "required": false,
+      "default": "1px solid #d1d5db",
+      "description": "Border for control bar"
+    },
+    "controlBarHeight": {
+      "type": "string",
+      "required": false,
+      "default": "48px",
+      "description": "Height of control bar"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "#e5e7eb",
+      "description": "Background color for report display area"
+    },
+    "loadingMessage": {
+      "type": "string",
+      "required": false,
+      "default": "Loading report...",
+      "description": "Message displayed while report loads"
+    },
+    "errorMessage": {
+      "type": "string",
+      "required": false,
+      "default": "Error loading report",
+      "description": "Message displayed if report fails to load"
+    },
+    "emptyMessage": {
+      "type": "string",
+      "required": false,
+      "default": "No report selected",
+      "description": "Message displayed when source is empty"
+    }
+  },
+  "view": {
+    "type": "reportViewer",
+    "props": {
+      "source": "{{params.source}}",
+      "params": "{{params.params}}",
+      "page": "{{params.page}}",
+      "zoomLevel": "{{params.zoomLevel}}",
+      "allowDownload": "{{params.allowDownload}}",
+      "downloadFilename": "{{params.downloadFilename}}",
+      "allowOpenInTab": "{{params.allowOpenInTab}}",
+      "controlStyle": {
+        "backgroundColor": "{{params.controlBarBackground}}",
+        "color": "{{params.controlBarColor}}",
+        "border": "{{params.controlBarBorder}}",
+        "height": "{{params.controlBarHeight}}",
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "space-between",
+        "padding": "0 16px",
+        "gap": "12px"
+      },
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "display": "flex",
+        "flexDirection": "column"
+      }
+    },
+    "metadata": {
+      "notes": [
+        "Requires Reporting Module to be installed on Gateway",
+        "Source path is case-sensitive and must match exactly",
+        "Right-click report in Project Browser to Copy full Path",
+        "Parameter names must match report parameters exactly",
+        "Parameters override default report parameter values",
+        "Page property updates automatically as user navigates pages",
+        "pageCount property is read-only and shows total pages",
+        "Download icon disabled after click until save/cancel dialog",
+        "Empty source results in blank component display"
+      ],
+      "toolbarControls": {
+        "zoom": {
+          "description": "Controls PDF view zoom level",
+          "visibility": "Controlled by showZoomControl parameter",
+          "range": "10% to 500%"
+        },
+        "pager": {
+          "description": "Displays current page and navigation buttons",
+          "visibility": "Controlled by showPager parameter",
+          "features": "Previous/Next buttons, page number input, total pages"
+        },
+        "download": {
+          "description": "Exports report as PDF",
+          "visibility": "Controlled by allowDownload parameter",
+          "behavior": "Disabled after click until save or cancel",
+          "filename": "Uses downloadFilename or defaults to report name"
+        },
+        "popout": {
+          "description": "Opens report in new browser window",
+          "visibility": "Controlled by allowOpenInTab parameter",
+          "format": "PDF in new tab"
+        }
+      },
+      "reportParameters": {
+        "configuration": "Define in params object",
+        "matching": "Names must match report parameters exactly (case-sensitive)",
+        "override": "Values override report defaults",
+        "types": "Support all report parameter types (string, number, date, etc.)",
+        "binding": "Can be bound to dynamic values"
+      },
+      "propertyBindings": [
+        "source - Dynamic report path selection",
+        "params - Real-time parameter updates",
+        "page - Navigate to specific pages programmatically",
+        "zoomLevel - Control zoom via scripting or bindings"
+      ],
+      "readOnlyProperties": [
+        "pageCount - Total number of pages in report (read-only)"
+      ],
+      "workflowExample": {
+        "step1": "Create report in Reporting Module",
+        "step2": "Right-click report in Project Browser to copy path",
+        "step3": "Add Report Viewer component to view",
+        "step4": "Paste path into 'source' property",
+        "step5": "Add any required parameters to 'params' object",
+        "step6": "Configure toolbar controls (download, popout, zoom, pager)",
+        "step7": "Style control bar and display area as needed"
+      },
+      "performanceConsiderations": [
+        "Large reports may take time to load",
+        "PDF rendering is resource-intensive",
+        "Consider loading indicator for better UX",
+        "Page navigation is client-side after initial load",
+        "Zoom operations affect rendering performance"
+      ],
+      "commonUseCases": [
+        "Production reports embedded in operator dashboards",
+        "Quality control documentation displays",
+        "Real-time report generation with dynamic parameters",
+        "Historical data review and analysis",
+        "Maintenance and inspection reports",
+        "Batch and lot tracking reports",
+        "Compliance and audit trail documentation"
+      ],
+      "printingBehavior": [
+        "Static content prints via Request Print action",
+        "Dynamic content may print incompletely due to loading delays",
+        "Charts and real-time data may not be fully rendered",
+        "Consider using PDF download for reliable printing",
+        "Use allowDownload to provide PDF export option"
+      ],
+      "errorHandling": [
+        "Invalid source path shows error in component",
+        "Missing Reporting Module prevents component use",
+        "Parameter type mismatches may cause report errors",
+        "Network issues can delay or prevent loading",
+        "Custom error messages via errorMessage parameter"
+      ]
+    }
+  }
+}

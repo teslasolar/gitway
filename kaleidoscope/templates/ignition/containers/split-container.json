@@ -1,0 +1,423 @@
+{
+  "id": "split-container",
+  "name": "Split Container",
+  "description": "Split pane container with adjustable divider between panels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "horizontal",
+      "description": "Split orientation (horizontal, vertical)"
+    },
+    "initialSplit": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Initial split percentage (0-100)"
+    },
+    "minSize": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Minimum size for each panel in pixels"
+    },
+    "maxSize": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Maximum size for first panel in pixels (0 = no limit)"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "100%",
+      "description": "Container width"
+    },
+    "height": {
+      "type": "string",
+      "required": false,
+      "default": "600px",
+      "description": "Container height"
+    },
+    "firstPanel": {
+      "type": "object",
+      "required": true,
+      "default": {
+        "template": "",
+        "params": {}
+      },
+      "description": "First panel content"
+    },
+    "secondPanel": {
+      "type": "object",
+      "required": true,
+      "default": {
+        "template": "",
+        "params": {}
+      },
+      "description": "Second panel content"
+    },
+    "dividerSize": {
+      "type": "number",
+      "required": false,
+      "default": 8,
+      "description": "Divider thickness in pixels"
+    },
+    "dividerColor": {
+      "type": "string",
+      "required": false,
+      "default": "#e5e7eb",
+      "description": "Divider color"
+    },
+    "dividerHoverColor": {
+      "type": "string",
+      "required": false,
+      "default": "#0f766e",
+      "description": "Divider color on hover"
+    },
+    "showDividerHandle": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show handle indicator on divider"
+    },
+    "resizable": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow resizing panels"
+    },
+    "snapToSize": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Snap to size in pixels (0 = no snapping)"
+    },
+    "firstPanelBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "First panel background"
+    },
+    "secondPanelBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Second panel background"
+    },
+    "firstPanelPadding": {
+      "type": "string",
+      "required": false,
+      "default": "16px",
+      "description": "First panel padding"
+    },
+    "secondPanelPadding": {
+      "type": "string",
+      "required": false,
+      "default": "16px",
+      "description": "Second panel padding"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "1px solid #e5e7eb",
+      "description": "Container border"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Border radius"
+    },
+    "collapsible": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Allow collapsing panels"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "flex",
+        "flexDirection": "{{params.orientation === 'horizontal' ? 'row' : 'column'}}",
+        "width": "{{params.width}}",
+        "height": "{{params.height}}",
+        "border": "{{params.border}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "overflow": "hidden",
+        "position": "relative",
+        "boxSizing": "border-box"
+      }
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "className": "split-panel-first",
+          "style": {
+            "width": "{{params.orientation === 'horizontal' ? `${state.splitPosition || params.initialSplit}%` : '100%'}}",
+            "height": "{{params.orientation === 'vertical' ? `${state.splitPosition || params.initialSplit}%` : '100%'}}",
+            "background": "{{params.firstPanelBackground}}",
+            "padding": "{{params.firstPanelPadding}}",
+            "overflow": "auto",
+            "position": "relative",
+            "transition": "{{state.isDragging ? 'none' : 'all 0.1s ease'}}",
+            "minWidth": "{{params.orientation === 'horizontal' ? `${params.minSize}px` : 'auto'}}",
+            "minHeight": "{{params.orientation === 'vertical' ? `${params.minSize}px` : 'auto'}}"
+          }
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.firstPanel.template}}",
+              "children": [
+                {
+                  "type": "templateInstance",
+                  "props": {
+                    "template": "{{params.firstPanel.template}}",
+                    "params": "{{params.firstPanel.params}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.firstPanel.content}}",
+              "children": [
+                {
+                  "type": "html",
+                  "props": {
+                    "content": "{{params.firstPanel.content}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.collapsible}}",
+              "children": [
+                {
+                  "type": "button",
+                  "props": {
+                    "onClick": "{{() => collapsePanel('first')}}",
+                    "style": {
+                      "position": "absolute",
+                      "top": "{{params.orientation === 'horizontal' ? '8px' : 'auto'}}",
+                      "bottom": "{{params.orientation === 'vertical' ? '8px' : 'auto'}}",
+                      "right": "8px",
+                      "background": "{{params.dividerColor}}",
+                      "border": "none",
+                      "borderRadius": "4px",
+                      "padding": "4px 8px",
+                      "cursor": "pointer",
+                      "fontSize": "12px",
+                      "zIndex": 10
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "props": {
+                        "name": "{{params.orientation === 'horizontal' ? 'chevron-left' : 'chevron-up'}}",
+                        "size": 16
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.resizable}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "split-divider",
+                "onMouseDown": "{{(e) => startDragging(e)}}",
+                "style": {
+                  "width": "{{params.orientation === 'horizontal' ? `${params.dividerSize}px` : '100%'}}",
+                  "height": "{{params.orientation === 'vertical' ? `${params.dividerSize}px` : '100%'}}",
+                  "background": "{{state.isHovering || state.isDragging ? params.dividerHoverColor : params.dividerColor}}",
+                  "cursor": "{{params.orientation === 'horizontal' ? 'col-resize' : 'row-resize'}}",
+                  "flexShrink": 0,
+                  "display": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "position": "relative",
+                  "transition": "background 0.2s ease",
+                  "userSelect": "none"
+                },
+                "onMouseEnter": "{{() => setState({isHovering: true})}}",
+                "onMouseLeave": "{{() => setState({isHovering: false})}}"
+              },
+              "children": [
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{params.showDividerHandle}}",
+                    "children": [
+                      {
+                        "type": "container",
+                        "props": {
+                          "style": {
+                            "display": "flex",
+                            "flexDirection": "{{params.orientation === 'horizontal' ? 'column' : 'row'}}",
+                            "gap": "2px"
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "container",
+                            "props": {
+                              "style": {
+                                "width": "{{params.orientation === 'horizontal' ? '2px' : '20px'}}",
+                                "height": "{{params.orientation === 'horizontal' ? '20px' : '2px'}}",
+                                "background": "{{state.isHovering || state.isDragging ? '#ffffff' : '#9ca3af'}}",
+                                "borderRadius": "2px"
+                              }
+                            }
+                          },
+                          {
+                            "type": "container",
+                            "props": {
+                              "style": {
+                                "width": "{{params.orientation === 'horizontal' ? '2px' : '20px'}}",
+                                "height": "{{params.orientation === 'horizontal' ? '20px' : '2px'}}",
+                                "background": "{{state.isHovering || state.isDragging ? '#ffffff' : '#9ca3af'}}",
+                                "borderRadius": "2px"
+                              }
+                            }
+                          },
+                          {
+                            "type": "container",
+                            "props": {
+                              "style": {
+                                "width": "{{params.orientation === 'horizontal' ? '2px' : '20px'}}",
+                                "height": "{{params.orientation === 'horizontal' ? '20px' : '2px'}}",
+                                "background": "{{state.isHovering || state.isDragging ? '#ffffff' : '#9ca3af'}}",
+                                "borderRadius": "2px"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "container",
+        "props": {
+          "className": "split-panel-second",
+          "style": {
+            "flex": 1,
+            "background": "{{params.secondPanelBackground}}",
+            "padding": "{{params.secondPanelPadding}}",
+            "overflow": "auto",
+            "position": "relative",
+            "minWidth": "{{params.orientation === 'horizontal' ? `${params.minSize}px` : 'auto'}}",
+            "minHeight": "{{params.orientation === 'vertical' ? `${params.minSize}px` : 'auto'}}"
+          }
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.secondPanel.template}}",
+              "children": [
+                {
+                  "type": "templateInstance",
+                  "props": {
+                    "template": "{{params.secondPanel.template}}",
+                    "params": "{{params.secondPanel.params}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.secondPanel.content}}",
+              "children": [
+                {
+                  "type": "html",
+                  "props": {
+                    "content": "{{params.secondPanel.content}}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.collapsible}}",
+              "children": [
+                {
+                  "type": "button",
+                  "props": {
+                    "onClick": "{{() => collapsePanel('second')}}",
+                    "style": {
+                      "position": "absolute",
+                      "top": "{{params.orientation === 'horizontal' ? '8px' : 'auto'}}",
+                      "bottom": "{{params.orientation === 'vertical' ? '8px' : 'auto'}}",
+                      "left": "8px",
+                      "background": "{{params.dividerColor}}",
+                      "border": "none",
+                      "borderRadius": "4px",
+                      "padding": "4px 8px",
+                      "cursor": "pointer",
+                      "fontSize": "12px",
+                      "zIndex": 10
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "props": {
+                        "name": "{{params.orientation === 'horizontal' ? 'chevron-right' : 'chevron-down'}}",
+                        "size": 16
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "state": {
+    "splitPosition": "{{params.initialSplit}}",
+    "isDragging": false,
+    "isHovering": false,
+    "collapsedPanel": null
+  },
+  "methods": {
+    "startDragging": "function(e) { if (!params.resizable) return; this.setState({ isDragging: true, startPosition: params.orientation === 'horizontal' ? e.clientX : e.clientY }); document.addEventListener('mousemove', this.handleDrag); document.addEventListener('mouseup', this.stopDragging); }",
+    "handleDrag": "function(e) { if (!this.state.isDragging) return; const container = e.currentTarget.parentElement; const rect = container.getBoundingClientRect(); const totalSize = params.orientation === 'horizontal' ? rect.width : rect.height; const position = params.orientation === 'horizontal' ? e.clientX - rect.left : e.clientY - rect.top; let percent = (position / totalSize) * 100; percent = Math.max(params.minSize / totalSize * 100, Math.min(percent, 100 - params.minSize / totalSize * 100)); if (params.maxSize > 0) { percent = Math.min(percent, params.maxSize / totalSize * 100); } if (params.snapToSize > 0) { const snapPercent = params.snapToSize / totalSize * 100; percent = Math.round(percent / snapPercent) * snapPercent; } this.setState({ splitPosition: percent }); }",
+    "stopDragging": "function() { this.setState({ isDragging: false }); document.removeEventListener('mousemove', this.handleDrag); document.removeEventListener('mouseup', this.stopDragging); }",
+    "collapsePanel": "function(panel) { if (this.state.collapsedPanel === panel) { this.setState({ collapsedPanel: null, splitPosition: params.initialSplit }); } else { this.setState({ collapsedPanel: panel, splitPosition: panel === 'first' ? 0 : 100 }); } }"
+  }
+}

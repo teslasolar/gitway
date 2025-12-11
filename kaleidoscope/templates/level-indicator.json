@@ -1,0 +1,358 @@
+{
+  "id": "level-indicator",
+  "name": "Level Indicator",
+  "description": "Perspective Level Indicator component for displaying liquid/material levels with animated fill, alarm zones, and customizable visualization (based on Cylindrical Tank for level indication)",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for level value",
+      "example": "[default]Process/Tank1/Level"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Level Indicator",
+      "description": "Display title"
+    },
+    "minValue": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum level value"
+    },
+    "maxValue": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum level value"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "%",
+      "description": "Engineering units for level"
+    },
+    "containerType": {
+      "type": "string",
+      "required": false,
+      "default": "cylindrical",
+      "description": "Visual container type",
+      "options": ["cylindrical", "rectangular", "vertical-bar"]
+    },
+    "fillColor": {
+      "type": "color",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Default liquid/fill color"
+    },
+    "fillOpacity": {
+      "type": "number",
+      "required": false,
+      "default": 0.8,
+      "description": "Fill opacity (0-1)"
+    },
+    "containerColor": {
+      "type": "color",
+      "required": false,
+      "default": "#e5e7eb",
+      "description": "Container/background color"
+    },
+    "containerStrokeColor": {
+      "type": "color",
+      "required": false,
+      "default": "#9ca3af",
+      "description": "Container outline color"
+    },
+    "containerStrokeWidth": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Container outline width in pixels"
+    },
+    "highAlarm": {
+      "type": "number",
+      "required": false,
+      "default": 90,
+      "description": "High level alarm threshold"
+    },
+    "highHighAlarm": {
+      "type": "number",
+      "required": false,
+      "description": "High-high level alarm threshold (optional)"
+    },
+    "lowAlarm": {
+      "type": "number",
+      "required": false,
+      "default": 10,
+      "description": "Low level alarm threshold"
+    },
+    "lowLowAlarm": {
+      "type": "number",
+      "required": false,
+      "description": "Low-low level alarm threshold (optional)"
+    },
+    "highAlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#f59e0b",
+      "description": "Color when high alarm active"
+    },
+    "highHighAlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#ef4444",
+      "description": "Color when high-high alarm active"
+    },
+    "lowAlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#f59e0b",
+      "description": "Color when low alarm active"
+    },
+    "lowLowAlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#ef4444",
+      "description": "Color when low-low alarm active"
+    },
+    "showScale": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show level scale markings"
+    },
+    "showValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show current value"
+    },
+    "showPercentage": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show percentage of full scale"
+    },
+    "showAlarmIndicators": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show alarm threshold lines"
+    },
+    "animate": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Animate level changes"
+    },
+    "animationDuration": {
+      "type": "number",
+      "required": false,
+      "default": 1000,
+      "description": "Animation duration in milliseconds"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "300px",
+        "height": "450px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "align": "center",
+          "gap": "15px",
+          "style": {
+            "padding": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "levelIndicator",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "minValue": "{{params.minValue}}",
+              "maxValue": "{{params.maxValue}}",
+              "containerType": "{{params.containerType}}",
+              "fill": {
+                "color": "{{params.highHighAlarm && tags.[params.tagPath] >= params.highHighAlarm ? params.highHighAlarmColor : params.highAlarm && tags.[params.tagPath] >= params.highAlarm ? params.highAlarmColor : params.lowLowAlarm && tags.[params.tagPath] <= params.lowLowAlarm ? params.lowLowAlarmColor : params.lowAlarm && tags.[params.tagPath] <= params.lowAlarm ? params.lowAlarmColor : params.fillColor}}",
+                "opacity": "{{params.fillOpacity}}"
+              },
+              "container": {
+                "color": "{{params.containerColor}}",
+                "stroke": "{{params.containerStrokeColor}}",
+                "strokeWidth": "{{params.containerStrokeWidth}}"
+              },
+              "alarmIndicators": {
+                "enabled": "{{params.showAlarmIndicators}}",
+                "highAlarm": "{{params.highAlarm}}",
+                "highHighAlarm": "{{params.highHighAlarm}}",
+                "lowAlarm": "{{params.lowAlarm}}",
+                "lowLowAlarm": "{{params.lowLowAlarm}}",
+                "style": {
+                  "lineStyle": "dashed",
+                  "lineWidth": 2,
+                  "highColor": "{{params.highAlarmColor}}",
+                  "highHighColor": "{{params.highHighAlarmColor}}",
+                  "lowColor": "{{params.lowAlarmColor}}",
+                  "lowLowColor": "{{params.lowLowAlarmColor}}"
+                }
+              },
+              "scale": {
+                "enabled": "{{params.showScale}}",
+                "majorTicks": 5,
+                "minorTicks": 10,
+                "style": {
+                  "color": "#6b7280",
+                  "fontSize": "11px"
+                }
+              },
+              "animation": {
+                "enabled": "{{params.animate}}",
+                "duration": "{{params.animationDuration}}",
+                "easing": "ease-in-out"
+              },
+              "style": {
+                "width": "200px",
+                "height": "280px"
+              }
+            }
+          },
+          {
+            "type": "flex",
+            "props": {
+              "direction": "column",
+              "align": "center",
+              "gap": "10px",
+              "style": {
+                "width": "100%"
+              }
+            },
+            "children": [
+              {
+                "type": "conditional",
+                "props": {
+                  "condition": "{{params.showValue}}",
+                  "children": [
+                    {
+                      "type": "flex",
+                      "props": {
+                        "direction": "row",
+                        "justify": "center",
+                        "gap": "5px"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "props": {
+                            "value": "{{tags.[params.tagPath]}}",
+                            "format": "0.0",
+                            "style": {
+                              "fontSize": "28px",
+                              "fontWeight": "bold",
+                              "color": "#1f2937"
+                            }
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "props": {
+                            "value": "{{params.units}}",
+                            "style": {
+                              "fontSize": "16px",
+                              "color": "#6b7280",
+                              "alignSelf": "flex-end",
+                              "marginBottom": "4px"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "conditional",
+                "props": {
+                  "condition": "{{params.showPercentage}}",
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "{{((tags.[params.tagPath] - params.minValue) / (params.maxValue - params.minValue) * 100)}}% Full",
+                        "format": "0.0",
+                        "style": {
+                          "fontSize": "14px",
+                          "color": "#6b7280"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 2,
+              "gap": "10px",
+              "style": {
+                "width": "100%",
+                "fontSize": "12px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Min",
+                  "value": "{{params.minValue}}",
+                  "units": "{{params.units}}",
+                  "style": {
+                    "textAlign": "center"
+                  }
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Max",
+                  "value": "{{params.maxValue}}",
+                  "units": "{{params.units}}",
+                  "style": {
+                    "textAlign": "center"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "statusBadge",
+            "props": {
+              "value": "{{params.highHighAlarm && tags.[params.tagPath] >= params.highHighAlarm ? 'HIGH-HIGH' : params.highAlarm && tags.[params.tagPath] >= params.highAlarm ? 'HIGH' : params.lowLowAlarm && tags.[params.tagPath] <= params.lowLowAlarm ? 'LOW-LOW' : params.lowAlarm && tags.[params.tagPath] <= params.lowAlarm ? 'LOW' : 'NORMAL'}}",
+              "color": "{{params.highHighAlarm && tags.[params.tagPath] >= params.highHighAlarm ? 'red' : params.highAlarm && tags.[params.tagPath] >= params.highAlarm ? 'yellow' : params.lowLowAlarm && tags.[params.tagPath] <= params.lowLowAlarm ? 'red' : params.lowAlarm && tags.[params.tagPath] <= params.lowAlarm ? 'yellow' : 'green'}}",
+              "style": {
+                "width": "100%",
+                "textAlign": "center",
+                "fontSize": "14px",
+                "fontWeight": "600",
+                "padding": "8px"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

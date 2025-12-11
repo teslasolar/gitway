@@ -1,0 +1,342 @@
+{
+  "id": "slider",
+  "name": "Slider Input",
+  "description": "Slider input with range controls, step increments, and value labels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Input",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for numeric value",
+      "example": "[default]Setpoints/FlowRate"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "Value",
+      "description": "Slider label"
+    },
+    "labelPosition": {
+      "type": "string",
+      "required": false,
+      "default": "top",
+      "enum": ["top", "left"],
+      "description": "Label position"
+    },
+    "min": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum value"
+    },
+    "max": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum value"
+    },
+    "step": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Step increment"
+    },
+    "precision": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Decimal places for display"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering units"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable or disable slider"
+    },
+    "showValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show current value label"
+    },
+    "showMinMax": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show min/max labels"
+    },
+    "showTicks": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show tick marks along slider"
+    },
+    "tickCount": {
+      "type": "number",
+      "required": false,
+      "default": 5,
+      "description": "Number of tick marks to show"
+    },
+    "trackColor": {
+      "type": "string",
+      "required": false,
+      "default": "#e5e7eb",
+      "description": "Track background color"
+    },
+    "fillColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Filled track color"
+    },
+    "thumbColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Thumb/handle color"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "300px",
+      "description": "Slider width"
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "horizontal",
+      "enum": ["horizontal", "vertical"],
+      "description": "Slider orientation"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "{{params.labelPosition === 'top' ? 'column' : 'row'}}",
+      "align": "{{params.labelPosition === 'top' ? 'flex-start' : 'center'}}",
+      "gap": "12px",
+      "style": {
+        "width": "auto"
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.label}}",
+          "style": {
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "color": "#374151",
+            "marginBottom": "{{params.labelPosition === 'top' ? '4px' : '0'}}",
+            "minWidth": "{{params.labelPosition === 'left' ? '100px' : 'auto'}}"
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "8px",
+          "style": {
+            "width": "{{params.orientation === 'horizontal' ? params.width : 'auto'}}",
+            "height": "{{params.orientation === 'vertical' ? params.width : 'auto'}}"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "direction": "row",
+              "align": "center",
+              "justify": "space-between",
+              "gap": "12px",
+              "style": {
+                "width": "100%",
+                "display": "{{params.showValue ? 'flex' : 'none'}}"
+              }
+            },
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "value": "Current Value",
+                  "style": {
+                    "fontSize": "12px",
+                    "color": "#6b7280"
+                  }
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "direction": "row",
+                  "align": "baseline",
+                  "gap": "4px"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "{{tags.[params.tagPath]}}",
+                      "format": "{{params.precision === 0 ? '0' : params.precision === 1 ? '0.0' : params.precision === 2 ? '0.00' : '0.000'}}",
+                      "style": {
+                        "fontSize": "16px",
+                        "fontWeight": "600",
+                        "color": "#1f2937"
+                      }
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "{{params.units}}",
+                      "style": {
+                        "fontSize": "12px",
+                        "color": "#6b7280",
+                        "display": "{{params.units !== '' ? 'block' : 'none'}}"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "direction": "{{params.orientation === 'horizontal' ? 'column' : 'row'}}",
+              "align": "center",
+              "gap": "8px",
+              "style": {
+                "width": "100%",
+                "position": "relative"
+              }
+            },
+            "children": [
+              {
+                "type": "slider",
+                "props": {
+                  "value": "{{tags.[params.tagPath]}}",
+                  "min": "{{params.min}}",
+                  "max": "{{params.max}}",
+                  "step": "{{params.step}}",
+                  "enabled": "{{params.enabled}}",
+                  "orientation": "{{params.orientation}}",
+                  "style": {
+                    "width": "{{params.orientation === 'horizontal' ? '100%' : '20px'}}",
+                    "height": "{{params.orientation === 'horizontal' ? '20px' : '100%'}}",
+                    "position": "relative",
+                    "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+                    "opacity": "{{params.enabled ? '1' : '0.5'}}"
+                  },
+                  "trackStyle": {
+                    "width": "{{params.orientation === 'horizontal' ? '100%' : '4px'}}",
+                    "height": "{{params.orientation === 'horizontal' ? '4px' : '100%'}}",
+                    "backgroundColor": "{{params.trackColor}}",
+                    "borderRadius": "2px",
+                    "position": "relative"
+                  },
+                  "fillStyle": {
+                    "width": "{{params.orientation === 'horizontal' ? ((tags.[params.tagPath] - params.min) / (params.max - params.min) * 100) + '%' : '4px'}}",
+                    "height": "{{params.orientation === 'horizontal' ? '4px' : ((tags.[params.tagPath] - params.min) / (params.max - params.min) * 100) + '%'}}",
+                    "backgroundColor": "{{params.fillColor}}",
+                    "borderRadius": "2px",
+                    "position": "absolute",
+                    "top": "0",
+                    "left": "0"
+                  },
+                  "thumbStyle": {
+                    "width": "20px",
+                    "height": "20px",
+                    "backgroundColor": "{{params.thumbColor}}",
+                    "border": "3px solid #ffffff",
+                    "borderRadius": "50%",
+                    "position": "absolute",
+                    "top": "{{params.orientation === 'horizontal' ? '-8px' : ((tags.[params.tagPath] - params.min) / (params.max - params.min) * 100) + '%'}}",
+                    "left": "{{params.orientation === 'horizontal' ? ((tags.[params.tagPath] - params.min) / (params.max - params.min) * 100) + '%' : '-8px'}}",
+                    "transform": "{{params.orientation === 'horizontal' ? 'translateX(-50%)' : 'translateY(-50%)'}}",
+                    "boxShadow": "0 2px 4px rgba(0,0,0,0.2)",
+                    "cursor": "{{params.enabled ? 'grab' : 'not-allowed'}}",
+                    "transition": "transform 0.1s ease"
+                  },
+                  "thumbActiveStyle": {
+                    "cursor": "{{params.enabled ? 'grabbing' : 'not-allowed'}}",
+                    "transform": "{{params.orientation === 'horizontal' ? 'translateX(-50%) scale(1.1)' : 'translateY(-50%) scale(1.1)'}}",
+                    "boxShadow": "0 3px 6px rgba(0,0,0,0.3)"
+                  },
+                  "events": {
+                    "onChange": {
+                      "tagWrite": {
+                        "path": "{{params.tagPath}}",
+                        "value": "{{event.value}}"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "direction": "{{params.orientation === 'horizontal' ? 'row' : 'column'}}",
+                  "justify": "space-between",
+                  "style": {
+                    "width": "{{params.orientation === 'horizontal' ? '100%' : 'auto'}}",
+                    "display": "{{params.showTicks ? 'flex' : 'none'}}",
+                    "position": "relative",
+                    "marginTop": "{{params.orientation === 'horizontal' ? '8px' : '0'}}",
+                    "marginLeft": "{{params.orientation === 'vertical' ? '8px' : '0'}}"
+                  }
+                },
+                "children": "{{Array.from({length: params.tickCount}, (_, i) => ({ type: 'flex', props: { direction: 'column', align: 'center', style: { position: 'relative' } }, children: [{ type: 'div', props: { style: { width: '2px', height: '8px', backgroundColor: '#9ca3af' } } }, { type: 'text', props: { value: String(Math.round(params.min + (params.max - params.min) * i / (params.tickCount - 1))), style: { fontSize: '10px', color: '#9ca3af', marginTop: '4px' } } }] })).toJSON()}}"
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "direction": "row",
+              "justify": "space-between",
+              "style": {
+                "width": "100%",
+                "display": "{{params.showMinMax ? 'flex' : 'none'}}"
+              }
+            },
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "value": "{{params.min}}",
+                  "style": {
+                    "fontSize": "11px",
+                    "color": "#9ca3af",
+                    "fontWeight": "500"
+                  }
+                }
+              },
+              {
+                "type": "text",
+                "props": {
+                  "value": "{{params.max}}",
+                  "style": {
+                    "fontSize": "11px",
+                    "color": "#9ca3af",
+                    "fontWeight": "500"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

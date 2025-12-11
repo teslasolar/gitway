@@ -1,0 +1,205 @@
+{
+  "id": "indicator",
+  "name": "Indicator",
+  "description": "Status indicator with color states and optional label/animation",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for status value",
+      "example": "[default]Equipment/Status"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Optional label text"
+    },
+    "labelPosition": {
+      "type": "string",
+      "required": false,
+      "default": "right",
+      "description": "Label position relative to indicator",
+      "options": ["left", "right", "top", "bottom"]
+    },
+    "size": {
+      "type": "number",
+      "required": false,
+      "default": 24,
+      "description": "Indicator size in pixels"
+    },
+    "shape": {
+      "type": "string",
+      "required": false,
+      "default": "circle",
+      "description": "Indicator shape",
+      "options": ["circle", "square", "diamond"]
+    },
+    "goodValue": {
+      "type": "string",
+      "required": false,
+      "default": "Running",
+      "description": "Value for good state"
+    },
+    "goodColor": {
+      "type": "string",
+      "required": false,
+      "default": "#00aa00",
+      "description": "Color for good state"
+    },
+    "warningValue": {
+      "type": "string",
+      "required": false,
+      "default": "Warning",
+      "description": "Value for warning state"
+    },
+    "warningColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ff9900",
+      "description": "Color for warning state"
+    },
+    "errorValue": {
+      "type": "string",
+      "required": false,
+      "default": "Fault",
+      "description": "Value for error state"
+    },
+    "errorColor": {
+      "type": "string",
+      "required": false,
+      "default": "#cc0000",
+      "description": "Color for error state"
+    },
+    "inactiveValue": {
+      "type": "string",
+      "required": false,
+      "default": "Stopped",
+      "description": "Value for inactive state"
+    },
+    "inactiveColor": {
+      "type": "string",
+      "required": false,
+      "default": "#999999",
+      "description": "Color for inactive state"
+    },
+    "enableGlow": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable glow effect"
+    },
+    "enablePulse": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable pulse animation for active states"
+    },
+    "pulseDuration": {
+      "type": "number",
+      "required": false,
+      "default": 1.5,
+      "description": "Pulse animation duration in seconds"
+    },
+    "showBorder": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show border around indicator"
+    },
+    "borderWidth": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Border width in pixels"
+    },
+    "borderColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Border color"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "flex",
+        "flexDirection": "{{params.labelPosition === 'top' ? 'column' : params.labelPosition === 'bottom' ? 'column-reverse' : 'row'}}",
+        "alignItems": "center",
+        "gap": "8px"
+      }
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "width": "{{params.size}}px",
+            "height": "{{params.size}}px",
+            "backgroundColor": "{{tags.[params.tagPath] === params.goodValue ? params.goodColor : tags.[params.tagPath] === params.warningValue ? params.warningColor : tags.[params.tagPath] === params.errorValue ? params.errorColor : params.inactiveColor}}",
+            "borderRadius": "{{params.shape === 'circle' ? '50%' : params.shape === 'diamond' ? '0%' : '4px'}}",
+            "transform": "{{params.shape === 'diamond' ? 'rotate(45deg)' : 'none'}}",
+            "border": "{{params.showBorder ? params.borderWidth + 'px solid ' + params.borderColor : 'none'}}",
+            "boxShadow": "{{params.enableGlow ? '0 0 ' + (params.size * 0.5) + 'px ' + (tags.[params.tagPath] === params.goodValue ? params.goodColor : tags.[params.tagPath] === params.warningValue ? params.warningColor : tags.[params.tagPath] === params.errorValue ? params.errorColor : 'transparent') : 'none'}}",
+            "animation": "{{params.enablePulse && (tags.[params.tagPath] === params.goodValue || tags.[params.tagPath] === params.warningValue || tags.[params.tagPath] === params.errorValue) ? 'pulse ' + params.pulseDuration + 's ease-in-out infinite' : 'none'}}",
+            "transition": "all 0.3s ease"
+          }
+        },
+        "bindings": [
+          {
+            "type": "property",
+            "property": "style.backgroundColor",
+            "binding": {
+              "type": "expression",
+              "expression": "if({[params.tagPath]} == params.goodValue, params.goodColor, if({[params.tagPath]} == params.warningValue, params.warningColor, if({[params.tagPath]} == params.errorValue, params.errorColor, params.inactiveColor)))"
+            }
+          },
+          {
+            "type": "property",
+            "property": "style.boxShadow",
+            "binding": {
+              "type": "expression",
+              "expression": "if(params.enableGlow, '0 0 ' + (params.size * 0.5) + 'px ' + if({[params.tagPath]} == params.goodValue, params.goodColor, if({[params.tagPath]} == params.warningValue, params.warningColor, if({[params.tagPath]} == params.errorValue, params.errorColor, 'transparent'))), 'none')"
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.label}}",
+          "children": [
+            {
+              "type": "text",
+              "props": {
+                "value": "{{params.label}}",
+                "style": {
+                  "fontSize": "14px",
+                  "color": "#333",
+                  "fontWeight": "500",
+                  "order": "{{params.labelPosition === 'left' || params.labelPosition === 'top' ? '-1' : '1'}}"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "styles": {
+      "@keyframes pulse": {
+        "0%, 100%": {
+          "opacity": "1",
+          "transform": "{{params.shape === 'diamond' ? 'rotate(45deg) scale(1)' : 'scale(1)'}}"
+        },
+        "50%": {
+          "opacity": "0.7",
+          "transform": "{{params.shape === 'diamond' ? 'rotate(45deg) scale(1.1)' : 'scale(1.1)'}}"
+        }
+      }
+    }
+  }
+}

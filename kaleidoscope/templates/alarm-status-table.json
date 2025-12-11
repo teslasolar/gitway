@@ -1,0 +1,521 @@
+{
+  "id": "alarm-status-table",
+  "name": "Perspective Alarm Status Table",
+  "description": "Perspective Alarm Status Table - displays currently active alarm events with capabilities for viewing details, shelving, and acknowledgment",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Alarm",
+  "ignitionComponent": "perspective.alarm-status-table",
+  "parameters": {
+    "refreshRate": {
+      "type": "number",
+      "required": false,
+      "default": 1000,
+      "description": "Refresh rate in milliseconds for polling alarm updates"
+    },
+    "enableHeader": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show table header"
+    },
+    "enableDetails": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable details action for active events"
+    },
+    "enableAcknowledge": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable acknowledge functionality"
+    },
+    "enableShelve": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable shelve functionality"
+    },
+    "enableUnshelve": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable unshelve functionality"
+    },
+    "dragOrderable": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable drag to reorder columns"
+    },
+    "shelvingTimes": {
+      "type": "array",
+      "required": false,
+      "default": [3600, 7200, 86400],
+      "description": "Available shelving times in seconds (1hr, 2hr, 24hr default)"
+    },
+    "selectionModeActive": {
+      "type": "string",
+      "required": false,
+      "default": "multiple",
+      "enum": ["single", "multiple", "none"],
+      "description": "Selection mode for active alarms"
+    },
+    "selectionModeShelved": {
+      "type": "string",
+      "required": false,
+      "default": "multiple",
+      "enum": ["single", "multiple", "none"],
+      "description": "Selection mode for shelved alarms"
+    },
+    "filterActiveUnacked": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show active unacknowledged alarms"
+    },
+    "filterActiveAcked": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show active acknowledged alarms"
+    },
+    "filterClearUnacked": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show cleared unacknowledged alarms"
+    },
+    "filterClearAcked": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Filter: Show cleared acknowledged alarms"
+    },
+    "filterDiagnostic": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Filter: Show diagnostic priority"
+    },
+    "filterLow": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show low priority"
+    },
+    "filterMedium": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show medium priority"
+    },
+    "filterHigh": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show high priority"
+    },
+    "filterCritical": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Filter: Show critical priority"
+    },
+    "filterSource": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Filter by source path (comma-separated, wildcard support)"
+    },
+    "filterDisplayPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Filter by display path (comma-separated, wildcard support)"
+    },
+    "filterProvider": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Filter by provider name"
+    },
+    "enableToolbar": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show toolbar"
+    },
+    "enableActiveTab": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show active alarms tab"
+    },
+    "enableShelvedTab": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show shelved alarms tab"
+    },
+    "enableFilter": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show filter in toolbar"
+    },
+    "toggleableFilter": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow toggling filter visibility"
+    },
+    "enableFilterResults": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show filter results count"
+    },
+    "enablePreFilters": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show priority/state pre-filters"
+    },
+    "enableConfiguration": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show configuration button"
+    },
+    "enablePager": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable pagination"
+    },
+    "hidePager": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Hide pager when enabled"
+    },
+    "pagerOptions": {
+      "type": "array",
+      "required": false,
+      "default": [10, 25, 50, 100],
+      "description": "Page size options"
+    },
+    "initialPageSize": {
+      "type": "number",
+      "required": false,
+      "default": 25,
+      "description": "Initial page size"
+    },
+    "enableResponsive": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable responsive card layout"
+    },
+    "responsiveBreakpoint": {
+      "type": "number",
+      "required": false,
+      "default": 768,
+      "description": "Responsive breakpoint in pixels"
+    }
+  },
+  "view": {
+    "type": "alarmStatusTable",
+    "props": {
+      "style": {
+        "width": "100%",
+        "height": "600px"
+      },
+      "refreshRate": "{{params.refreshRate}}",
+      "enableHeader": "{{params.enableHeader}}",
+      "enableDetails": "{{params.enableDetails}}",
+      "enableAcknowledge": "{{params.enableAcknowledge}}",
+      "enableShelve": "{{params.enableShelve}}",
+      "enableUnshelve": "{{params.enableUnshelve}}",
+      "dragOrderable": "{{params.dragOrderable}}",
+      "shelvingTimes": "{{params.shelvingTimes}}",
+      "selection": {
+        "active": {
+          "mode": "{{params.selectionModeActive}}",
+          "data": []
+        },
+        "shelved": {
+          "mode": "{{params.selectionModeShelved}}",
+          "data": []
+        }
+      },
+      "filters": {
+        "active": {
+          "text": "",
+          "states": {
+            "activeUnacked": "{{params.filterActiveUnacked}}",
+            "activeAcked": "{{params.filterActiveAcked}}",
+            "clearUnacked": "{{params.filterClearUnacked}}",
+            "clearAcked": "{{params.filterClearAcked}}"
+          },
+          "priorities": {
+            "diagnostic": "{{params.filterDiagnostic}}",
+            "low": "{{params.filterLow}}",
+            "medium": "{{params.filterMedium}}",
+            "high": "{{params.filterHigh}}",
+            "critical": "{{params.filterCritical}}"
+          },
+          "conditions": {
+            "source": "{{params.filterSource}}",
+            "displayPath": "{{params.filterDisplayPath}}",
+            "provider": "{{params.filterProvider}}"
+          },
+          "results": {
+            "enabled": false,
+            "data": []
+          }
+        },
+        "shelved": {
+          "text": "",
+          "results": {
+            "enabled": false,
+            "data": []
+          }
+        }
+      },
+      "columns": {
+        "activeTime": {
+          "enabled": true,
+          "width": 180,
+          "strictWidth": false,
+          "sort": "descending"
+        },
+        "displayPath": {
+          "enabled": true,
+          "width": 250,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "priority": {
+          "enabled": true,
+          "width": 100,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "state": {
+          "enabled": true,
+          "width": 120,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "source": {
+          "enabled": false,
+          "width": 200,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "label": {
+          "enabled": false,
+          "width": 150,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "name": {
+          "enabled": false,
+          "width": 150,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "eventId": {
+          "enabled": false,
+          "width": 100,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "eventValue": {
+          "enabled": false,
+          "width": 100,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "notes": {
+          "enabled": false,
+          "width": 200,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "isActive": {
+          "enabled": false,
+          "width": 80,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "isAcked": {
+          "enabled": false,
+          "width": 80,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "isClear": {
+          "enabled": false,
+          "width": 80,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "ackTime": {
+          "enabled": false,
+          "width": 180,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "ackUser": {
+          "enabled": false,
+          "width": 120,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "ackNotes": {
+          "enabled": false,
+          "width": 200,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "ackPipeline": {
+          "enabled": false,
+          "width": 150,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "activePipeline": {
+          "enabled": false,
+          "width": 150,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "clearTime": {
+          "enabled": false,
+          "width": 180,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "clearPipeline": {
+          "enabled": false,
+          "width": 150,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "deadband": {
+          "enabled": false,
+          "width": 100,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "expires": {
+          "enabled": true,
+          "width": 180,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "shelvedBy": {
+          "enabled": true,
+          "width": 120,
+          "strictWidth": false,
+          "sort": "none"
+        },
+        "sourcePath": {
+          "enabled": true,
+          "width": 250,
+          "strictWidth": false,
+          "sort": "none"
+        }
+      },
+      "columnsAssociated": {
+        "active": []
+      },
+      "activeSortOrder": ["activeTime"],
+      "shelvedSortOrder": ["expires"],
+      "rowStyles": {
+        "activeUnacked": {
+          "base": {
+            "backgroundColor": "#ffebee",
+            "color": "#c62828",
+            "fontWeight": "600"
+          },
+          "priorities": {
+            "diagnostic": {
+              "backgroundColor": "#f5f5f5",
+              "color": "#616161"
+            },
+            "low": {
+              "backgroundColor": "#fff9c4",
+              "color": "#f57f17"
+            },
+            "medium": {
+              "backgroundColor": "#ffe0b2",
+              "color": "#e65100"
+            },
+            "high": {
+              "backgroundColor": "#ffccbc",
+              "color": "#d84315"
+            },
+            "critical": {
+              "backgroundColor": "#ffebee",
+              "color": "#c62828"
+            }
+          }
+        },
+        "activeAcked": {
+          "backgroundColor": "#e8eaf6",
+          "color": "#283593"
+        },
+        "clearUnacked": {
+          "backgroundColor": "#fff3e0",
+          "color": "#e65100"
+        },
+        "clearAcked": {
+          "backgroundColor": "#e8f5e9",
+          "color": "#2e7d32"
+        },
+        "dateFormat": "yyyy-MM-dd HH:mm:ss"
+      },
+      "toolbar": {
+        "enabled": "{{params.enableToolbar}}",
+        "enableActiveTab": "{{params.enableActiveTab}}",
+        "enableShelvedTab": "{{params.enableShelvedTab}}",
+        "enableFilter": "{{params.enableFilter}}",
+        "toggleableFilter": "{{params.toggleableFilter}}",
+        "enableFilterResults": "{{params.enableFilterResults}}",
+        "enablePreFilters": "{{params.enablePreFilters}}",
+        "enableConfiguration": "{{params.enableConfiguration}}"
+      },
+      "pager": {
+        "enabled": "{{params.enablePager}}",
+        "hide": "{{params.hidePager}}",
+        "options": "{{params.pagerOptions}}",
+        "initialOption": "{{params.initialPageSize}}",
+        "activePage": 1,
+        "shelvedPage": 1
+      },
+      "responsive": {
+        "enabled": "{{params.enableResponsive}}",
+        "breakpoint": "{{params.responsiveBreakpoint}}"
+      },
+      "events": {
+        "onSelectionChange": {
+          "script": ""
+        },
+        "onAcknowledge": {
+          "script": ""
+        },
+        "onShelve": {
+          "script": ""
+        },
+        "onUnshelve": {
+          "script": ""
+        }
+      }
+    }
+  }
+}

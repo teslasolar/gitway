@@ -1,0 +1,129 @@
+{
+  "id": "icon",
+  "name": "Icon",
+  "description": "Material Design icon component with size, color, and rotation controls",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "iconName": {
+      "type": "string",
+      "required": true,
+      "default": "settings",
+      "description": "Material Design icon name",
+      "example": "check_circle, warning, error, info, build, power_settings_new"
+    },
+    "size": {
+      "type": "number",
+      "required": false,
+      "default": 24,
+      "description": "Icon size in pixels"
+    },
+    "color": {
+      "type": "string",
+      "required": false,
+      "default": "#666666",
+      "description": "Icon color"
+    },
+    "rotation": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Rotation in degrees (0-360)"
+    },
+    "tagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Optional tag path for dynamic icon state",
+      "example": "[default]Equipment/Status"
+    },
+    "enableConditionalColor": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable conditional color based on tag value"
+    },
+    "goodColor": {
+      "type": "string",
+      "required": false,
+      "default": "#00aa00",
+      "description": "Color for good/running state"
+    },
+    "warningColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ff9900",
+      "description": "Color for warning state"
+    },
+    "errorColor": {
+      "type": "string",
+      "required": false,
+      "default": "#cc0000",
+      "description": "Color for error/fault state"
+    },
+    "inactiveColor": {
+      "type": "string",
+      "required": false,
+      "default": "#999999",
+      "description": "Color for inactive/stopped state"
+    },
+    "enableRotationAnimation": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable continuous rotation animation"
+    },
+    "animationDuration": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Animation duration in seconds"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center"
+      }
+    },
+    "children": [
+      {
+        "type": "materialIcon",
+        "props": {
+          "icon": "{{params.iconName}}",
+          "style": {
+            "fontSize": "{{params.size}}px",
+            "color": "{{params.enableConditionalColor ? (tags.[params.tagPath] === 'Running' || tags.[params.tagPath] === 'Good' || tags.[params.tagPath] === 1 ? params.goodColor : tags.[params.tagPath] === 'Warning' ? params.warningColor : tags.[params.tagPath] === 'Fault' || tags.[params.tagPath] === 'Error' ? params.errorColor : params.inactiveColor) : params.color}}",
+            "transform": "rotate({{params.rotation}}deg)",
+            "transition": "all 0.3s ease",
+            "animation": "{{params.enableRotationAnimation ? 'spin ' + params.animationDuration + 's linear infinite' : 'none'}}"
+          }
+        },
+        "bindings": [
+          {
+            "type": "property",
+            "property": "style.color",
+            "binding": {
+              "type": "expression",
+              "expression": "if({[params.tagPath]} == 'Running' || {[params.tagPath]} == 'Good' || {[params.tagPath]} == 1, params.goodColor, if({[params.tagPath]} == 'Warning', params.warningColor, if({[params.tagPath]} == 'Fault' || {[params.tagPath]} == 'Error', params.errorColor, params.inactiveColor)))",
+              "enabled": "{{params.enableConditionalColor}}"
+            }
+          }
+        ]
+      }
+    ],
+    "styles": {
+      "@keyframes spin": {
+        "from": {
+          "transform": "rotate(0deg)"
+        },
+        "to": {
+          "transform": "rotate(360deg)"
+        }
+      }
+    }
+  }
+}

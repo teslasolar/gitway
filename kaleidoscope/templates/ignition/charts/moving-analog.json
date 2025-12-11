@@ -1,0 +1,370 @@
+{
+  "id": "moving-analog",
+  "name": "Moving Analog Indicator",
+  "description": "Perspective Moving Analog Indicator component displaying process values with color-coded ranges, alarm states, and setpoint visualization",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for process value",
+      "example": "[default]Process/Temperature1"
+    },
+    "setpointTagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path for setpoint value",
+      "example": "[default]Process/Temperature1/Setpoint"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Process Value",
+      "description": "Display title"
+    },
+    "minValue": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum scale value"
+    },
+    "maxValue": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum scale value"
+    },
+    "desiredLow": {
+      "type": "number",
+      "required": false,
+      "default": 40,
+      "description": "Lower bound of desired range"
+    },
+    "desiredHigh": {
+      "type": "number",
+      "required": false,
+      "default": 65,
+      "description": "Upper bound of desired range"
+    },
+    "lowAlarm": {
+      "type": "number",
+      "required": false,
+      "default": 10,
+      "description": "Low alarm threshold"
+    },
+    "highAlarm": {
+      "type": "number",
+      "required": false,
+      "default": 90,
+      "description": "High alarm threshold"
+    },
+    "lowLowAlarm": {
+      "type": "number",
+      "required": false,
+      "description": "Low-low alarm threshold (optional)"
+    },
+    "highHighAlarm": {
+      "type": "number",
+      "required": false,
+      "description": "High-high alarm threshold (optional)"
+    },
+    "lowInterlock": {
+      "type": "number",
+      "required": false,
+      "description": "Low interlock threshold (optional)"
+    },
+    "highInterlock": {
+      "type": "number",
+      "required": false,
+      "description": "High interlock threshold (optional)"
+    },
+    "desiredRangeColor": {
+      "type": "color",
+      "required": false,
+      "default": "#10b981",
+      "description": "Color for desired operating range"
+    },
+    "defaultRangeColor": {
+      "type": "color",
+      "required": false,
+      "default": "#9ca3af",
+      "description": "Color for undefined ranges"
+    },
+    "inactiveAlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#d1d5db",
+      "description": "Color for inactive alarm zones"
+    },
+    "level2AlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#f59e0b",
+      "description": "Color for level 2 alarms (high/low)"
+    },
+    "level1AlarmColor": {
+      "type": "color",
+      "required": false,
+      "default": "#ef4444",
+      "description": "Color for level 1 alarms (high-high/low-low)"
+    },
+    "interlockColor": {
+      "type": "color",
+      "required": false,
+      "default": "#7c3aed",
+      "description": "Color for interlock boundaries"
+    },
+    "indicatorColor": {
+      "type": "color",
+      "required": false,
+      "default": "#1f2937",
+      "description": "Color for process value indicator"
+    },
+    "setpointColor": {
+      "type": "color",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Color for setpoint marker"
+    },
+    "reverseIndicator": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Place indicator on opposite side"
+    },
+    "labelVisible": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show numeric value label"
+    },
+    "labelFormat": {
+      "type": "string",
+      "required": false,
+      "default": "#,##0.0",
+      "description": "Number format for label",
+      "options": ["#,##0", "#,##0.0", "#,##0.00", "0", "0.0", "0.00", "#,##0%"]
+    },
+    "outlineColor": {
+      "type": "color",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Color for range segment outlines"
+    },
+    "outlineWidth": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Width of range segment outlines in pixels"
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Component orientation (auto based on dimensions)",
+      "options": ["auto", "horizontal", "vertical"]
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "400px",
+        "height": "200px"
+      }
+    },
+    "children": [
+      {
+        "type": "movingAnalogIndicator",
+        "props": {
+          "processValue": "{{tags.[params.tagPath]}}",
+          "setpointValue": "{{params.setpointTagPath ? tags.[params.setpointTagPath] : null}}",
+          "minValue": "{{params.minValue}}",
+          "maxValue": "{{params.maxValue}}",
+          "desiredLow": "{{params.desiredLow}}",
+          "desiredHigh": "{{params.desiredHigh}}",
+          "lowAlarm": "{{params.lowAlarm}}",
+          "highAlarm": "{{params.highAlarm}}",
+          "lowLowAlarm": "{{params.lowLowAlarm}}",
+          "highHighAlarm": "{{params.highHighAlarm}}",
+          "lowInterlock": "{{params.lowInterlock}}",
+          "highInterlock": "{{params.highInterlock}}",
+          "desiredRangeColor": "{{params.desiredRangeColor}}",
+          "defaultRangeColor": "{{params.defaultRangeColor}}",
+          "inactiveAlarmColor": "{{params.inactiveAlarmColor}}",
+          "level2AlarmColor": "{{params.level2AlarmColor}}",
+          "level1AlarmColor": "{{params.level1AlarmColor}}",
+          "interlockColor": "{{params.interlockColor}}",
+          "indicatorColor": "{{params.indicatorColor}}",
+          "setpointColor": "{{params.setpointColor}}",
+          "reverseIndicator": "{{params.reverseIndicator}}",
+          "label": {
+            "visible": "{{params.labelVisible}}",
+            "format": "{{params.labelFormat}}",
+            "style": {
+              "fontSize": "14px",
+              "fontWeight": "600",
+              "color": "#1f2937",
+              "padding": "4px 8px",
+              "backgroundColor": "#ffffff",
+              "borderRadius": "4px",
+              "border": "1px solid #e5e7eb"
+            }
+          },
+          "selectOutline": {
+            "color": "{{params.outlineColor}}",
+            "width": "{{params.outlineWidth}}"
+          },
+          "style": {
+            "width": "100%",
+            "height": "100%",
+            "padding": "10px"
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "direction": "row",
+          "justify": "space-between",
+          "align": "center",
+          "style": {
+            "marginTop": "10px",
+            "padding": "0 10px",
+            "fontSize": "12px",
+            "color": "#6b7280"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "direction": "row",
+              "gap": "15px"
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": {
+                  "align": "center",
+                  "gap": "5px"
+                },
+                "children": [
+                  {
+                    "type": "div",
+                    "props": {
+                      "style": {
+                        "width": "12px",
+                        "height": "12px",
+                        "backgroundColor": "{{params.desiredRangeColor}}",
+                        "borderRadius": "2px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "Desired"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "align": "center",
+                  "gap": "5px"
+                },
+                "children": [
+                  {
+                    "type": "div",
+                    "props": {
+                      "style": {
+                        "width": "12px",
+                        "height": "12px",
+                        "backgroundColor": "{{params.level2AlarmColor}}",
+                        "borderRadius": "2px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "Alarm"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "align": "center",
+                  "gap": "5px"
+                },
+                "children": [
+                  {
+                    "type": "div",
+                    "props": {
+                      "style": {
+                        "width": "12px",
+                        "height": "12px",
+                        "backgroundColor": "{{params.level1AlarmColor}}",
+                        "borderRadius": "2px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "Critical"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "direction": "row",
+              "gap": "10px"
+            },
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "value": "PV: {{tags.[params.tagPath]}}",
+                  "style": {
+                    "fontWeight": "600",
+                    "color": "#1f2937"
+                  }
+                }
+              },
+              {
+                "type": "conditional",
+                "props": {
+                  "condition": "{{params.setpointTagPath}}",
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "SP: {{tags.[params.setpointTagPath]}}",
+                        "style": {
+                          "fontWeight": "600",
+                          "color": "{{params.setpointColor}}"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

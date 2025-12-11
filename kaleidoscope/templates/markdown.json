@@ -1,0 +1,321 @@
+{
+  "id": "markdown",
+  "name": "Markdown",
+  "description": "Perspective Markdown component - lightweight formatting language for publishable plain text with HTML support",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "source": {
+      "type": "string",
+      "required": true,
+      "default": "# Heading\n\nThis is **bold** and this is *italic*.\n\n- List item 1\n- List item 2\n- List item 3",
+      "description": "Text annotated with markdown syntax to display",
+      "multiline": true
+    },
+    "sectionSpacing": {
+      "type": "number",
+      "required": false,
+      "default": 16,
+      "description": "Vertical spacing in pixels between sections and headers"
+    },
+    "escapeHtml": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Escape HTML tags (false allows HTML rendering but poses security risk with user input)"
+    },
+    "skipHtml": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Skip inline and block HTML elements entirely"
+    },
+    "sourcePos": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Track source positioning for debugging purposes"
+    },
+    "unwrapDisallowed": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Extract children from disallowed node types"
+    },
+    "disallowedTypes": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of markdown node types to prevent from rendering",
+      "example": ["heading", "code", "image"]
+    },
+    "fontFamily": {
+      "type": "string",
+      "required": false,
+      "default": "inherit",
+      "description": "Font family for markdown content"
+    },
+    "fontSize": {
+      "type": "string",
+      "required": false,
+      "default": "14px",
+      "description": "Base font size"
+    },
+    "lineHeight": {
+      "type": "string",
+      "required": false,
+      "default": "1.6",
+      "description": "Line height for text"
+    },
+    "textColor": {
+      "type": "string",
+      "required": false,
+      "default": "#1f2937",
+      "description": "Text color"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Background color"
+    },
+    "padding": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Padding around markdown content"
+    },
+    "headingColor": {
+      "type": "string",
+      "required": false,
+      "default": "#111827",
+      "description": "Color for headings"
+    },
+    "linkColor": {
+      "type": "string",
+      "required": false,
+      "default": "#3b82f6",
+      "description": "Color for hyperlinks"
+    },
+    "codeBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#f3f4f6",
+      "description": "Background for inline code"
+    },
+    "codeColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ef4444",
+      "description": "Text color for inline code"
+    },
+    "blockquoteBorderColor": {
+      "type": "string",
+      "required": false,
+      "default": "#d1d5db",
+      "description": "Left border color for blockquotes"
+    },
+    "blockquoteBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#f9fafb",
+      "description": "Background color for blockquotes"
+    }
+  },
+  "view": {
+    "type": "markdown",
+    "props": {
+      "source": "{{params.source}}",
+      "sectionSpacing": "{{params.sectionSpacing}}",
+      "markdown": {
+        "sourcePos": "{{params.sourcePos}}",
+        "escapeHtml": "{{params.escapeHtml}}",
+        "skipHtml": "{{params.skipHtml}}",
+        "disallowedTypes": "{{params.disallowedTypes}}",
+        "unwrapDisallowed": "{{params.unwrapDisallowed}}",
+        "renderers": {}
+      },
+      "style": {
+        "fontFamily": "{{params.fontFamily}}",
+        "fontSize": "{{params.fontSize}}",
+        "lineHeight": "{{params.lineHeight}}",
+        "color": "{{params.textColor}}",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "padding": "{{params.padding}}",
+        "width": "100%",
+        "height": "100%",
+        "overflow": "auto"
+      },
+      "className": "markdown-component"
+    },
+    "styles": {
+      ".markdown-component h1, .markdown-component h2, .markdown-component h3, .markdown-component h4, .markdown-component h5, .markdown-component h6": {
+        "color": "{{params.headingColor}}",
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "calc({{params.sectionSpacing}}px / 2)"
+      },
+      ".markdown-component h1": {
+        "fontSize": "2em",
+        "fontWeight": "bold"
+      },
+      ".markdown-component h2": {
+        "fontSize": "1.5em",
+        "fontWeight": "bold"
+      },
+      ".markdown-component h3": {
+        "fontSize": "1.25em",
+        "fontWeight": "bold"
+      },
+      ".markdown-component a": {
+        "color": "{{params.linkColor}}",
+        "textDecoration": "none"
+      },
+      ".markdown-component a:hover": {
+        "textDecoration": "underline"
+      },
+      ".markdown-component code": {
+        "backgroundColor": "{{params.codeBackground}}",
+        "color": "{{params.codeColor}}",
+        "padding": "2px 6px",
+        "borderRadius": "3px",
+        "fontFamily": "monospace",
+        "fontSize": "0.9em"
+      },
+      ".markdown-component pre": {
+        "backgroundColor": "{{params.codeBackground}}",
+        "padding": "12px",
+        "borderRadius": "6px",
+        "overflow": "auto",
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px"
+      },
+      ".markdown-component pre code": {
+        "backgroundColor": "transparent",
+        "padding": "0",
+        "color": "inherit"
+      },
+      ".markdown-component blockquote": {
+        "borderLeft": "4px solid {{params.blockquoteBorderColor}}",
+        "backgroundColor": "{{params.blockquoteBackground}}",
+        "margin": "{{params.sectionSpacing}}px 0",
+        "padding": "12px 20px",
+        "fontStyle": "italic"
+      },
+      ".markdown-component ul, .markdown-component ol": {
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px",
+        "paddingLeft": "30px"
+      },
+      ".markdown-component li": {
+        "marginBottom": "8px"
+      },
+      ".markdown-component p": {
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px"
+      },
+      ".markdown-component img": {
+        "maxWidth": "100%",
+        "height": "auto",
+        "display": "block",
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px"
+      },
+      ".markdown-component table": {
+        "borderCollapse": "collapse",
+        "width": "100%",
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px"
+      },
+      ".markdown-component table th, .markdown-component table td": {
+        "border": "1px solid #d1d5db",
+        "padding": "8px 12px",
+        "textAlign": "left"
+      },
+      ".markdown-component table th": {
+        "backgroundColor": "#f3f4f6",
+        "fontWeight": "bold"
+      },
+      ".markdown-component hr": {
+        "border": "none",
+        "borderTop": "1px solid #d1d5db",
+        "marginTop": "{{params.sectionSpacing}}px",
+        "marginBottom": "{{params.sectionSpacing}}px"
+      }
+    },
+    "metadata": {
+      "notes": [
+        "Lightweight formatting language for plain text",
+        "Easy to write and easy to read",
+        "HTML support for extended functionality",
+        "Security warning: escapeHtml=false with user input creates XSS risk",
+        "Renders content as plain text in browser when configured",
+        "Manual line breaks require two trailing spaces or HTML <br> tags"
+      ],
+      "supportedMarkdownSyntax": {
+        "headings": "# H1, ## H2, ### H3 (up to ######)",
+        "bold": "**bold text** or __bold text__",
+        "italic": "*italic text* or _italic text_",
+        "links": "[link text](https://url.com)",
+        "images": "![alt text](image-url.jpg)",
+        "lists": "- unordered or 1. ordered",
+        "code": "`inline code` or ```code blocks```",
+        "blockquotes": "> quoted text",
+        "horizontalRule": "--- or ***",
+        "tables": "| Header | Header |\n|--------|--------|\n| Cell   | Cell   |"
+      },
+      "htmlSupport": {
+        "enabled": "Set escapeHtml to false",
+        "coloredText": "<span style='color: red;'>Red text</span>",
+        "lineBreaks": "<br> or <p>paragraphs</p>",
+        "formatting": "Any HTML tags and inline styles",
+        "securityWarning": "HTML rendering with user input creates XSS vulnerability"
+      },
+      "lineBreakTechniques": [
+        "End line with two spaces before newline",
+        "Use <br> tag (requires escapeHtml=false)",
+        "Use <p> tags for paragraphs (requires escapeHtml=false)",
+        "Use &nbsp; for forced spaces"
+      ],
+      "disallowedTypesOptions": [
+        "heading",
+        "paragraph",
+        "emphasis",
+        "strong",
+        "link",
+        "image",
+        "code",
+        "inlineCode",
+        "list",
+        "listItem",
+        "blockquote",
+        "table",
+        "tableHead",
+        "tableBody",
+        "tableRow",
+        "tableCell",
+        "thematicBreak"
+      ],
+      "securityBestPractices": [
+        "Always use escapeHtml=true for user-generated content",
+        "Sanitize input if HTML rendering is required",
+        "Use disallowedTypes to restrict certain markdown features",
+        "Validate and filter user input before rendering",
+        "Consider using skipHtml=true to ignore all HTML"
+      ],
+      "commonUseCases": [
+        "Documentation displays",
+        "User instructions and help text",
+        "Formatted notes and comments",
+        "Rich text content areas",
+        "Release notes and changelogs",
+        "Technical documentation with code examples"
+      ],
+      "references": [
+        "Markdown Basics documentation",
+        "Markdown Node Types reference",
+        "https://www.markdownguide.org/ for syntax reference"
+      ]
+    }
+  }
+}

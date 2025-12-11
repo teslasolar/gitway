@@ -1,0 +1,370 @@
+{
+  "id": "power-chart",
+  "name": "Power Chart",
+  "description": "Perspective Power Chart - collects and displays historical data based on configured pens (requires Tag Historian license)",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Chart",
+  "ignitionComponent": "perspective.chart.power",
+  "parameters": {
+    "histprov": {
+      "type": "string",
+      "required": true,
+      "description": "Tag Historian Provider name",
+      "example": "default"
+    },
+    "tagBrowserStartPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Starting path for tag browser navigation"
+    },
+    "mode": {
+      "type": "string",
+      "required": false,
+      "default": "realtime",
+      "description": "Query mode",
+      "options": ["realtime", "historical"]
+    },
+    "refreshRate": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Data query interval in milliseconds"
+    },
+    "unitOfTime": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Realtime query duration amount"
+    },
+    "measureOfTime": {
+      "type": "string",
+      "required": false,
+      "default": "hours",
+      "description": "Time unit for realtime queries",
+      "options": ["seconds", "minutes", "hours", "days", "weeks", "months", "years"]
+    },
+    "pointCount": {
+      "type": "number",
+      "required": false,
+      "default": -1,
+      "description": "Returned datapoints (-1 retrieves all stored points)"
+    },
+    "pens": {
+      "type": "array",
+      "required": true,
+      "description": "Pen configurations for displaying data",
+      "example": [
+        {
+          "name": "Temperature",
+          "data": {
+            "source": "[default]Process/Temperature"
+          },
+          "axis": "axis1",
+          "plot": 0,
+          "visible": true,
+          "enabled": true,
+          "selectable": true,
+          "display": {
+            "type": "line",
+            "interpolation": "curveLinear",
+            "breakLine": false
+          }
+        }
+      ]
+    },
+    "showTagBrowser": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show tag browser panel"
+    },
+    "showDateRangeSelector": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show date range selector"
+    },
+    "showPenControlDisplay": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show pen control display panel"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "Power Chart",
+      "style": {
+        "width": "100%",
+        "minWidth": "800px",
+        "minHeight": "600px"
+      }
+    },
+    "children": [
+      {
+        "type": "powerChart",
+        "props": {
+          "style": {
+            "width": "100%",
+            "height": "100%"
+          },
+          "config": {
+            "penNamePathDepth": 1,
+            "tagBrowserStartPath": "{{params.tagBrowserStartPath}}",
+            "histprov": "{{params.histprov}}",
+            "drv": "Gateway:{{params.histprov}}",
+            "tag": "",
+            "mode": "{{params.mode}}",
+            "refreshRate": "{{params.refreshRate}}",
+            "pointCount": "{{params.pointCount}}",
+            "startDate": "",
+            "endDate": "",
+            "dateFormat": "YYYY-MM-DD",
+            "timeFormat": "HH:mm:ss",
+            "rangeSelectorPen": "",
+            "unitOfTime": "{{params.unitOfTime}}",
+            "measureOfTime": "{{params.measureOfTime}}",
+            "rangeStartDate": null,
+            "rangeEndDate": null,
+            "responsiveDesignWidth": 750,
+            "visibility": {
+              "showTagBrowser": "{{params.showTagBrowser}}",
+              "showDateRangeSelector": "{{params.showDateRangeSelector}}",
+              "showPenControlDisplay": "{{params.showPenControlDisplay}}",
+              "buttons": {
+                "showTagBrowserButton": true,
+                "showPanZoomButton": true,
+                "showXTraceButton": true,
+                "showRangeBrushButton": true,
+                "showAnnotationButton": true,
+                "showFullscreenButton": true,
+                "showSettingsButton": true,
+                "showMoreButton": true
+              }
+            },
+            "export": {
+              "dateFormat": "YYYY-MM-DD",
+              "timeFormat": "HH:mm:ss"
+            }
+          },
+          "interaction": {
+            "mode": "panAndZoom",
+            "fullscreen": false,
+            "chartZoomLevel": 0,
+            "rangeZoomLevel": 0,
+            "mode.panAndZoom": {
+              "freeRange": false
+            },
+            "mode.xTrace": {
+              "values": [],
+              "infoBox": {
+                "visible": true,
+                "showTime": true,
+                "width": 200,
+                "dataFormat": "0,0.00",
+                "dateFormat": "YYYY-MM-DD",
+                "timeFormat": "HH:mm:ss",
+                "stroke": {
+                  "color": "#333333",
+                  "width": 1,
+                  "opacity": 1,
+                  "dashArray": ""
+                },
+                "fill": {
+                  "color": "#ffffff",
+                  "opacity": 0.9
+                },
+                "style": {}
+              },
+              "line": {
+                "visible": true,
+                "color": "#000000",
+                "width": 1,
+                "opacity": 1,
+                "dashArray": "3,3",
+                "style": {}
+              }
+            },
+            "mode.rangeBrush": {
+              "values": [
+                {
+                  "start": "",
+                  "end": ""
+                }
+              ],
+              "active": {
+                "color": "#3b82f6",
+                "opacity": 0.3,
+                "style": {}
+              },
+              "inactive": {
+                "color": "#999999",
+                "opacity": 0.2,
+                "style": {}
+              }
+            },
+            "mode.annotation": {
+              "infoBox": {
+                "visible": true,
+                "showTime": true,
+                "width": 200,
+                "dateFormat": "YYYY-MM-DD",
+                "timeFormat": "HH:mm:ss",
+                "stroke": {
+                  "color": "#333333",
+                  "width": 1,
+                  "opacity": 1,
+                  "dashArray": ""
+                },
+                "fill": {
+                  "color": "#ffffff",
+                  "opacity": 0.9
+                },
+                "font": {
+                  "color": "#333333",
+                  "size": 12,
+                  "style": "normal"
+                },
+                "style": {}
+              },
+              "line": {
+                "visible": true,
+                "color": "#000000",
+                "width": 1,
+                "opacity": 1,
+                "dashArray": "",
+                "style": {}
+              },
+              "dot": {
+                "visible": true,
+                "color": "#3b82f6",
+                "radius": 4,
+                "opacity": 1,
+                "style": {}
+              }
+            }
+          },
+          "axes": [
+            {
+              "name": "axis1",
+              "position": "left",
+              "width": 60,
+              "color": "#333333",
+              "dataFormat": "0,0.00",
+              "range": {
+                "auto": true,
+                "min": 0,
+                "max": 100
+              },
+              "label": {
+                "text": "Primary Axis",
+                "offset": 0,
+                "font": {
+                  "size": 12,
+                  "color": "#333333"
+                },
+                "style": {}
+              },
+              "tick": {
+                "color": "#333333",
+                "count": "Auto",
+                "label": {
+                  "font": {
+                    "size": 10,
+                    "color": "#333333"
+                  },
+                  "format": "0,0.0",
+                  "style": {}
+                },
+                "style": {}
+              },
+              "grid": {
+                "visible": true,
+                "color": "#e5e7eb",
+                "opacity": 1,
+                "dashArray": "",
+                "style": {}
+              },
+              "style": {}
+            }
+          ],
+          "pens": "{{params.pens}}",
+          "plots": [
+            {
+              "relativeWeight": 1,
+              "color": "#ffffff",
+              "markers": [],
+              "style": {}
+            }
+          ],
+          "dataColumns": {
+            "penControl": {
+              "currentValue": true,
+              "minimum": true,
+              "maximum": true,
+              "average": true,
+              "axis": true,
+              "plot": true,
+              "xTrace": false
+            },
+            "rangeSelection": {
+              "first": true,
+              "last": true,
+              "average": true,
+              "minimum": true,
+              "maximum": true,
+              "median": false,
+              "delta": false,
+              "sum": false,
+              "ucl": false,
+              "lcl": false,
+              "standardDeviation": false
+            }
+          },
+          "title": {
+            "visible": true,
+            "text": "Power Chart",
+            "font": {
+              "size": 16,
+              "color": "#333333"
+            },
+            "style": {}
+          },
+          "timeAxis": {
+            "visible": true,
+            "tickCount": 0,
+            "height": 40,
+            "color": "#333333",
+            "tick": {
+              "color": "#333333",
+              "label": {
+                "angled": false,
+                "format": "HH:mm:ss",
+                "font": {
+                  "size": 10,
+                  "color": "#333333"
+                },
+                "style": {}
+              },
+              "style": {}
+            },
+            "grid": {
+              "visible": true,
+              "color": "#e5e7eb",
+              "opacity": 1,
+              "dashArray": "",
+              "style": {}
+            },
+            "style": {}
+          },
+          "legend": {
+            "visible": true
+          }
+        }
+      }
+    ]
+  }
+}

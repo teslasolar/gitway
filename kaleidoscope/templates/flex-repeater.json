@@ -1,0 +1,486 @@
+{
+  "id": "flex-repeater",
+  "name": "Flex Repeater",
+  "description": "Perspective Flex Repeater - dynamically generates instances of embedded views from array data with flexible layout",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Embedding",
+  "parameters": {
+    "instances": {
+      "type": "array",
+      "required": true,
+      "default": [
+        {
+          "viewPath": "",
+          "viewParams": {}
+        }
+      ],
+      "description": "Array of instance definitions - each creates embedded view with parameters"
+    },
+    "direction": {
+      "type": "string",
+      "required": false,
+      "default": "row",
+      "enum": [
+        "row",
+        "row-reverse",
+        "column",
+        "column-reverse"
+      ],
+      "description": "Flex direction for laying out instances"
+    },
+    "wrap": {
+      "type": "string",
+      "required": false,
+      "default": "wrap",
+      "enum": [
+        "nowrap",
+        "wrap",
+        "wrap-reverse"
+      ],
+      "description": "Whether instances wrap to new lines"
+    },
+    "justifyContent": {
+      "type": "string",
+      "required": false,
+      "default": "flex-start",
+      "enum": [
+        "flex-start",
+        "flex-end",
+        "center",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ],
+      "description": "Horizontal alignment of instances"
+    },
+    "alignItems": {
+      "type": "string",
+      "required": false,
+      "default": "stretch",
+      "enum": [
+        "stretch",
+        "flex-start",
+        "flex-end",
+        "center",
+        "baseline"
+      ],
+      "description": "Vertical alignment of instances"
+    },
+    "alignContent": {
+      "type": "string",
+      "required": false,
+      "default": "flex-start",
+      "enum": [
+        "flex-start",
+        "flex-end",
+        "center",
+        "space-between",
+        "space-around",
+        "stretch"
+      ],
+      "description": "Alignment of wrapped lines"
+    },
+    "gap": {
+      "type": "string",
+      "required": false,
+      "default": "16px",
+      "description": "Gap between instances (CSS gap property)"
+    },
+    "instanceWidth": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Width for each instance (auto, px, %, fr)"
+    },
+    "instanceHeight": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Height for each instance (auto, px, %, fr)"
+    },
+    "instanceMinWidth": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Minimum width for instances"
+    },
+    "instanceMaxWidth": {
+      "type": "string",
+      "required": false,
+      "default": "none",
+      "description": "Maximum width for instances"
+    },
+    "instanceMinHeight": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Minimum height for instances"
+    },
+    "instanceMaxHeight": {
+      "type": "string",
+      "required": false,
+      "default": "none",
+      "description": "Maximum height for instances"
+    },
+    "instanceFlexGrow": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Flex grow factor for instances"
+    },
+    "instanceFlexShrink": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Flex shrink factor for instances"
+    },
+    "instanceFlexBasis": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Flex basis for instances"
+    },
+    "loadingOrder": {
+      "type": "string",
+      "required": false,
+      "default": "with-parent",
+      "enum": [
+        "with-parent",
+        "after-parent"
+      ],
+      "description": "When to load instance views: 'with-parent' (simultaneous) or 'after-parent' (sequential)"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Background color for repeater container"
+    },
+    "padding": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Padding around repeater content"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "none",
+      "description": "Border for repeater container"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Border radius for repeater container"
+    },
+    "overflow": {
+      "type": "string",
+      "required": false,
+      "default": "visible",
+      "enum": [
+        "visible",
+        "hidden",
+        "scroll",
+        "auto"
+      ],
+      "description": "Overflow behavior"
+    },
+    "enableVirtualization": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable virtualization for large datasets (renders only visible instances)"
+    },
+    "virtualizationThreshold": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Number of instances before virtualization kicks in"
+    },
+    "animateInstances": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable enter/exit animations for instances"
+    },
+    "animationDuration": {
+      "type": "string",
+      "required": false,
+      "default": "0.3s",
+      "description": "Duration for instance animations"
+    },
+    "emptyMessage": {
+      "type": "string",
+      "required": false,
+      "default": "No items to display",
+      "description": "Message shown when instances array is empty"
+    },
+    "showEmptyMessage": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show message when instances array is empty"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "padding": "{{params.padding}}",
+        "border": "{{params.border}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "overflow": "{{params.overflow}}"
+      }
+    },
+    "children": [
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.instances && params.instances.length > 0}}",
+          "children": [
+            {
+              "type": "flexRepeater",
+              "props": {
+                "instances": "{{params.instances}}",
+                "loading": {
+                  "order": "{{params.loadingOrder}}"
+                },
+                "enableVirtualization": "{{params.enableVirtualization}}",
+                "virtualizationThreshold": "{{params.virtualizationThreshold}}",
+                "style": {
+                  "display": "flex",
+                  "flexDirection": "{{params.direction}}",
+                  "flexWrap": "{{params.wrap}}",
+                  "justifyContent": "{{params.justifyContent}}",
+                  "alignItems": "{{params.alignItems}}",
+                  "alignContent": "{{params.alignContent}}",
+                  "gap": "{{params.gap}}",
+                  "width": "100%",
+                  "height": "100%"
+                },
+                "instanceStyle": {
+                  "width": "{{params.instanceWidth}}",
+                  "height": "{{params.instanceHeight}}",
+                  "minWidth": "{{params.instanceMinWidth}}",
+                  "maxWidth": "{{params.instanceMaxWidth}}",
+                  "minHeight": "{{params.instanceMinHeight}}",
+                  "maxHeight": "{{params.instanceMaxHeight}}",
+                  "flexGrow": "{{params.instanceFlexGrow}}",
+                  "flexShrink": "{{params.instanceFlexShrink}}",
+                  "flexBasis": "{{params.instanceFlexBasis}}",
+                  "transition": "{{params.animateInstances ? 'all ' + params.animationDuration + ' ease' : 'none'}}"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{(!params.instances || params.instances.length === 0) && params.showEmptyMessage}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "style": {
+                  "display": "flex",
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "width": "100%",
+                  "height": "100%",
+                  "color": "#9ca3af",
+                  "fontSize": "14px",
+                  "fontStyle": "italic",
+                  "padding": "24px"
+                }
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "value": "{{params.emptyMessage}}"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "metadata": {
+      "notes": [
+        "Dynamically generates embedded view instances from array data",
+        "Each instance object must have viewPath and viewParams properties",
+        "Combines flexibility of Embedded View with power of data-driven generation",
+        "Uses CSS Flexbox for responsive, flexible layouts",
+        "Instances update automatically when data array changes",
+        "Loading order affects perceived performance (with-parent vs after-parent)",
+        "Virtualization improves performance with large datasets"
+      ],
+      "instanceStructure": {
+        "required": {
+          "viewPath": "string - Path to view to embed for this instance",
+          "viewParams": "object - Parameters to pass to view instance"
+        },
+        "optional": {
+          "id": "string - Unique identifier for instance",
+          "key": "string - React key for optimal rendering",
+          "enabled": "boolean - Whether instance is rendered (default: true)",
+          "style": "object - Custom styles for this specific instance"
+        }
+      },
+      "flexboxProperties": {
+        "direction": {
+          "row": "Instances laid out horizontally left-to-right",
+          "row-reverse": "Instances laid out horizontally right-to-left",
+          "column": "Instances laid out vertically top-to-bottom",
+          "column-reverse": "Instances laid out vertically bottom-to-top"
+        },
+        "wrap": {
+          "nowrap": "All instances on single line (may overflow)",
+          "wrap": "Instances wrap to new lines as needed",
+          "wrap-reverse": "Instances wrap in reverse order"
+        },
+        "justifyContent": {
+          "flex-start": "Instances packed at start of line",
+          "flex-end": "Instances packed at end of line",
+          "center": "Instances centered on line",
+          "space-between": "Instances distributed with space between",
+          "space-around": "Instances distributed with space around",
+          "space-evenly": "Instances distributed with even space"
+        },
+        "alignItems": {
+          "stretch": "Instances stretch to fill cross-axis",
+          "flex-start": "Instances aligned to cross-axis start",
+          "flex-end": "Instances aligned to cross-axis end",
+          "center": "Instances centered on cross-axis",
+          "baseline": "Instances aligned by text baseline"
+        }
+      },
+      "instanceSizing": {
+        "fixedSize": "Set width/height to specific px or % values",
+        "flexibleSize": "Use flexGrow/flexShrink/flexBasis for responsive sizing",
+        "constrainedSize": "Use minWidth/maxWidth/minHeight/maxHeight for bounds",
+        "autoSize": "Use 'auto' to size based on content",
+        "example": {
+          "cards": "width: 300px, flexGrow: 0, wrap: wrap",
+          "equalColumns": "flexGrow: 1, flexBasis: 0, wrap: nowrap",
+          "responsiveGrid": "minWidth: 250px, flexGrow: 1, wrap: wrap"
+        }
+      },
+      "dataBinding": {
+        "databaseQuery": "Bind instances to dataset from database query",
+        "tagHistory": "Generate instances from historical tag data",
+        "namedQuery": "Use named query results to populate instances",
+        "tagBrowse": "Create instances from tag browse results",
+        "transformScript": "Transform data with script before passing to instances",
+        "example": "SELECT id, name, value FROM equipment -> [{viewPath: 'Equipment/Card', viewParams: {id, name, value}}]"
+      },
+      "performanceOptimization": {
+        "virtualization": "Enable for 50+ instances to render only visible items",
+        "loadingStrategy": "Use 'after-parent' for many instances to show parent faster",
+        "instanceCaching": "Perspective caches view definitions for reuse",
+        "parameterOptimization": "Minimize parameter object size and complexity",
+        "updateStrategy": "Batch instance array updates to avoid repeated renders",
+        "keyProperty": "Provide unique 'key' property to optimize React reconciliation"
+      },
+      "comparisonToOtherComponents": {
+        "embeddedView": "Single static view vs array of dynamic views",
+        "tableSubview": "Table structure with row expansion vs freeform flex layout",
+        "carousel": "Sequential navigation vs all-visible grid/list layout",
+        "accordion": "Collapsible sections vs always-visible instances"
+      },
+      "commonUseCases": [
+        "Equipment dashboard with card for each device",
+        "Product catalog with item tiles",
+        "Alarm list with custom alarm views",
+        "Multi-site monitoring with site panels",
+        "Recipe/batch display with step cards",
+        "User management with user profile cards",
+        "File/document browser with preview cards",
+        "Sensor array visualization with gauge instances",
+        "Process flow with stage status displays"
+      ],
+      "layoutPatterns": {
+        "grid": {
+          "direction": "row",
+          "wrap": "wrap",
+          "instanceWidth": "calc(33.333% - 16px)",
+          "gap": "16px",
+          "justifyContent": "flex-start"
+        },
+        "list": {
+          "direction": "column",
+          "wrap": "nowrap",
+          "instanceWidth": "100%",
+          "gap": "8px"
+        },
+        "cards": {
+          "direction": "row",
+          "wrap": "wrap",
+          "instanceMinWidth": "300px",
+          "instanceFlexGrow": 1,
+          "gap": "16px"
+        },
+        "equalColumns": {
+          "direction": "row",
+          "wrap": "nowrap",
+          "instanceFlexGrow": 1,
+          "instanceFlexBasis": "0",
+          "gap": "12px"
+        }
+      },
+      "dynamicBehavior": {
+        "adding": "Push new objects to instances array",
+        "removing": "Filter or splice instances array",
+        "updating": "Modify objects in instances array",
+        "sorting": "Sort instances array by property",
+        "filtering": "Filter instances based on criteria",
+        "reactivity": "Changes to instances array trigger re-render",
+        "preservation": "Instance state reset when instances array changes"
+      },
+      "scriptingCapabilities": [
+        "Add instance: instances.push({viewPath, viewParams})",
+        "Remove instance: instances.splice(index, 1)",
+        "Update instance: instances[index].viewParams.property = value",
+        "Filter instances: instances.filter(i => i.viewParams.active)",
+        "Sort instances: instances.sort((a,b) => a.viewParams.order - b.viewParams.order)",
+        "Clear all: instances = []",
+        "Find instance: instances.find(i => i.viewParams.id === targetId)"
+      ],
+      "eventHandling": {
+        "childEvents": "Instance views can fire events to parent",
+        "messageHandlers": "Configure message handlers on instances",
+        "bidirectionalParams": "Use input/output parameters for two-way communication",
+        "customEvents": "Emit custom events from instance views"
+      },
+      "bestPractices": [
+        "Provide unique ID or key for each instance for optimal rendering",
+        "Keep viewParams objects minimal - only pass needed data",
+        "Use same viewPath for all instances when possible (view reuse)",
+        "Consider virtualization for 50+ instances",
+        "Test performance with maximum expected instance count",
+        "Use loading order 'after-parent' for many instances",
+        "Implement empty state message for better UX",
+        "Document expected instance object structure",
+        "Handle missing or malformed instance data gracefully"
+      ],
+      "troubleshooting": {
+        "instancesNotShowing": "Check instances array structure and viewPath validity",
+        "performanceSlow": "Enable virtualization or reduce instance count",
+        "layoutIssues": "Verify flexbox properties and instance sizing",
+        "parameterErrors": "Validate viewParams match target view parameters",
+        "stateNotPersisting": "Instance state resets on instances array changes",
+        "renderingGlitches": "Provide unique key property for each instance"
+      }
+    }
+  }
+}

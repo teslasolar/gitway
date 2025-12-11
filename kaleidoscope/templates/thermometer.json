@@ -1,0 +1,257 @@
+{
+  "id": "thermometer",
+  "name": "Thermometer",
+  "description": "Perspective Thermometer component displaying temperature values as mercury levels with customizable intervals and color-coded temperature ranges",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for temperature value",
+      "example": "[default]Sensors/Temperature1"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Temperature",
+      "description": "Display title"
+    },
+    "lowBound": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum temperature range"
+    },
+    "highBound": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum temperature range"
+    },
+    "unit": {
+      "type": "string",
+      "required": false,
+      "default": "F",
+      "description": "Temperature unit",
+      "options": ["F", "C"]
+    },
+    "thermometerColor": {
+      "type": "color",
+      "required": false,
+      "default": "#000000",
+      "description": "Thermometer outline color"
+    },
+    "mercuryColor": {
+      "type": "color",
+      "required": false,
+      "default": "#ef4444",
+      "description": "Default mercury color"
+    },
+    "axisLabelColor": {
+      "type": "color",
+      "required": false,
+      "default": "#000000",
+      "description": "Y-axis label color"
+    },
+    "valueFontColor": {
+      "type": "color",
+      "required": false,
+      "default": "#1f2937",
+      "description": "Current value text color"
+    },
+    "strokeWidth": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Thermometer outline stroke width in pixels"
+    },
+    "valueFontSize": {
+      "type": "number",
+      "required": false,
+      "default": 16,
+      "description": "Current value font size in pixels"
+    },
+    "intervals": {
+      "type": "array",
+      "required": false,
+      "default": [
+        {
+          "low": 0,
+          "high": 32,
+          "color": "#3b82f6"
+        },
+        {
+          "low": 32,
+          "high": 70,
+          "color": "#10b981"
+        },
+        {
+          "low": 70,
+          "high": 90,
+          "color": "#f59e0b"
+        },
+        {
+          "low": 90,
+          "high": 100,
+          "color": "#ef4444"
+        }
+      ],
+      "description": "Temperature intervals with associated colors"
+    },
+    "showBulb": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show thermometer bulb at bottom"
+    },
+    "showAxisLabels": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show temperature scale labels"
+    },
+    "showCurrentValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show current temperature value"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "280px",
+        "height": "450px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "align": "center",
+          "gap": "15px",
+          "style": {
+            "padding": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "thermometer",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "lowBound": "{{params.lowBound}}",
+              "highBound": "{{params.highBound}}",
+              "unit": "{{params.unit}}",
+              "thermometerColor": "{{params.thermometerColor}}",
+              "mercuryColor": "{{params.mercuryColor}}",
+              "axisLabelColor": "{{params.axisLabelColor}}",
+              "valueFontColor": "{{params.valueFontColor}}",
+              "strokeWidth": "{{params.strokeWidth}}",
+              "valueFont": {
+                "fontSize": "{{params.valueFontSize}}"
+              },
+              "intervals": "{{params.intervals}}",
+              "style": {
+                "width": "150px",
+                "height": "320px"
+              }
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showCurrentValue}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "direction": "column",
+                    "align": "center",
+                    "gap": "5px"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "{{tags.[params.tagPath]}}°{{params.unit}}",
+                        "style": {
+                          "fontSize": "28px",
+                          "fontWeight": "bold",
+                          "color": "{{params.valueFontColor}}"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "Current Reading",
+                        "style": {
+                          "fontSize": "12px",
+                          "color": "#6b7280"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 2,
+              "gap": "10px",
+              "style": {
+                "width": "100%",
+                "fontSize": "12px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Min",
+                  "value": "{{params.lowBound}}",
+                  "units": "°{{params.unit}}",
+                  "style": {
+                    "textAlign": "center"
+                  }
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Max",
+                  "value": "{{params.highBound}}",
+                  "units": "°{{params.unit}}",
+                  "style": {
+                    "textAlign": "center"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "statusBadge",
+            "props": {
+              "value": "{{tags.[params.tagPath] < params.intervals[0].high ? 'COLD' : tags.[params.tagPath] < params.intervals[1].high ? 'NORMAL' : tags.[params.tagPath] < params.intervals[2].high ? 'WARM' : 'HOT'}}",
+              "color": "{{tags.[params.tagPath] < params.intervals[0].high ? 'blue' : tags.[params.tagPath] < params.intervals[1].high ? 'green' : tags.[params.tagPath] < params.intervals[2].high ? 'yellow' : 'red'}}",
+              "style": {
+                "width": "100%",
+                "textAlign": "center",
+                "fontSize": "14px",
+                "fontWeight": "600",
+                "padding": "8px"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

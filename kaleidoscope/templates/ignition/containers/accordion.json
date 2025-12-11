@@ -1,0 +1,323 @@
+{
+  "id": "accordion",
+  "name": "Accordion Container",
+  "description": "Collapsible accordion sections with expandable panels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "sections": {
+      "type": "array",
+      "required": true,
+      "default": [
+        {
+          "id": "section1",
+          "title": "Section 1",
+          "icon": "",
+          "expanded": true,
+          "template": "",
+          "params": {}
+        }
+      ],
+      "description": "Array of accordion sections"
+    },
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "100%",
+      "description": "Container width"
+    },
+    "allowMultiple": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Allow multiple sections to be expanded simultaneously"
+    },
+    "allowToggleAll": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow collapsing all sections"
+    },
+    "headerBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#f9fafb",
+      "description": "Section header background"
+    },
+    "headerActiveBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#e5e7eb",
+      "description": "Active section header background"
+    },
+    "headerColor": {
+      "type": "string",
+      "required": false,
+      "default": "#1f2937",
+      "description": "Header text color"
+    },
+    "contentBackground": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Content area background"
+    },
+    "contentPadding": {
+      "type": "string",
+      "required": false,
+      "default": "16px",
+      "description": "Content padding"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "1px solid #e5e7eb",
+      "description": "Section border"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Border radius"
+    },
+    "spacing": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Spacing between sections"
+    },
+    "animationDuration": {
+      "type": "string",
+      "required": false,
+      "default": "0.3s",
+      "description": "Expand/collapse animation duration"
+    },
+    "showIcons": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show expand/collapse icons"
+    },
+    "iconPosition": {
+      "type": "string",
+      "required": false,
+      "default": "right",
+      "description": "Icon position (left, right)"
+    },
+    "expandIcon": {
+      "type": "string",
+      "required": false,
+      "default": "chevron-down",
+      "description": "Icon for expanded state"
+    },
+    "collapseIcon": {
+      "type": "string",
+      "required": false,
+      "default": "chevron-right",
+      "description": "Icon for collapsed state"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "width": "{{params.width}}",
+        "display": "flex",
+        "flexDirection": "column",
+        "gap": "{{params.spacing}}"
+      }
+    },
+    "children": [
+      {
+        "type": "repeat",
+        "props": {
+          "items": "{{params.sections}}",
+          "itemKey": "id",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "className": "accordion-section",
+                "style": {
+                  "border": "{{params.border}}",
+                  "borderRadius": "{{params.borderRadius}}",
+                  "overflow": "hidden",
+                  "transition": "all {{params.animationDuration}} ease"
+                }
+              },
+              "children": [
+                {
+                  "type": "button",
+                  "props": {
+                    "onClick": "{{() => toggleSection(item.id)}}",
+                    "className": "accordion-header",
+                    "style": {
+                      "width": "100%",
+                      "display": "flex",
+                      "alignItems": "center",
+                      "justifyContent": "space-between",
+                      "padding": "16px 20px",
+                      "background": "{{isExpanded(item.id) ? params.headerActiveBackground : params.headerBackground}}",
+                      "color": "{{params.headerColor}}",
+                      "border": "none",
+                      "cursor": "pointer",
+                      "fontSize": "16px",
+                      "fontWeight": "600",
+                      "textAlign": "left",
+                      "transition": "background {{params.animationDuration}} ease",
+                      "userSelect": "none"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "container",
+                      "props": {
+                        "style": {
+                          "display": "flex",
+                          "alignItems": "center",
+                          "gap": "12px",
+                          "flex": 1,
+                          "flexDirection": "{{params.iconPosition === 'left' ? 'row' : 'row-reverse'}}",
+                          "justifyContent": "{{params.iconPosition === 'left' ? 'flex-start' : 'space-between'}}"
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "conditional",
+                          "props": {
+                            "condition": "{{params.showIcons}}",
+                            "children": [
+                              {
+                                "type": "icon",
+                                "props": {
+                                  "name": "{{isExpanded(item.id) ? params.expandIcon : params.collapseIcon}}",
+                                  "size": 20,
+                                  "style": {
+                                    "transition": "transform {{params.animationDuration}} ease",
+                                    "flexShrink": 0
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "type": "container",
+                          "props": {
+                            "style": {
+                              "display": "flex",
+                              "alignItems": "center",
+                              "gap": "12px",
+                              "flex": 1
+                            }
+                          },
+                          "children": [
+                            {
+                              "type": "conditional",
+                              "props": {
+                                "condition": "{{item.icon}}",
+                                "children": [
+                                  {
+                                    "type": "icon",
+                                    "props": {
+                                      "name": "{{item.icon}}",
+                                      "size": 20,
+                                      "style": {
+                                        "flexShrink": 0
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "type": "text",
+                              "props": {
+                                "value": "{{item.title}}"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{isExpanded(item.id)}}",
+                    "children": [
+                      {
+                        "type": "container",
+                        "props": {
+                          "className": "accordion-content",
+                          "style": {
+                            "padding": "{{params.contentPadding}}",
+                            "background": "{{params.contentBackground}}",
+                            "borderTop": "{{params.border}}",
+                            "animation": "slideDown {{params.animationDuration}} ease"
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.template}}",
+                              "children": [
+                                {
+                                  "type": "templateInstance",
+                                  "props": {
+                                    "template": "{{item.template}}",
+                                    "params": "{{item.params}}"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.content}}",
+                              "children": [
+                                {
+                                  "type": "html",
+                                  "props": {
+                                    "content": "{{item.content}}"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "conditional",
+                            "props": {
+                              "condition": "{{item.component}}",
+                              "children": [
+                                {
+                                  "type": "{{item.component}}",
+                                  "props": "{{item.componentProps}}"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "state": {
+    "expandedSections": "{{params.sections.filter(s => s.expanded).map(s => s.id)}}"
+  },
+  "methods": {
+    "toggleSection": "function(sectionId) { const expanded = this.state.expandedSections || []; if (expanded.includes(sectionId)) { if (params.allowToggleAll || expanded.length > 1) { this.setState({ expandedSections: expanded.filter(id => id !== sectionId) }); } } else { this.setState({ expandedSections: params.allowMultiple ? [...expanded, sectionId] : [sectionId] }); } }",
+    "isExpanded": "function(sectionId) { return (this.state.expandedSections || []).includes(sectionId); }"
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "id": "breakpoint-container",
+  "name": "Breakpoint Container",
+  "description": "Perspective Breakpoint Container - responsive container that switches between completely different layouts based on session width",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "defaultView": {
+      "type": "string",
+      "required": false,
+      "default": "large",
+      "enum": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "description": "Default view to display (small, medium, or large)"
+    },
+    "smallBreakpoint": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum width in pixels for small breakpoint (typically 0px)"
+    },
+    "mediumBreakpoint": {
+      "type": "number",
+      "required": false,
+      "default": 768,
+      "description": "Minimum width in pixels for medium breakpoint (typically 768px for tablets)"
+    },
+    "largeBreakpoint": {
+      "type": "number",
+      "required": false,
+      "default": 1024,
+      "description": "Minimum width in pixels for large breakpoint (typically 1024px for desktops)"
+    },
+    "smallViewPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Path to view for small breakpoint (mobile devices)",
+      "example": "Mobile/SmallView"
+    },
+    "smallViewParams": {
+      "type": "object",
+      "required": false,
+      "default": {},
+      "description": "Parameters to pass to small breakpoint view"
+    },
+    "mediumViewPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Path to view for medium breakpoint (tablets)",
+      "example": "Tablet/MediumView"
+    },
+    "mediumViewParams": {
+      "type": "object",
+      "required": false,
+      "default": {},
+      "description": "Parameters to pass to medium breakpoint view"
+    },
+    "largeViewPath": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Path to view for large breakpoint (desktops)",
+      "example": "Desktop/LargeView"
+    },
+    "largeViewParams": {
+      "type": "object",
+      "required": false,
+      "default": {},
+      "description": "Parameters to pass to large breakpoint view"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "required": false,
+      "default": "0.3s",
+      "description": "Duration of transition animation when switching breakpoints"
+    },
+    "enableTransitions": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable transition animations when switching between breakpoints"
+    },
+    "position": {
+      "type": "string",
+      "required": false,
+      "default": "absolute",
+      "enum": [
+        "absolute",
+        "relative",
+        "fixed",
+        "static"
+      ],
+      "description": "CSS position property for container (inherited by child components)"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Background color for breakpoint container"
+    },
+    "padding": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Padding around breakpoint content"
+    },
+    "overflow": {
+      "type": "string",
+      "required": false,
+      "default": "visible",
+      "enum": [
+        "visible",
+        "hidden",
+        "scroll",
+        "auto"
+      ],
+      "description": "Overflow behavior for content"
+    }
+  },
+  "view": {
+    "type": "breakpointContainer",
+    "props": {
+      "defaultView": "{{params.defaultView}}",
+      "breakpoints": {
+        "small": {
+          "minWidth": "{{params.smallBreakpoint}}",
+          "maxWidth": "{{params.mediumBreakpoint - 1}}",
+          "viewPath": "{{params.smallViewPath}}",
+          "params": "{{params.smallViewParams}}"
+        },
+        "medium": {
+          "minWidth": "{{params.mediumBreakpoint}}",
+          "maxWidth": "{{params.largeBreakpoint - 1}}",
+          "viewPath": "{{params.mediumViewPath}}",
+          "params": "{{params.mediumViewParams}}"
+        },
+        "large": {
+          "minWidth": "{{params.largeBreakpoint}}",
+          "maxWidth": "{{null}}",
+          "viewPath": "{{params.largeViewPath}}",
+          "params": "{{params.largeViewParams}}"
+        }
+      },
+      "position": "{{params.position}}",
+      "style": {
+        "width": "100%",
+        "height": "100%",
+        "position": "{{params.position}}",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "padding": "{{params.padding}}",
+        "overflow": "{{params.overflow}}",
+        "transition": "{{params.enableTransitions ? 'all ' + params.transitionDuration + ' ease' : 'none'}}"
+      }
+    },
+    "metadata": {
+      "notes": [
+        "Ideal for completely different layouts between mobile and desktop",
+        "Components in each breakpoint are completely separate instances",
+        "Unlike Flex containers, provides discrete breakpoint switching",
+        "Position property is inherited by child components",
+        "Breakpoints based on session width, not device width",
+        "Useful when Flex container doesn't provide desired responsiveness"
+      ],
+      "breakpointDefinitions": {
+        "small": {
+          "description": "Mobile devices (phones)",
+          "typicalRange": "0px - 767px",
+          "defaultMin": 0,
+          "commonUse": "Single column layouts, simplified navigation, touch-optimized controls"
+        },
+        "medium": {
+          "description": "Tablet devices",
+          "typicalRange": "768px - 1023px",
+          "defaultMin": 768,
+          "commonUse": "Two column layouts, collapsible sidebars, adaptive navigation"
+        },
+        "large": {
+          "description": "Desktop devices",
+          "typicalRange": "1024px and above",
+          "defaultMin": 1024,
+          "commonUse": "Multi-column layouts, full navigation, expanded controls"
+        }
+      },
+      "commonBreakpoints": {
+        "mobilePortrait": "320px - 479px",
+        "mobileLandscape": "480px - 767px",
+        "tabletPortrait": "768px - 1023px",
+        "tabletLandscape": "1024px - 1279px",
+        "desktop": "1280px - 1919px",
+        "desktopLarge": "1920px and above"
+      },
+      "responsiveDesignPatterns": [
+        "Mobile-first: Design small breakpoint first, enhance for larger screens",
+        "Desktop-first: Design large breakpoint first, simplify for smaller screens",
+        "Component-based: Each breakpoint uses different component sets",
+        "Layout-based: Same components, different arrangements per breakpoint"
+      ],
+      "viewInheritance": {
+        "position": "Inherited by components in breakpoint container",
+        "absolute": "Components position relative to container",
+        "relative": "Components flow in document order",
+        "fixed": "Components fixed to viewport (rare use case)",
+        "static": "Default flow positioning"
+      },
+      "performanceConsiderations": [
+        "Each breakpoint loads separate view instance",
+        "Only active breakpoint view is rendered",
+        "Switching breakpoints unmounts/mounts views",
+        "State not preserved when switching breakpoints",
+        "Consider view load time for breakpoint transitions"
+      ],
+      "comparisonToFlexContainer": {
+        "breakpointContainer": "Completely different views per breakpoint, discrete switching, separate component trees",
+        "flexContainer": "Same components with responsive flex layouts, continuous resizing, shared component tree"
+      },
+      "commonUseCases": [
+        "Header that switches from icon to full logo",
+        "Self-hiding navigation drawers (mobile vs desktop)",
+        "Different dashboard layouts for phones vs tablets vs desktops",
+        "Simplified mobile UIs with full-featured desktop versions",
+        "Touch-optimized mobile controls vs mouse-optimized desktop controls",
+        "Different data visualization approaches per device type"
+      ],
+      "parameterPassing": {
+        "separate": "Each breakpoint can receive different parameters",
+        "shared": "Pass same data with different presentation",
+        "bidirectional": "Support input/output parameters across breakpoints",
+        "consistency": "Maintain parameter structure across breakpoints for easier development"
+      },
+      "designBestPractices": [
+        "Maintain consistent functionality across all breakpoints",
+        "Test at exact breakpoint widths (767px, 1023px) for edge cases",
+        "Use meaningful content hierarchy appropriate to screen size",
+        "Optimize touch targets for mobile (min 44x44px)",
+        "Consider portrait and landscape orientations",
+        "Provide clear visual feedback during breakpoint transitions",
+        "Avoid hiding critical features on smaller breakpoints"
+      ],
+      "scriptingCapabilities": [
+        "Access current active breakpoint via scripting",
+        "Programmatically switch between breakpoints",
+        "Detect breakpoint changes with event handlers",
+        "Query breakpoint configuration at runtime"
+      ],
+      "examples": {
+        "navigationDrawer": {
+          "small": "Hamburger menu with slide-out drawer",
+          "medium": "Collapsible sidebar navigation",
+          "large": "Always-visible sidebar navigation"
+        },
+        "dashboard": {
+          "small": "Single column, stacked widgets, simplified charts",
+          "medium": "Two columns, resizable widgets, standard charts",
+          "large": "Three columns, drag-drop widgets, advanced charts"
+        },
+        "dataEntry": {
+          "small": "Single field focus, step-by-step wizard",
+          "medium": "Grouped fields, tabbed interface",
+          "large": "Full form view, multi-section layout"
+        }
+      }
+    }
+  }
+}

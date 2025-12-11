@@ -1,0 +1,148 @@
+{
+  "id": "pie-chart",
+  "name": "Pie Chart",
+  "description": "Perspective Pie Chart - displays named items with values as parts of a total",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Chart",
+  "ignitionComponent": "perspective.chart.pie",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Pie Chart",
+      "description": "Chart title"
+    },
+    "data": {
+      "type": "array",
+      "required": true,
+      "description": "Data source for the chart. Each object defines name and value",
+      "example": [
+        {"name": "Category A", "value": 50},
+        {"name": "Category B", "value": 30},
+        {"name": "Category C", "value": 20}
+      ]
+    },
+    "colors": {
+      "type": "array",
+      "required": false,
+      "default": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"],
+      "description": "Wedge colors corresponding to data order (color wheel, palette, RGB, or HSL)"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Display labels on chart"
+    },
+    "showLegend": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Display legend"
+    },
+    "threeDimensional": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Apply 3D depth effect to pie wedges"
+    },
+    "cutoutRadius": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Percentage of radius to remove (creates ring/donut chart when > 0)"
+    },
+    "enableTransitions": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable visual effects for data changes"
+    },
+    "showPercentSymbol": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show percent symbol in value display"
+    },
+    "showValueAsPercent": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Display values as percentages"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "100%",
+        "minWidth": "400px",
+        "minHeight": "400px"
+      }
+    },
+    "children": [
+      {
+        "type": "pieChart",
+        "props": {
+          "data": "{{params.data}}",
+          "colors": "{{params.colors}}",
+          "title": "{{params.title}}",
+          "showLabels": "{{params.showLabels}}",
+          "showLegend": "{{params.showLegend}}",
+          "threeDimensional": "{{params.threeDimensional}}",
+          "cutoutRadius": "{{params.cutoutRadius}}",
+          "enableTransitions": "{{params.enableTransitions}}",
+          "style": {
+            "width": "100%",
+            "height": "100%"
+          },
+          "config": {
+            "labels": {
+              "showName": true,
+              "showValue": true,
+              "bent": false,
+              "align": "center",
+              "inside": {
+                "enabled": false,
+                "radius": 50,
+                "percentLimit": 5,
+                "color": "#ffffff"
+              },
+              "wrap": {
+                "enabled": false,
+                "maxWidth": 100
+              },
+              "color": "#333333"
+            },
+            "legend": {
+              "fontSize": 12,
+              "icon": {
+                "height": 12,
+                "width": 12,
+                "enabled": true
+              },
+              "position": "right"
+            },
+            "legendLabelColor": "#333333",
+            "valueFormat": {
+              "showPercentSymbol": "{{params.showPercentSymbol}}",
+              "showValueAsPercent": "{{params.showValueAsPercent}}"
+            },
+            "tooltipFormat": "{category}: {value} ({value.percent}%)",
+            "selectOutline": {
+              "width": 2,
+              "color": "#000000",
+              "opacity": 1
+            },
+            "selection": {
+              "enabled": false,
+              "data": []
+            }
+          }
+        }
+      }
+    ]
+  }
+}

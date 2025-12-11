@@ -1,0 +1,190 @@
+{
+  "id": "progress-bar",
+  "name": "Progress Bar",
+  "description": "Progress bar with value, min/max ranges, and conditional color formatting",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for progress value",
+      "example": "[default]Process/Level"
+    },
+    "minValue": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum value"
+    },
+    "maxValue": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum value"
+    },
+    "height": {
+      "type": "number",
+      "required": false,
+      "default": 24,
+      "description": "Height in pixels"
+    },
+    "showValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show numeric value on bar"
+    },
+    "showPercentage": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show as percentage"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "#e0e0e0",
+      "description": "Background color"
+    },
+    "barColor": {
+      "type": "string",
+      "required": false,
+      "default": "#2196F3",
+      "description": "Default bar color"
+    },
+    "enableConditionalColor": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable conditional color based on thresholds"
+    },
+    "lowThreshold": {
+      "type": "number",
+      "required": false,
+      "default": 25,
+      "description": "Low threshold percentage"
+    },
+    "lowColor": {
+      "type": "string",
+      "required": false,
+      "default": "#cc0000",
+      "description": "Color below low threshold"
+    },
+    "mediumThreshold": {
+      "type": "number",
+      "required": false,
+      "default": 75,
+      "description": "Medium threshold percentage"
+    },
+    "mediumColor": {
+      "type": "string",
+      "required": false,
+      "default": "#ff9900",
+      "description": "Color between low and medium threshold"
+    },
+    "highColor": {
+      "type": "string",
+      "required": false,
+      "default": "#00aa00",
+      "description": "Color above medium threshold"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "4px",
+      "description": "Border radius"
+    },
+    "animated": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable smooth animation"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "position": "relative",
+        "width": "100%",
+        "height": "{{params.height}}px",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "overflow": "hidden",
+        "border": "1px solid #ccc"
+      }
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "position": "absolute",
+            "left": "0",
+            "top": "0",
+            "height": "100%",
+            "width": "{{((tags.[params.tagPath] - params.minValue) / (params.maxValue - params.minValue)) * 100}}%",
+            "backgroundColor": "{{params.enableConditionalColor ? (((tags.[params.tagPath] - params.minValue) / (params.maxValue - params.minValue)) * 100 < params.lowThreshold ? params.lowColor : ((tags.[params.tagPath] - params.minValue) / (params.maxValue - params.minValue)) * 100 < params.mediumThreshold ? params.mediumColor : params.highColor) : params.barColor}}",
+            "transition": "{{params.animated ? 'width 0.5s ease, background-color 0.3s ease' : 'none'}}",
+            "borderRadius": "{{params.borderRadius}}"
+          }
+        },
+        "bindings": [
+          {
+            "type": "property",
+            "property": "style.width",
+            "binding": {
+              "type": "expression",
+              "expression": "max(0, min(100, (({[params.tagPath]} - params.minValue) / (params.maxValue - params.minValue)) * 100)) + '%'"
+            }
+          },
+          {
+            "type": "property",
+            "property": "style.backgroundColor",
+            "binding": {
+              "type": "expression",
+              "expression": "if(params.enableConditionalColor, if((({[params.tagPath]} - params.minValue) / (params.maxValue - params.minValue)) * 100 < params.lowThreshold, params.lowColor, if((({[params.tagPath]} - params.minValue) / (params.maxValue - params.minValue)) * 100 < params.mediumThreshold, params.mediumColor, params.highColor)), params.barColor)"
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showValue}}",
+          "children": [
+            {
+              "type": "text",
+              "props": {
+                "value": "{{params.showPercentage ? (((tags.[params.tagPath] - params.minValue) / (params.maxValue - params.minValue)) * 100).toFixed(1) + '%' : tags.[params.tagPath].toFixed(1)}}",
+                "style": {
+                  "position": "absolute",
+                  "top": "50%",
+                  "left": "50%",
+                  "transform": "translate(-50%, -50%)",
+                  "fontSize": "{{params.height * 0.6}}px",
+                  "fontWeight": "bold",
+                  "color": "#ffffff",
+                  "textShadow": "0 0 3px rgba(0,0,0,0.5)",
+                  "zIndex": "10"
+                }
+              },
+              "bindings": [
+                {
+                  "type": "property",
+                  "property": "value",
+                  "binding": {
+                    "type": "expression",
+                    "expression": "if(params.showPercentage, format((({[params.tagPath]} - params.minValue) / (params.maxValue - params.minValue)) * 100, '0.1') + '%', format({[params.tagPath]}, '0.1'))"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

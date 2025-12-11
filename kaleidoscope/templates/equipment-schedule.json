@@ -1,0 +1,223 @@
+{
+  "id": "equipment-schedule",
+  "name": "Equipment Schedule",
+  "description": "Perspective Equipment Schedule component for displaying equipment availability, scheduled events, downtime, and breaks in a timeline format",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "items": {
+      "type": "array",
+      "required": true,
+      "description": "Equipment items to display",
+      "default": [],
+      "example": [
+        {
+          "id": "line1",
+          "label": "Production Line 1",
+          "iconConfig": {
+            "path": "material/production",
+            "color": "#3b82f6"
+          }
+        }
+      ]
+    },
+    "dateRangeStart": {
+      "type": "datetime",
+      "required": false,
+      "description": "Start date for visible range",
+      "default": "{{now()}}"
+    },
+    "dateRangeEnd": {
+      "type": "datetime",
+      "required": false,
+      "description": "End date for visible range",
+      "default": "{{addDays(now(), 7)}}"
+    },
+    "defaultZoom": {
+      "type": "string",
+      "required": false,
+      "default": "day",
+      "description": "Initial zoom level",
+      "options": ["month", "day", "12-hr", "8-hr", "6-hr", "3-hr", "hours", "minutes", "15-min"]
+    },
+    "rowHeight": {
+      "type": "number",
+      "required": false,
+      "default": 60,
+      "description": "Height of each equipment row in pixels"
+    },
+    "addEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow users to add new events"
+    },
+    "resizeEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow users to resize events"
+    },
+    "moveEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow users to move events"
+    },
+    "deleteEnabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow users to delete events"
+    },
+    "scheduledEventsPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path or dataset for scheduled events",
+      "example": "[default]Schedule/Events"
+    },
+    "downtimeEventsPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path or dataset for downtime events",
+      "example": "[default]Schedule/Downtime"
+    },
+    "breakEventsPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path or dataset for break events",
+      "example": "[default]Schedule/Breaks"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "style": {
+        "width": "100%",
+        "minHeight": "500px"
+      }
+    },
+    "children": [
+      {
+        "type": "equipmentSchedule",
+        "props": {
+          "items": "{{params.items}}",
+          "dateRange": {
+            "startDate": "{{params.dateRangeStart}}",
+            "endDate": "{{params.dateRangeEnd}}"
+          },
+          "defaultZoom": "{{params.defaultZoom}}",
+          "rowHeight": "{{params.rowHeight}}",
+          "addEnabled": "{{params.addEnabled}}",
+          "resizeEnabled": "{{params.resizeEnabled}}",
+          "moveEnabled": "{{params.moveEnabled}}",
+          "deleteEnabled": "{{params.deleteEnabled}}",
+          "scheduledEvents": "{{params.scheduledEventsPath ? tags.[params.scheduledEventsPath] : []}}",
+          "downtimeEvents": "{{params.downtimeEventsPath ? tags.[params.downtimeEventsPath] : []}}",
+          "breakEvents": "{{params.breakEventsPath ? tags.[params.breakEventsPath] : []}}",
+          "selectedEvent": {
+            "itemId": "",
+            "eventId": ""
+          },
+          "currentTimeIndicator": {
+            "color": "#ef4444",
+            "opacity": 0.8,
+            "width": 2
+          },
+          "progressBar": {
+            "enabled": true,
+            "bar": {
+              "color": "#10b981",
+              "style": {}
+            },
+            "track": {
+              "color": "#e5e7eb",
+              "style": {}
+            },
+            "valueDisplay": {
+              "enabled": true,
+              "format": "percent",
+              "justify": "center",
+              "style": {
+                "fontSize": "11px"
+              }
+            }
+          },
+          "headerStyles": {
+            "primaryHeaderStyle": {
+              "backgroundColor": "#f3f4f6",
+              "fontWeight": "bold",
+              "fontSize": "14px"
+            },
+            "secondaryHeaderStyle": {
+              "backgroundColor": "#f9fafb",
+              "fontSize": "12px"
+            },
+            "tertiaryHeaderStyle": {
+              "backgroundColor": "#ffffff",
+              "fontSize": "11px"
+            }
+          },
+          "rowStyle": {
+            "borderBottom": "1px solid #e5e7eb"
+          },
+          "scheduledEventStyle": {
+            "backgroundColor": "#3b82f6",
+            "color": "#ffffff",
+            "borderRadius": "4px",
+            "padding": "4px 8px",
+            "fontSize": "12px"
+          },
+          "downtimeEventStyle": {
+            "backgroundColor": "#ef4444",
+            "color": "#ffffff",
+            "borderRadius": "4px",
+            "padding": "4px 8px",
+            "fontSize": "12px"
+          },
+          "breakEventStyle": {
+            "backgroundColor": "#f59e0b",
+            "color": "#ffffff",
+            "borderRadius": "4px",
+            "padding": "4px 8px",
+            "fontSize": "12px"
+          },
+          "selectedEventStyle": {
+            "boxShadow": "0 0 0 3px rgba(59, 130, 246, 0.3)",
+            "outline": "2px solid #3b82f6"
+          },
+          "bodyStyle": {
+            "backgroundColor": "#ffffff"
+          },
+          "style": {
+            "width": "100%",
+            "height": "100%"
+          }
+        },
+        "events": {
+          "onEventAdd": {
+            "action": "script",
+            "script": "// Handle event addition\nconst { itemId, startDate, endDate } = event.data;\nsystem.tag.writeAsync([params.scheduledEventsPath], [newEventData]);"
+          },
+          "onEventResize": {
+            "action": "script",
+            "script": "// Handle event resize\nconst { eventId, itemId, startDate, endDate } = event.data;\n// Update event in dataset"
+          },
+          "onEventMove": {
+            "action": "script",
+            "script": "// Handle event move\nconst { eventId, itemId, startDate, endDate } = event.data;\n// Update event in dataset"
+          },
+          "onEventDelete": {
+            "action": "script",
+            "script": "// Handle event deletion\nconst { eventId, itemId } = event.data;\n// Remove event from dataset"
+          },
+          "onEventSelect": {
+            "action": "script",
+            "script": "// Handle event selection\nconst { eventId, itemId } = event.data;\nthis.props.selectedEvent = { eventId, itemId };"
+          }
+        }
+      }
+    ]
+  }
+}

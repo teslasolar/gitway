@@ -2,28 +2,69 @@
   "name": "Gateway",
   "title": "Gateway Management Console",
   "description": "Manage screens, templates, and gateway connections",
-  "type": "flex",
-  "props": {
-    "direction": "column",
-    "style": {
-      "background": "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
-      "padding": "0",
-      "minHeight": "100vh"
+  "template": "dock-layout",
+  "templateParams": {
+    "showNorth": true,
+    "showWest": true,
+    "showEast": false,
+    "showSouth": false,
+    "northContent": {
+      "template": "header-dock",
+      "params": {
+        "logoText": "🌺 Konomi GitWay",
+        "currentScope": "Gateway",
+        "showUserMenu": true,
+        "showSearch": true
+      }
+    },
+    "westContent": {
+      "template": "navigation-dock",
+      "params": {
+        "title": "Gateway",
+        "expandAll": false,
+        "items": [
+          {
+            "label": "Kaleidoscope",
+            "icon": "mdi-view-dashboard",
+            "path": "/gateway/kaleidoscope",
+            "children": [
+              { "label": "Active Screens", "icon": "mdi-monitor-multiple", "path": "/gateway/kaleidoscope/screens" },
+              { "label": "Sessions", "icon": "mdi-account-multiple", "path": "/gateway/kaleidoscope/sessions" }
+            ]
+          },
+          {
+            "label": "Templates",
+            "icon": "mdi-file-tree",
+            "path": "/gateway/templates",
+            "children": [
+              { "label": "Library", "icon": "mdi-file-multiple", "path": "/gateway/templates/library" },
+              { "label": "Editor", "icon": "mdi-code-json", "path": "/gateway/templates/editor" }
+            ]
+          },
+          {
+            "label": "Connections",
+            "icon": "mdi-lan-connect",
+            "path": "/gateway/connections",
+            "children": [
+              { "label": "Ignition Gateway", "icon": "mdi-factory", "path": "/gateway/connections/ignition" },
+              { "label": "Bridge Server", "icon": "mdi-bridge", "path": "/gateway/connections/bridge" },
+              { "label": "GitHub", "icon": "mdi-github", "path": "/gateway/connections/github" },
+              { "label": "GitDB", "icon": "mdi-database", "path": "/gateway/connections/gitdb" }
+            ]
+          },
+          {
+            "label": "Parameters",
+            "icon": "mdi-tune",
+            "path": "/gateway/parameters"
+          }
+        ]
+      }
+    },
+    "mainContent": {
+      "type": "container"
     }
   },
   "children": [
-    {
-      "type": "header",
-      "props": {
-        "title": "🌐 GitWay Gateway Console",
-        "style": {
-          "background": "rgba(255,255,255,0.1)",
-          "backdropFilter": "blur(10px)",
-          "padding": "15px 30px",
-          "borderBottom": "1px solid rgba(255,255,255,0.2)"
-        }
-      }
-    },
     {
       "type": "tabs",
       "props": {

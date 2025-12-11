@@ -1,0 +1,236 @@
+{
+  "id": "range-selector",
+  "name": "Chart Range Selector",
+  "description": "Perspective Chart Range Selector - small recreation of a chart for selecting time ranges (pairs with Time Series Chart)",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Chart",
+  "ignitionComponent": "perspective.chart.rangeSelector",
+  "parameters": {
+    "data": {
+      "type": "object",
+      "required": true,
+      "description": "Data source containing timestamps and numeric values",
+      "example": {
+        "tagPath": "[default]Process/Temperature",
+        "aggregation": "Average"
+      }
+    },
+    "enablePanZoom": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Allow chart to be panned and zoomed (cannot zoom out past base range)"
+    },
+    "brushRangeVisible": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Display range labels on brush"
+    },
+    "dateFormat": {
+      "type": "string",
+      "required": false,
+      "default": "YYYY-MM-DD",
+      "description": "MomentJS date format for brush range labels"
+    },
+    "timeFormat": {
+      "type": "string",
+      "required": false,
+      "default": "HH:mm:ss",
+      "description": "MomentJS time format for brush range labels"
+    },
+    "timeAxisVisible": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show time axis"
+    },
+    "timeAxisHeight": {
+      "type": "number",
+      "required": false,
+      "default": 30,
+      "description": "Time axis height in pixels"
+    },
+    "timeAxisTickCount": {
+      "type": "number",
+      "required": false,
+      "default": 5,
+      "description": "Number of time axis ticks (multiples of 2, 5, or 10)"
+    },
+    "yAxisVisible": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show Y axis"
+    },
+    "yAxisWidth": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Y axis width in pixels"
+    },
+    "colorScheme": {
+      "type": "string",
+      "required": false,
+      "default": "blues",
+      "description": "Color Brewer scheme reference for area styles"
+    },
+    "height": {
+      "type": "number",
+      "required": false,
+      "default": 120,
+      "description": "Component height in pixels"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "width": "100%",
+        "minWidth": "600px"
+      }
+    },
+    "children": [
+      {
+        "type": "rangeSelector",
+        "props": {
+          "data": "{{params.data}}",
+          "enablePanZoom": "{{params.enablePanZoom}}",
+          "style": {
+            "width": "100%",
+            "height": "{{params.height}}px"
+          },
+          "config": {
+            "selectedRange": {
+              "start": null,
+              "end": null
+            },
+            "brushRange": {
+              "visible": "{{params.brushRangeVisible}}",
+              "dateFormat": "{{params.dateFormat}}",
+              "timeFormat": "{{params.timeFormat}}"
+            },
+            "timeAxis": {
+              "visible": "{{params.timeAxisVisible}}",
+              "tickCount": "{{params.timeAxisTickCount}}",
+              "height": "{{params.timeAxisHeight}}",
+              "color": "#333333",
+              "tick": {
+                "color": "#333333",
+                "label": {
+                  "angled": false,
+                  "format": "{{params.timeFormat}}",
+                  "font": {
+                    "color": "#333333",
+                    "size": 10
+                  }
+                },
+                "style": {}
+              },
+              "grid": {
+                "visible": true,
+                "color": "#e5e7eb",
+                "opacity": 1,
+                "dashArray": ""
+              }
+            },
+            "yAxis": {
+              "visible": "{{params.yAxisVisible}}",
+              "width": "{{params.yAxisWidth}}",
+              "label": {
+                "visible": true,
+                "text": "Value",
+                "offset": 0,
+                "font": {
+                  "color": "#333333",
+                  "size": 12
+                }
+              },
+              "tick": {
+                "color": "#333333",
+                "count": "Auto",
+                "label": {
+                  "format": "~f",
+                  "font": {
+                    "color": "#333333",
+                    "size": 10
+                  },
+                  "style": {}
+                },
+                "style": {}
+              },
+              "grid": {
+                "visible": true,
+                "color": "#e5e7eb",
+                "opacity": 1,
+                "dashArray": ""
+              }
+            },
+            "areaStyles": {
+              "colorScheme": "{{params.colorScheme}}",
+              "colors": ""
+            }
+          },
+          "interactions": {
+            "zoom": {
+              "enabled": true,
+              "description": "Mouse wheel zoom (cannot zoom past base level)"
+            },
+            "pan": {
+              "enabled": true,
+              "description": "Click-and-drag to pan across component"
+            },
+            "mobilePinchZoom": {
+              "enabled": true,
+              "description": "Multi-touch zoom gesture"
+            },
+            "mobileBrush": {
+              "enabled": true,
+              "description": "Single touch to draw/move brush ranges"
+            }
+          },
+          "bindings": {
+            "selectedRange.start": {
+              "type": "property",
+              "description": "Unix timestamp (milliseconds) - bind to Time Series Chart start date"
+            },
+            "selectedRange.end": {
+              "type": "property",
+              "description": "Unix timestamp (milliseconds) - bind to Time Series Chart end date"
+            }
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "justify": "space-between",
+          "align": "center",
+          "style": {
+            "marginTop": "10px",
+            "padding": "8px",
+            "background": "#f3f4f6",
+            "borderRadius": "4px",
+            "fontSize": "12px",
+            "color": "#666666"
+          }
+        },
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "value": "Start: {{moment(config.selectedRange.start).format(params.dateFormat + ' ' + params.timeFormat)}}"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "value": "End: {{moment(config.selectedRange.end).format(params.dateFormat + ' ' + params.timeFormat)}}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

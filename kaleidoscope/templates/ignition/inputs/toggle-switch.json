@@ -1,0 +1,163 @@
+{
+  "id": "toggle-switch",
+  "name": "Toggle Switch",
+  "description": "Toggle switch for boolean values with customizable labels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Input",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for boolean value",
+      "example": "[default]Controls/EnableMotor"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "Toggle",
+      "description": "Label text"
+    },
+    "labelPosition": {
+      "type": "string",
+      "required": false,
+      "default": "left",
+      "enum": ["left", "right", "top", "bottom"],
+      "description": "Label position relative to switch"
+    },
+    "onLabel": {
+      "type": "string",
+      "required": false,
+      "default": "ON",
+      "description": "Label when toggle is on"
+    },
+    "offLabel": {
+      "type": "string",
+      "required": false,
+      "default": "OFF",
+      "description": "Label when toggle is off"
+    },
+    "showStateLabel": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show ON/OFF state label"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable or disable the switch"
+    },
+    "onColor": {
+      "type": "string",
+      "required": false,
+      "default": "#10b981",
+      "description": "Color when toggle is on"
+    },
+    "offColor": {
+      "type": "string",
+      "required": false,
+      "default": "#9ca3af",
+      "description": "Color when toggle is off"
+    },
+    "size": {
+      "type": "string",
+      "required": false,
+      "default": "medium",
+      "enum": ["small", "medium", "large"],
+      "description": "Switch size"
+    }
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "{{params.labelPosition === 'top' || params.labelPosition === 'bottom' ? 'column' : 'row'}}",
+      "align": "center",
+      "gap": "12px",
+      "style": {
+        "width": "auto",
+        "height": "auto"
+      }
+    },
+    "children": [
+      {
+        "type": "text",
+        "props": {
+          "value": "{{params.label}}",
+          "style": {
+            "fontSize": "14px",
+            "fontWeight": "500",
+            "color": "#374151",
+            "order": "{{params.labelPosition === 'right' || params.labelPosition === 'bottom' ? '2' : '1'}}"
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "direction": "row",
+          "align": "center",
+          "gap": "8px",
+          "style": {
+            "order": "{{params.labelPosition === 'right' || params.labelPosition === 'bottom' ? '1' : '2'}}"
+          }
+        },
+        "children": [
+          {
+            "type": "toggle",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "enabled": "{{params.enabled}}",
+              "style": {
+                "width": "{{params.size === 'small' ? '40px' : params.size === 'medium' ? '52px' : '64px'}}",
+                "height": "{{params.size === 'small' ? '20px' : params.size === 'medium' ? '28px' : '36px'}}",
+                "borderRadius": "{{params.size === 'small' ? '10px' : params.size === 'medium' ? '14px' : '18px'}}",
+                "backgroundColor": "{{tags.[params.tagPath] ? params.onColor : params.offColor}}",
+                "position": "relative",
+                "cursor": "{{params.enabled ? 'pointer' : 'not-allowed'}}",
+                "opacity": "{{params.enabled ? '1' : '0.5'}}",
+                "transition": "background-color 0.3s ease",
+                "border": "none",
+                "outline": "none"
+              },
+              "thumbStyle": {
+                "width": "{{params.size === 'small' ? '16px' : params.size === 'medium' ? '24px' : '32px'}}",
+                "height": "{{params.size === 'small' ? '16px' : params.size === 'medium' ? '24px' : '32px'}}",
+                "borderRadius": "50%",
+                "backgroundColor": "#ffffff",
+                "position": "absolute",
+                "top": "{{params.size === 'small' ? '2px' : params.size === 'medium' ? '2px' : '2px'}}",
+                "left": "{{tags.[params.tagPath] ? (params.size === 'small' ? '22px' : params.size === 'medium' ? '26px' : '30px') : '2px'}}",
+                "transition": "left 0.3s ease",
+                "boxShadow": "0 2px 4px rgba(0,0,0,0.2)"
+              },
+              "events": {
+                "onClick": {
+                  "tagWrite": {
+                    "path": "{{params.tagPath}}",
+                    "value": "{{!tags.[params.tagPath]}}"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "value": "{{tags.[params.tagPath] ? params.onLabel : params.offLabel}}",
+              "style": {
+                "fontSize": "{{params.size === 'small' ? '11px' : params.size === 'medium' ? '12px' : '14px'}}",
+                "fontWeight": "600",
+                "color": "{{tags.[params.tagPath] ? params.onColor : params.offColor}}",
+                "display": "{{params.showStateLabel ? 'block' : 'none'}}",
+                "minWidth": "30px",
+                "textAlign": "center"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

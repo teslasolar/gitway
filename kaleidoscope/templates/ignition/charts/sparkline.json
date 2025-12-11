@@ -1,0 +1,266 @@
+{
+  "id": "sparkline",
+  "name": "Sparkline",
+  "description": "Mini trend chart for quick visualization of data trends",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for historical data",
+      "example": "[default]Process/Temperature"
+    },
+    "width": {
+      "type": "number",
+      "required": false,
+      "default": 200,
+      "description": "Width in pixels"
+    },
+    "height": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Height in pixels"
+    },
+    "lineColor": {
+      "type": "string",
+      "required": false,
+      "default": "#2196F3",
+      "description": "Line color"
+    },
+    "lineWidth": {
+      "type": "number",
+      "required": false,
+      "default": 2,
+      "description": "Line width in pixels"
+    },
+    "fillColor": {
+      "type": "string",
+      "required": false,
+      "default": "rgba(33, 150, 243, 0.2)",
+      "description": "Fill color under line"
+    },
+    "showFill": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show fill area under line"
+    },
+    "showDots": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show data points as dots"
+    },
+    "dotSize": {
+      "type": "number",
+      "required": false,
+      "default": 3,
+      "description": "Dot size in pixels"
+    },
+    "timeRange": {
+      "type": "string",
+      "required": false,
+      "default": "1h",
+      "description": "Time range for historical data",
+      "options": ["5m", "15m", "30m", "1h", "4h", "8h", "24h"]
+    },
+    "sampleSize": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Number of data points to display"
+    },
+    "showCurrentValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show current value"
+    },
+    "showMinMax": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show min/max indicators"
+    },
+    "enableConditionalColor": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable conditional color based on trend"
+    },
+    "upTrendColor": {
+      "type": "string",
+      "required": false,
+      "default": "#00aa00",
+      "description": "Color for upward trend"
+    },
+    "downTrendColor": {
+      "type": "string",
+      "required": false,
+      "default": "#cc0000",
+      "description": "Color for downward trend"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "transparent",
+      "description": "Background color"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "position": "relative",
+        "width": "{{params.width}}px",
+        "height": "{{params.height}}px",
+        "backgroundColor": "{{params.backgroundColor}}",
+        "display": "flex",
+        "flexDirection": "column"
+      }
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "flex": "1",
+            "position": "relative"
+          }
+        },
+        "children": [
+          {
+            "type": "chart",
+            "props": {
+              "type": "line",
+              "data": {
+                "historicalBinding": {
+                  "tagPath": "{{params.tagPath}}",
+                  "timeRange": "{{params.timeRange}}",
+                  "sampleSize": "{{params.sampleSize}}"
+                }
+              },
+              "options": {
+                "responsive": true,
+                "maintainAspectRatio": false,
+                "legend": {
+                  "display": false
+                },
+                "scales": {
+                  "xAxes": [{
+                    "display": false,
+                    "gridLines": {
+                      "display": false
+                    }
+                  }],
+                  "yAxes": [{
+                    "display": false,
+                    "gridLines": {
+                      "display": false
+                    }
+                  }]
+                },
+                "elements": {
+                  "line": {
+                    "borderColor": "{{params.enableConditionalColor ? (tags.[params.tagPath + '.trend'] > 0 ? params.upTrendColor : params.downTrendColor) : params.lineColor}}",
+                    "borderWidth": "{{params.lineWidth}}",
+                    "fill": "{{params.showFill}}",
+                    "backgroundColor": "{{params.fillColor}}",
+                    "tension": 0.4
+                  },
+                  "point": {
+                    "radius": "{{params.showDots ? params.dotSize : 0}}",
+                    "hitRadius": "{{params.dotSize * 2}}",
+                    "hoverRadius": "{{params.dotSize * 1.5}}"
+                  }
+                },
+                "tooltips": {
+                  "enabled": true,
+                  "mode": "index",
+                  "intersect": false
+                }
+              },
+              "bindings": [
+                {
+                  "type": "property",
+                  "property": "data",
+                  "binding": {
+                    "type": "historical",
+                    "tagPath": "{{params.tagPath}}",
+                    "timeRange": "{{params.timeRange}}",
+                    "aggregation": "Average"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showCurrentValue}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "style": {
+                  "display": "flex",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "marginTop": "4px",
+                  "fontSize": "11px",
+                  "color": "#666"
+                }
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "value": "{{tags.[params.tagPath].toFixed(2)}}",
+                    "style": {
+                      "fontWeight": "bold",
+                      "color": "{{params.lineColor}}"
+                    }
+                  },
+                  "bindings": [
+                    {
+                      "type": "property",
+                      "property": "value",
+                      "binding": {
+                        "type": "tag",
+                        "tagPath": "{{params.tagPath}}",
+                        "format": "0.00"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{params.showMinMax}}",
+                    "children": [
+                      {
+                        "type": "text",
+                        "props": {
+                          "value": "Min: {{tags.[params.tagPath + '.min'].toFixed(1)}} Max: {{tags.[params.tagPath + '.max'].toFixed(1)}}",
+                          "style": {
+                            "fontSize": "10px",
+                            "color": "#999"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

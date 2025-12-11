@@ -1,0 +1,147 @@
+{
+  "id": "coordinate-container",
+  "name": "Coordinate Container",
+  "description": "Container with absolute positioning for precise child placement",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Container",
+  "parameters": {
+    "width": {
+      "type": "string",
+      "required": false,
+      "default": "100%",
+      "description": "Container width (px, %, vh, vw)"
+    },
+    "height": {
+      "type": "string",
+      "required": false,
+      "default": "600px",
+      "description": "Container height (px, %, vh, vw)"
+    },
+    "background": {
+      "type": "string",
+      "required": false,
+      "default": "#ffffff",
+      "description": "Background color"
+    },
+    "border": {
+      "type": "string",
+      "required": false,
+      "default": "1px solid #e5e7eb",
+      "description": "Border style"
+    },
+    "borderRadius": {
+      "type": "string",
+      "required": false,
+      "default": "8px",
+      "description": "Border radius"
+    },
+    "padding": {
+      "type": "string",
+      "required": false,
+      "default": "0px",
+      "description": "Container padding"
+    },
+    "children": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Array of child components with position properties"
+    },
+    "showGrid": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show background grid for alignment"
+    },
+    "gridSize": {
+      "type": "number",
+      "required": false,
+      "default": 20,
+      "description": "Grid size in pixels"
+    },
+    "overflow": {
+      "type": "string",
+      "required": false,
+      "default": "hidden",
+      "description": "Overflow behavior (hidden, auto, scroll, visible)"
+    },
+    "responsive": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable responsive scaling"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "position": "relative",
+        "width": "{{params.width}}",
+        "height": "{{params.height}}",
+        "background": "{{params.showGrid ? `repeating-linear-gradient(0deg, transparent, transparent ${params.gridSize - 1}px, #e5e7eb ${params.gridSize - 1}px, #e5e7eb ${params.gridSize}px), repeating-linear-gradient(90deg, transparent, transparent ${params.gridSize - 1}px, #e5e7eb ${params.gridSize - 1}px, #e5e7eb ${params.gridSize}px), ${params.background}` : params.background}}",
+        "border": "{{params.border}}",
+        "borderRadius": "{{params.borderRadius}}",
+        "padding": "{{params.padding}}",
+        "overflow": "{{params.overflow}}",
+        "boxSizing": "border-box"
+      }
+    },
+    "children": [
+      {
+        "type": "repeat",
+        "props": {
+          "items": "{{params.children}}",
+          "itemKey": "id",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "style": {
+                  "position": "absolute",
+                  "left": "{{params.responsive ? `calc(${item.x || 0} * 100% / 1000)` : `${item.x || 0}px`}}",
+                  "top": "{{params.responsive ? `calc(${item.y || 0} * 100% / 1000)` : `${item.y || 0}px`}}",
+                  "width": "{{item.width || 'auto'}}",
+                  "height": "{{item.height || 'auto'}}",
+                  "zIndex": "{{item.zIndex || 1}}",
+                  "transform": "{{item.rotation ? `rotate(${item.rotation}deg)` : 'none'}}",
+                  "opacity": "{{item.opacity || 1}}"
+                }
+              },
+              "children": [
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{item.template}}",
+                    "children": [
+                      {
+                        "type": "templateInstance",
+                        "props": {
+                          "template": "{{item.template}}",
+                          "params": "{{item.params}}"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "conditional",
+                  "props": {
+                    "condition": "{{item.component}}",
+                    "children": [
+                      {
+                        "type": "{{item.component}}",
+                        "props": "{{item.componentProps}}"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

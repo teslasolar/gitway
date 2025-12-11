@@ -1,0 +1,367 @@
+{
+  "id": "symbol",
+  "name": "Symbol Component",
+  "description": "Perspective Symbol component with configurable appearance modes (P&ID, mimic, simple), animation, states, and orientation - supports Motors, Pumps, Sensors, Valves, and Vessels",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Symbols",
+  "parameters": {
+    "symbolType": {
+      "type": "string",
+      "required": true,
+      "description": "Type of symbol to display",
+      "options": ["motor", "pump", "sensor", "valve", "vessel"],
+      "default": "motor"
+    },
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Base tag path for symbol data",
+      "example": "[default]Equipment/Motor1"
+    },
+    "name": {
+      "type": "string",
+      "required": false,
+      "default": "Symbol",
+      "description": "Symbol display name"
+    },
+    "appearance": {
+      "type": "string",
+      "required": false,
+      "default": "auto",
+      "description": "Visual appearance style",
+      "options": ["auto", "p&id", "mimic", "simple"]
+    },
+    "state": {
+      "type": "string",
+      "required": false,
+      "default": "default",
+      "description": "Symbol state (default, running, stopped, faulted, or custom)",
+      "options": ["default", "running", "stopped", "faulted"]
+    },
+    "stateTagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path for dynamic state binding",
+      "example": "[default]Equipment/Motor1/State"
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "right",
+      "description": "Symbol orientation",
+      "options": ["top", "bottom", "left", "right"]
+    },
+    "animationSpeed": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Animation speed as percentage (0 to disable)"
+    },
+    "animationSpeedTagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path for dynamic animation speed",
+      "example": "[default]Equipment/Motor1/Speed"
+    },
+    "labelText": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Label text to display"
+    },
+    "labelLocation": {
+      "type": "string",
+      "required": false,
+      "default": "bottom",
+      "description": "Label position",
+      "options": ["top", "bottom", "left", "right", "hidden"]
+    },
+    "labelJustify": {
+      "type": "string",
+      "required": false,
+      "default": "center",
+      "description": "Label text alignment",
+      "options": ["left", "center", "right", "auto"]
+    },
+    "valueText": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Value text to display"
+    },
+    "valueTagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path for dynamic value display",
+      "example": "[default]Equipment/Motor1/Value"
+    },
+    "valueLocation": {
+      "type": "string",
+      "required": false,
+      "default": "bottom",
+      "description": "Value position",
+      "options": ["top", "bottom", "left", "right", "hidden"]
+    },
+    "valueJustify": {
+      "type": "string",
+      "required": false,
+      "default": "center",
+      "description": "Value text alignment",
+      "options": ["left", "center", "right", "auto"]
+    },
+    "vesselShowFillLevel": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show fill level (vessel only)"
+    },
+    "vesselShowStand": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show stand (vessel only)"
+    },
+    "vesselShowAgitator": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show agitator (vessel only)"
+    },
+    "vesselFillLevel": {
+      "type": "number",
+      "required": false,
+      "default": 50,
+      "description": "Fill level percentage (vessel only)"
+    },
+    "vesselFillLevelTagPath": {
+      "type": "string",
+      "required": false,
+      "description": "Tag path for vessel fill level",
+      "example": "[default]Equipment/Vessel1/Level"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.name}}",
+      "style": {
+        "width": "280px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "align": "center",
+          "gap": "10px",
+          "style": {
+            "padding": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "symbol",
+            "props": {
+              "symbolType": "{{params.symbolType}}",
+              "appearance": "{{params.appearance}}",
+              "state": "{{params.stateTagPath ? tags.[params.stateTagPath] : params.state}}",
+              "orientation": "{{params.orientation}}",
+              "animationSpeed": "{{params.animationSpeedTagPath ? tags.[params.animationSpeedTagPath] : params.animationSpeed}}",
+              "label": {
+                "text": "{{params.labelText}}",
+                "location": "{{params.labelLocation}}",
+                "justify": "{{params.labelJustify}}",
+                "style": {
+                  "fontSize": "14px",
+                  "fontWeight": "500",
+                  "color": "#374151"
+                }
+              },
+              "value": {
+                "text": "{{params.valueTagPath ? tags.[params.valueTagPath] : params.valueText}}",
+                "location": "{{params.valueLocation}}",
+                "justify": "{{params.valueJustify}}",
+                "style": {
+                  "fontSize": "16px",
+                  "fontWeight": "600",
+                  "color": "#1f2937"
+                }
+              },
+              "vessel": {
+                "showFillLevel": "{{params.vesselShowFillLevel}}",
+                "showStand": "{{params.vesselShowStand}}",
+                "showAgitator": "{{params.vesselShowAgitator}}",
+                "fillLevel": "{{params.vesselFillLevelTagPath ? tags.[params.vesselFillLevelTagPath] : params.vesselFillLevel}}"
+              },
+              "style": {
+                "width": "120px",
+                "height": "120px"
+              }
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 2,
+              "gap": "10px",
+              "style": {
+                "width": "100%",
+                "marginTop": "10px"
+              }
+            },
+            "children": [
+              {
+                "type": "statusIndicator",
+                "props": {
+                  "label": "State",
+                  "value": "{{params.stateTagPath ? tags.[params.stateTagPath] : params.state}}",
+                  "color": "{{(params.stateTagPath ? tags.[params.stateTagPath] : params.state) === 'running' ? 'green' : (params.stateTagPath ? tags.[params.stateTagPath] : params.state) === 'faulted' ? 'red' : (params.stateTagPath ? tags.[params.stateTagPath] : params.state) === 'stopped' ? 'gray' : 'blue'}}"
+                }
+              },
+              {
+                "type": "statusIndicator",
+                "props": {
+                  "label": "Mode",
+                  "value": "{{tags.[params.tagPath + '.mode'] || 'MANUAL'}}",
+                  "color": "{{tags.[params.tagPath + '.mode'] === 'AUTO' ? 'blue' : 'yellow'}}"
+                }
+              }
+            ]
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.symbolType === 'motor' || params.symbolType === 'pump'}}",
+              "children": [
+                {
+                  "type": "grid",
+                  "props": {
+                    "columns": 3,
+                    "gap": "8px",
+                    "style": {
+                      "width": "100%",
+                      "fontSize": "12px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "metric",
+                      "props": {
+                        "label": "Speed",
+                        "value": "{{tags.[params.tagPath + '.speed'] || 0}}",
+                        "units": "%",
+                        "format": "0"
+                      }
+                    },
+                    {
+                      "type": "metric",
+                      "props": {
+                        "label": "Current",
+                        "value": "{{tags.[params.tagPath + '.current'] || 0}}",
+                        "units": "A",
+                        "format": "0.0"
+                      }
+                    },
+                    {
+                      "type": "metric",
+                      "props": {
+                        "label": "Runtime",
+                        "value": "{{tags.[params.tagPath + '.runtime'] || 0}}",
+                        "units": "hrs",
+                        "format": "0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.symbolType === 'valve'}}",
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Position",
+                    "value": "{{tags.[params.tagPath + '.position'] || 0}}",
+                    "units": "%",
+                    "format": "0",
+                    "style": {
+                      "fontSize": "18px",
+                      "fontWeight": "bold",
+                      "textAlign": "center"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.symbolType === 'vessel'}}",
+              "children": [
+                {
+                  "type": "grid",
+                  "props": {
+                    "columns": 2,
+                    "gap": "8px",
+                    "style": {
+                      "width": "100%"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "metric",
+                      "props": {
+                        "label": "Level",
+                        "value": "{{params.vesselFillLevelTagPath ? tags.[params.vesselFillLevelTagPath] : params.vesselFillLevel}}",
+                        "units": "%",
+                        "format": "0.0"
+                      }
+                    },
+                    {
+                      "type": "metric",
+                      "props": {
+                        "label": "Volume",
+                        "value": "{{tags.[params.tagPath + '.volume'] || 0}}",
+                        "units": "gal",
+                        "format": "0,0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.symbolType === 'sensor'}}",
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Reading",
+                    "value": "{{tags.[params.tagPath + '.value'] || 0}}",
+                    "units": "{{tags.[params.tagPath + '.units'] || ''}}",
+                    "format": "0.00",
+                    "style": {
+                      "fontSize": "20px",
+                      "fontWeight": "bold",
+                      "textAlign": "center"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

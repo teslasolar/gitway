@@ -122,8 +122,10 @@ class PerspectiveExporter {
 
             const perspectiveView = this.convertView(kaleidoscopeView);
 
-            // Create view directory
-            const viewDir = path.join(tempDir, 'com.inductiveautomation.perspective', 'views', viewName);
+            // Create double-nested view directory structure (Perspective requirement)
+            // Structure: views/[ViewName]/[ViewName]/view.json
+            const viewParentDir = path.join(tempDir, 'com.inductiveautomation.perspective', 'views', viewName);
+            const viewDir = path.join(viewParentDir, viewName);
             fs.mkdirSync(viewDir, { recursive: true });
 
             // Write view.json
@@ -132,8 +134,8 @@ class PerspectiveExporter {
                 JSON.stringify(perspectiveView, null, 2)
             );
 
-            // Write resource.json
-            this.writeResourceJson(viewDir, viewName, 'view');
+            // Write resource.json at the parent level
+            this.writeResourceJson(viewParentDir, viewName, 'view');
 
             console.log(`   ✅ ${viewName}`);
         }
@@ -358,7 +360,7 @@ class PerspectiveExporter {
             '{}'
         );
 
-        // Page configuration
+        // Page configuration (double-nested structure)
         const pageConfig = {
             "pages": {
                 "/": {
@@ -384,11 +386,24 @@ class PerspectiveExporter {
                 "/energy": {
                     "viewPath": "Energy",
                     "title": "Energy"
+                },
+                "/gateway": {
+                    "viewPath": "Gateway",
+                    "title": "Gateway"
+                },
+                "/tags": {
+                    "viewPath": "Tags",
+                    "title": "Tags"
+                },
+                "/gitdb": {
+                    "viewPath": "GitDB",
+                    "title": "GitDB"
                 }
             }
         };
 
-        const pageConfigDir = path.join(tempDir, 'com.inductiveautomation.perspective', 'page-config');
+        const pageConfigParentDir = path.join(tempDir, 'com.inductiveautomation.perspective', 'page-config');
+        const pageConfigDir = path.join(pageConfigParentDir, 'config');
         fs.mkdirSync(pageConfigDir, { recursive: true });
 
         fs.writeFileSync(
@@ -396,11 +411,11 @@ class PerspectiveExporter {
             JSON.stringify(pageConfig, null, 2)
         );
 
-        this.writeResourceJson(pageConfigDir, 'config', 'page-config');
+        this.writePageConfigResourceJson(pageConfigParentDir);
     }
 
     /**
-     * Write resource.json for a resource
+     * Write resource.json for a view resource
      */
     writeResourceJson(dir, name, type) {
         const resourceJson = {
@@ -409,13 +424,40 @@ class PerspectiveExporter {
                 "scope": "A",
                 "restricted": false,
                 "overridable": true,
-                "files": ["view.json", "thumbnail.png"],
+                "files": [name + "/view.json"],
                 "attributes": {
                     "lastModification": {
                         "actor": "Kaleidoscope Export",
                         "timestamp": new Date().toISOString()
                     },
-                    "type": type
+                    "lastModificationSignature": "00000000000000000000000000000000"
+                }
+            }
+        };
+
+        fs.writeFileSync(
+            path.join(dir, 'resource.json'),
+            JSON.stringify(resourceJson, null, 2)
+        );
+    }
+
+    /**
+     * Write resource.json for page config
+     */
+    writePageConfigResourceJson(dir) {
+        const resourceJson = {
+            "resource": {
+                "version": 1,
+                "scope": "A",
+                "restricted": false,
+                "overridable": true,
+                "files": ["config/config.json"],
+                "attributes": {
+                    "lastModification": {
+                        "actor": "Kaleidoscope Export",
+                        "timestamp": new Date().toISOString()
+                    },
+                    "lastModificationSignature": "00000000000000000000000000000000"
                 }
             }
         };

@@ -1,0 +1,237 @@
+{
+  "name": "GitWay JDBC Driver Configuration",
+  "description": "Ignition-compatible JDBC driver configuration for GitDB",
+  "version": "1.0.0",
+  "drivers": {
+    "MySQL": {
+      "className": "com.github.gitdb.mysql.Driver",
+      "displayName": "MySQL Connector/J",
+      "jdbcUrl": "gitdb:mysql://{host}:{port,3306}/{database}",
+      "defaultPort": 3306,
+      "translatorClass": "com.github.gitdb.translators.MySQLTranslator",
+      "connectionProperties": {
+        "zeroDateTimeBehavior": "convertToNull",
+        "useSSL": false,
+        "serverTimezone": "UTC"
+      },
+      "validationQuery": "SELECT 1",
+      "features": {
+        "schemas": false,
+        "catalogs": true,
+        "storedProcedures": true,
+        "transactions": true,
+        "batchUpdates": true,
+        "generatedKeys": true,
+        "scrollableCursors": true
+      }
+    },
+    "MSSQL": {
+      "className": "com.github.gitdb.mssql.SQLServerDriver",
+      "displayName": "Microsoft SQL Server",
+      "jdbcUrl": "gitdb:sqlserver://{host}:{port,1433};databaseName={database}",
+      "defaultPort": 1433,
+      "translatorClass": "com.github.gitdb.translators.MSSQLTranslator",
+      "connectionProperties": {
+        "integratedSecurity": false,
+        "encrypt": false,
+        "trustServerCertificate": true
+      },
+      "validationQuery": "SELECT 1",
+      "features": {
+        "schemas": true,
+        "catalogs": true,
+        "storedProcedures": true,
+        "transactions": true,
+        "batchUpdates": true,
+        "generatedKeys": true,
+        "scrollableCursors": true,
+        "namedParameters": true
+      }
+    },
+    "PostgreSQL": {
+      "className": "com.github.gitdb.postgresql.Driver",
+      "displayName": "PostgreSQL",
+      "jdbcUrl": "gitdb:postgresql://{host}:{port,5432}/{database}",
+      "defaultPort": 5432,
+      "translatorClass": "com.github.gitdb.translators.PostgreSQLTranslator",
+      "connectionProperties": {
+        "ssl": false,
+        "sslmode": "prefer",
+        "currentSchema": "public"
+      },
+      "validationQuery": "SELECT 1",
+      "features": {
+        "schemas": true,
+        "catalogs": false,
+        "storedProcedures": true,
+        "transactions": true,
+        "batchUpdates": true,
+        "generatedKeys": true,
+        "scrollableCursors": true,
+        "arrays": true
+      }
+    },
+    "Oracle": {
+      "className": "com.github.gitdb.oracle.OracleDriver",
+      "displayName": "Oracle Thin Driver",
+      "jdbcUrl": "gitdb:oracle:thin:@{host}:{port,1521}:{sid}",
+      "defaultPort": 1521,
+      "translatorClass": "com.github.gitdb.translators.OracleTranslator",
+      "connectionProperties": {
+        "oracle.net.CONNECT_TIMEOUT": "60000",
+        "v$session.program": "GitWay"
+      },
+      "validationQuery": "SELECT 1 FROM DUAL",
+      "features": {
+        "schemas": true,
+        "catalogs": false,
+        "storedProcedures": true,
+        "transactions": true,
+        "batchUpdates": true,
+        "generatedKeys": true,
+        "scrollableCursors": true,
+        "sequences": true
+      }
+    },
+    "MariaDB": {
+      "className": "com.github.gitdb.mariadb.Driver",
+      "displayName": "MariaDB Connector/J",
+      "jdbcUrl": "gitdb:mariadb://{host}:{port,3306}/{database}",
+      "defaultPort": 3306,
+      "translatorClass": "com.github.gitdb.translators.MariaDBTranslator",
+      "connectionProperties": {
+        "autoReconnect": true,
+        "useUnicode": true,
+        "characterEncoding": "UTF-8",
+        "useServerPrepStmts": true
+      },
+      "validationQuery": "SELECT 1",
+      "features": {
+        "schemas": false,
+        "catalogs": true,
+        "storedProcedures": true,
+        "transactions": true,
+        "batchUpdates": true,
+        "generatedKeys": true,
+        "scrollableCursors": true,
+        "jsonSupport": true,
+        "windowFunctions": true
+      }
+    }
+  },
+  "connectionPools": {
+    "default": {
+      "minIdle": 1,
+      "maxActive": 8,
+      "maxWait": 30000,
+      "validationInterval": 30000,
+      "testOnBorrow": true,
+      "testWhileIdle": true,
+      "timeBetweenEvictionRuns": 30000,
+      "minEvictableIdleTime": 60000
+    }
+  },
+  "typeMapping": {
+    "MySQL": {
+      "String": "VARCHAR(255)",
+      "Int4": "INT",
+      "Int8": "BIGINT",
+      "Float4": "FLOAT",
+      "Float8": "DOUBLE",
+      "Boolean": "BOOLEAN",
+      "DateTime": "DATETIME",
+      "Document": "JSON",
+      "DataSet": "TEXT"
+    },
+    "MSSQL": {
+      "String": "NVARCHAR(255)",
+      "Int4": "INT",
+      "Int8": "BIGINT",
+      "Float4": "REAL",
+      "Float8": "FLOAT",
+      "Boolean": "BIT",
+      "DateTime": "DATETIME2",
+      "Document": "NVARCHAR(MAX)",
+      "DataSet": "NVARCHAR(MAX)"
+    },
+    "PostgreSQL": {
+      "String": "VARCHAR(255)",
+      "Int4": "INTEGER",
+      "Int8": "BIGINT",
+      "Float4": "REAL",
+      "Float8": "DOUBLE PRECISION",
+      "Boolean": "BOOLEAN",
+      "DateTime": "TIMESTAMP WITH TIME ZONE",
+      "Document": "JSONB",
+      "DataSet": "TEXT"
+    },
+    "Oracle": {
+      "String": "VARCHAR2(255)",
+      "Int4": "NUMBER(10)",
+      "Int8": "NUMBER(19)",
+      "Float4": "FLOAT",
+      "Float8": "DOUBLE PRECISION",
+      "Boolean": "NUMBER(1)",
+      "DateTime": "TIMESTAMP",
+      "Document": "CLOB",
+      "DataSet": "CLOB"
+    },
+    "MariaDB": {
+      "String": "VARCHAR(255)",
+      "Int4": "INT",
+      "Int8": "BIGINT",
+      "Float4": "FLOAT",
+      "Float8": "DOUBLE",
+      "Boolean": "BOOLEAN",
+      "DateTime": "DATETIME",
+      "Document": "JSON",
+      "DataSet": "TEXT"
+    }
+  },
+  "ignitionIntegration": {
+    "gatewayContext": {
+      "moduleId": "com.github.gitway.jdbc",
+      "moduleName": "GitWay JDBC Drivers",
+      "moduleVersion": "1.0.0",
+      "requiredIgnitionVersion": "8.1.0",
+      "requiredFrameworkVersion": "8"
+    },
+    "driverRegistration": {
+      "registerOnStartup": true,
+      "autoDiscoverConnections": true,
+      "managedByGateway": true
+    },
+    "systemFunctions": {
+      "system.db": {
+        "runQuery": "com.github.gitdb.GitDBConnection.runQuery",
+        "runPrepUpdate": "com.github.gitdb.GitDBConnection.runPrepUpdate",
+        "runNamedQuery": "com.github.gitdb.GitDBConnection.runNamedQuery",
+        "getConnection": "com.github.gitdb.GitDBDriver.getConnection",
+        "beginTransaction": "com.github.gitdb.GitDBConnection.beginTransaction",
+        "commitTransaction": "com.github.gitdb.GitDBConnection.commit",
+        "rollbackTransaction": "com.github.gitdb.GitDBConnection.rollback",
+        "closeTransaction": "com.github.gitdb.GitDBConnection.close"
+      }
+    }
+  },
+  "gitIntegration": {
+    "repository": {
+      "type": "github",
+      "owner": "teslasolar",
+      "name": "gitway",
+      "branch": "main"
+    },
+    "commitStrategy": {
+      "autoCommit": true,
+      "batchSize": 100,
+      "batchTimeout": 5000,
+      "commitMessage": "GitDB Transaction: {timestamp} - {operations} operations"
+    },
+    "storageFormat": {
+      "type": "json",
+      "compression": false,
+      "prettyPrint": true,
+      "fileExtension": ".gitdb.json"
+    }
+  }
+}

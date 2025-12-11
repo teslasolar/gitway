@@ -1,11 +1,12 @@
 {
   "name": "GitWay",
-  "title": "GitWay - GitHub to Gateway Bridge",
-  "description": "Unified interface for Ignition that works both as Perspective project and GitHub Pages site",
+  "title": "GitWay Kaleidoscope Project",
+  "description": "Kaleidoscope project - Free alternative to Perspective that runs from GitHub",
   "version": "1.0.0",
   "author": "GitWay Team",
   "enabled": true,
   "inheritable": true,
+  "engine": "kaleidoscope",
   "resources": {
     "icon": "material/cloud_sync",
     "primaryColor": "#667eea",
@@ -14,11 +15,13 @@
   "general": {
     "sessionTimeout": 900,
     "maxSessions": 100,
-    "pageStartup": "/gitway/dashboard",
+    "pageStartup": "/kaleidoscope/dashboard",
     "defaultTheme": "dark",
     "mobileOptimized": true
   },
-  "perspective": {
+  "kaleidoscope": {
+    "renderer": "dynamic",
+    "componentLibrary": "default",
     "dockingConfig": {
       "enabled": true,
       "position": "left",
@@ -27,6 +30,11 @@
     "navbar": {
       "enabled": true,
       "position": "top"
+    },
+    "features": {
+      "dragDrop": true,
+      "liveEdit": true,
+      "gitSync": true
     }
   },
   "webdev": {

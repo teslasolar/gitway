@@ -1,0 +1,236 @@
+{
+  "name": "GitWay Tag Provider",
+  "description": "Tag provider for GitWay system integration",
+  "version": "1.0.0",
+  "type": "standard",
+  "tagGroups": {
+    "System": {
+      "path": "[GitWay]System",
+      "tags": {
+        "Status": {
+          "dataType": "String",
+          "value": "Online",
+          "quality": "Good",
+          "documentation": "System online status"
+        },
+        "ConnectedClients": {
+          "dataType": "Int4",
+          "value": 0,
+          "quality": "Good",
+          "documentation": "Number of connected clients"
+        },
+        "LastUpdate": {
+          "dataType": "DateTime",
+          "value": "2024-12-10T00:00:00Z",
+          "quality": "Good",
+          "documentation": "Last update timestamp"
+        },
+        "Version": {
+          "dataType": "String",
+          "value": "1.0.0",
+          "quality": "Good",
+          "documentation": "System version"
+        }
+      }
+    },
+    "Database": {
+      "path": "[GitWay]Database",
+      "tags": {
+        "ActiveConnections": {
+          "dataType": "Int4",
+          "value": 0,
+          "quality": "Good",
+          "documentation": "Active database connections"
+        },
+        "TotalTransactions": {
+          "dataType": "Int8",
+          "value": 0,
+          "quality": "Good",
+          "documentation": "Total database transactions"
+        },
+        "LastCommitSHA": {
+          "dataType": "String",
+          "value": "",
+          "quality": "Good",
+          "documentation": "Last Git commit SHA"
+        },
+        "DatabaseMode": {
+          "dataType": "String",
+          "value": "GitDB",
+          "quality": "Good",
+          "documentation": "Current database mode"
+        }
+      }
+    },
+    "Kaleidoscope": {
+      "path": "[GitWay]Kaleidoscope",
+      "tags": {
+        "ProjectName": {
+          "dataType": "String",
+          "value": "Default",
+          "quality": "Good",
+          "documentation": "Active Kaleidoscope project"
+        },
+        "ComponentCount": {
+          "dataType": "Int4",
+          "value": 0,
+          "quality": "Good",
+          "documentation": "Number of components loaded"
+        },
+        "RenderMode": {
+          "dataType": "String",
+          "value": "Web",
+          "quality": "Good",
+          "documentation": "Current render mode (Web/Ignition)"
+        },
+        "LastSync": {
+          "dataType": "DateTime",
+          "value": "2024-12-10T00:00:00Z",
+          "quality": "Good",
+          "documentation": "Last synchronization with GitDB"
+        }
+      }
+    },
+    "Gateway": {
+      "path": "[GitWay]Gateway",
+      "tags": {
+        "Connected": {
+          "dataType": "Boolean",
+          "value": false,
+          "quality": "Good",
+          "documentation": "Gateway connection status"
+        },
+        "Host": {
+          "dataType": "String",
+          "value": "pred",
+          "quality": "Good",
+          "documentation": "Ignition gateway hostname"
+        },
+        "Port": {
+          "dataType": "Int4",
+          "value": 8088,
+          "quality": "Good",
+          "documentation": "Gateway port number"
+        },
+        "Protocol": {
+          "dataType": "String",
+          "value": "http",
+          "quality": "Good",
+          "documentation": "Connection protocol"
+        },
+        "BridgePort": {
+          "dataType": "Int4",
+          "value": 3001,
+          "quality": "Good",
+          "documentation": "Bridge server port"
+        }
+      }
+    },
+    "Drivers": {
+      "path": "[GitWay]Drivers",
+      "tags": {
+        "MySQL": {
+          "dataType": "Document",
+          "value": {
+            "enabled": true,
+            "className": "com.github.gitdb.mysql",
+            "url": "gitdb:mysql://",
+            "status": "Ready"
+          },
+          "quality": "Good",
+          "documentation": "MySQL driver configuration"
+        },
+        "MSSQL": {
+          "dataType": "Document",
+          "value": {
+            "enabled": true,
+            "className": "com.github.gitdb.mssql",
+            "url": "gitdb:sqlserver://",
+            "status": "Ready"
+          },
+          "quality": "Good",
+          "documentation": "Microsoft SQL Server driver"
+        },
+        "PostgreSQL": {
+          "dataType": "Document",
+          "value": {
+            "enabled": true,
+            "className": "com.github.gitdb.postgres",
+            "url": "gitdb:postgresql://",
+            "status": "Ready"
+          },
+          "quality": "Good",
+          "documentation": "PostgreSQL driver"
+        },
+        "Oracle": {
+          "dataType": "Document",
+          "value": {
+            "enabled": true,
+            "className": "com.github.gitdb.oracle",
+            "url": "gitdb:oracle:thin:@",
+            "status": "Ready"
+          },
+          "quality": "Good",
+          "documentation": "Oracle driver"
+        },
+        "MariaDB": {
+          "dataType": "Document",
+          "value": {
+            "enabled": true,
+            "className": "com.github.gitdb.mariadb",
+            "url": "gitdb:mariadb://",
+            "status": "Ready"
+          },
+          "quality": "Good",
+          "documentation": "MariaDB driver"
+        }
+      }
+    }
+  },
+  "udtDefinitions": {
+    "DatabaseConnection": {
+      "name": "DatabaseConnection",
+      "members": {
+        "Name": { "dataType": "String" },
+        "Driver": { "dataType": "String" },
+        "Status": { "dataType": "String" },
+        "LastQuery": { "dataType": "DateTime" },
+        "QueryCount": { "dataType": "Int8" },
+        "ErrorCount": { "dataType": "Int4" }
+      }
+    },
+    "ComponentStatus": {
+      "name": "ComponentStatus",
+      "members": {
+        "ComponentName": { "dataType": "String" },
+        "Type": { "dataType": "String" },
+        "Status": { "dataType": "String" },
+        "LastUpdate": { "dataType": "DateTime" },
+        "Properties": { "dataType": "Document" }
+      }
+    }
+  },
+  "alarmConfig": {
+    "defaults": {
+      "priority": "Medium",
+      "displayPath": "{itemPath}",
+      "label": "{name}"
+    },
+    "alarms": [
+      {
+        "path": "[GitWay]Gateway/Connected",
+        "name": "Gateway Connection Lost",
+        "mode": "Equal",
+        "setpointA": false,
+        "priority": "High"
+      },
+      {
+        "path": "[GitWay]Database/ActiveConnections",
+        "name": "High Database Connections",
+        "mode": "Above Setpoint",
+        "setpointA": 50,
+        "priority": "Medium"
+      }
+    ]
+  }
+}

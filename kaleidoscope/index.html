@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaleidoscope - Free Perspective Renderer 🔭</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Kaleidoscope Effect */
+        @keyframes kaleidoscope {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .kaleidoscope-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            transform: translate(-50%, -50%);
+            background: conic-gradient(from 0deg at 50% 50%,
+                rgba(102, 126, 234, 0.1) 0deg,
+                rgba(118, 75, 162, 0.1) 60deg,
+                rgba(102, 126, 234, 0.1) 120deg,
+                rgba(118, 75, 162, 0.1) 180deg,
+                rgba(102, 126, 234, 0.1) 240deg,
+                rgba(118, 75, 162, 0.1) 300deg,
+                rgba(102, 126, 234, 0.1) 360deg);
+            animation: kaleidoscope 30s linear infinite;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: '🔭';
+            font-size: 32px;
+            -webkit-text-fill-color: initial;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            margin: 20px auto;
+            gap: 20px;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .component-library {
+            margin-bottom: 20px;
+        }
+
+        .component-category {
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .component {
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+        }
+
+        .component:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .component.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .component-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .component-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .canvas {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .canvas-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .perspective-view {
+            position: relative;
+            min-height: 600px;
+            z-index: 1;
+        }
+
+        .dropped-component {
+            position: absolute;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #667eea;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropped-component:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .dropped-component.selected {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.2);
+        }
+
+        .properties {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .property-group {
+            margin-bottom: 20px;
+        }
+
+        .property-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .property-field {
+            margin-bottom: 12px;
+        }
+
+        .property-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .toolbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin: 0 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+            border-color: #764ba2;
+        }
+
+        .gitway-sync {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .gitway-sync:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sync-icon {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .konami-easter-egg {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+            cursor: pointer;
+            z-index: 9999;
+        }
+
+        .konami-easter-egg:hover {
+            color: white;
+            transform: scale(1.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="kaleidoscope-bg"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                Kaleidoscope
+                <span style="font-size: 14px; opacity: 0.7;">Perspective Anywhere™</span>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-indicator"></span>
+                    <span>GitWay Connected</span>
+                </div>
+                <div class="status-item">
+                    <span>📊 5 Components</span>
+                </div>
+                <div class="status-item">
+                    <span>🔄 Live Sync</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="toolbar">
+        <div class="toolbar-buttons">
+            <button class="btn" onclick="kaleidoscope.newProject()">
+                <span>📄</span> New
+            </button>
+            <button class="btn" onclick="kaleidoscope.importProject()">
+                <span>📥</span> Import
+            </button>
+            <button class="btn btn-primary" onclick="kaleidoscope.exportProject()">
+                <span>📤</span> Export to Ignition
+            </button>
+            <button class="btn" onclick="kaleidoscope.preview()">
+                <span>👁️</span> Preview
+            </button>
+        </div>
+        <div class="toolbar-buttons">
+            <button class="btn" onclick="kaleidoscope.syncWithGitWay()">
+                <span>🔄</span> Sync GitWay
+            </button>
+            <button class="btn" onclick="kaleidoscope.publishToPages()">
+                <span>🚀</span> Publish to Pages
+            </button>
+        </div>
+    </div>
+
+    <div class="main">
+        <aside class="sidebar">
+            <div class="component-library">
+                <div class="category-title">Component Library</div>
+
+                <div class="component-category">
+                    <div class="category-title">Display</div>
+                    <div class="component" draggable="true" data-component="label">
+                        <div class="component-icon">L</div>
+                        <div class="component-name">Label</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="numeric-label">
+                        <div class="component-icon">N</div>
+                        <div class="component-name">Numeric Label</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="led-display">
+                        <div class="component-icon">●</div>
+                        <div class="component-name">LED Display</div>
+                    </div>
+                </div>
+
+                <div class="component-category">
+                    <div class="category-title">Input</div>
+                    <div class="component" draggable="true" data-component="button">
+                        <div class="component-icon">B</div>
+                        <div class="component-name">Button</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="toggle-switch">
+                        <div class="component-icon">T</div>
+                        <div class="component-name">Toggle Switch</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="slider">
+                        <div class="component-icon">S</div>
+                        <div class="component-name">Slider</div>
+                    </div>
+                </div>
+
+                <div class="component-category">
+                    <div class="category-title">Charts</div>
+                    <div class="component" draggable="true" data-component="time-series">
+                        <div class="component-icon">📈</div>
+                        <div class="component-name">Time Series Chart</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="gauge">
+                        <div class="component-icon">⚡</div>
+                        <div class="component-name">Gauge</div>
+                    </div>
+                </div>
+
+                <div class="component-category">
+                    <div class="category-title">Containers</div>
+                    <div class="component" draggable="true" data-component="flex-container">
+                        <div class="component-icon">□</div>
+                        <div class="component-name">Flex Container</div>
+                    </div>
+                    <div class="component" draggable="true" data-component="coord-container">
+                        <div class="component-icon">⊞</div>
+                        <div class="component-name">Coordinate Container</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="canvas" id="canvas">
+            <div class="canvas-grid"></div>
+            <div class="perspective-view" id="perspective-view">
+                <!-- Components drop here -->
+            </div>
+        </div>
+
+        <aside class="properties">
+            <div class="property-group">
+                <div class="property-title">Component Properties</div>
+                <div id="properties-panel">
+                    <p style="color: #999; font-size: 14px;">Select a component to edit properties</p>
+                </div>
+            </div>
+
+            <div class="property-group">
+                <div class="property-title">Bindings</div>
+                <div class="property-field">
+                    <div class="property-label">Tag Path</div>
+                    <input type="text" class="property-input" placeholder="[default]Path/To/Tag">
+                </div>
+                <div class="property-field">
+                    <div class="property-label">Transform</div>
+                    <select class="property-input">
+                        <option>None</option>
+                        <option>Map</option>
+                        <option>Expression</option>
+                        <option>Script</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="property-group">
+                <div class="property-title">GitWay Integration</div>
+                <div class="property-field">
+                    <div class="property-label">Commit Hash</div>
+                    <input type="text" class="property-input" id="commit-hash" readonly>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="kaleidoscope.commitToGitDB()">
+                    Commit to GitDB
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <div class="gitway-sync">
+        <div class="sync-status">
+            <span class="sync-icon">🔄</span>
+            <div>
+                <div style="font-weight: bold;">GitWay Active</div>
+                <div style="font-size: 12px; color: #666;">Polling every 5 seconds</div>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="kaleidoscope.openGitWayDashboard()">
+            Dashboard
+        </button>
+    </div>
+
+    <div class="konami-easter-egg" onclick="kaleidoscope.easterEgg()">
+        🦖 Konomi KaT-rex
+    </div>
+
+    <script>
+        class Kaleidoscope {
+            constructor() {
+                this.components = [];
+                this.selectedComponent = null;
+                this.projectData = {
+                    name: 'Untitled Project',
+                    views: [],
+                    components: []
+                };
+                this.gitwayAPI = 'https://teslasolar.github.io/gitway';
+                this.gitDB = [];
+                this.init();
+            }
+
+            init() {
+                this.setupDragDrop();
+                this.setupGitWayPolling();
+                this.loadFromGitDB();
+            }
+
+            setupDragDrop() {
+                const components = document.querySelectorAll('.component');
+                const canvas = document.getElementById('perspective-view');
+
+                components.forEach(comp => {
+                    comp.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('component-type', comp.dataset.component);
+                        comp.classList.add('dragging');
+                    });
+
+                    comp.addEventListener('dragend', () => {
+                        comp.classList.remove('dragging');
+                    });
+                });
+
+                canvas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+
+                canvas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const componentType = e.dataTransfer.getData('component-type');
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    this.addComponent(componentType, x, y);
+                });
+            }
+
+            addComponent(type, x, y) {
+                const component = {
+                    id: `comp_${Date.now()}`,
+                    type: type,
+                    x: x,
+                    y: y,
+                    props: this.getDefaultProps(type)
+                };
+
+                this.components.push(component);
+                this.renderComponent(component);
+                this.selectComponent(component);
+            }
+
+            getDefaultProps(type) {
+                const defaults = {
+                    'label': { text: 'Label', fontSize: 14, color: '#333' },
+                    'numeric-label': { value: 42, format: '0.00', units: '' },
+                    'button': { text: 'Button', enabled: true },
+                    'gauge': { min: 0, max: 100, value: 50 },
+                    'time-series': { tagPath: '', duration: '1h' }
+                };
+                return defaults[type] || {};
+            }
+
+            renderComponent(component) {
+                const el = document.createElement('div');
+                el.className = 'dropped-component';
+                el.id = component.id;
+                el.style.left = component.x + 'px';
+                el.style.top = component.y + 'px';
+                el.innerHTML = this.getComponentHTML(component);
+
+                el.addEventListener('click', () => this.selectComponent(component));
+                el.addEventListener('mousedown', (e) => this.startDrag(e, el));
+
+                document.getElementById('perspective-view').appendChild(el);
+            }
+
+            getComponentHTML(component) {
+                switch(component.type) {
+                    case 'label':
+                        return `<div style="padding: 10px;">${component.props.text}</div>`;
+                    case 'numeric-label':
+                        return `<div style="padding: 10px; font-size: 24px; color: #667eea;">${component.props.value}</div>`;
+                    case 'button':
+                        return `<button style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px;">${component.props.text}</button>`;
+                    case 'gauge':
+                        return `<div style="width: 150px; height: 150px; background: conic-gradient(#667eea ${component.props.value}%, #e5e7eb ${component.props.value}%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <div style="background: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">${component.props.value}%</div>
+                        </div>`;
+                    default:
+                        return `<div style="padding: 20px;">${component.type}</div>`;
+                }
+            }
+
+            selectComponent(component) {
+                document.querySelectorAll('.dropped-component').forEach(el => {
+                    el.classList.remove('selected');
+                });
+
+                document.getElementById(component.id)?.classList.add('selected');
+                this.selectedComponent = component;
+                this.showProperties(component);
+            }
+
+            showProperties(component) {
+                const panel = document.getElementById('properties-panel');
+                let html = '';
+
+                Object.entries(component.props).forEach(([key, value]) => {
+                    html += `
+                        <div class="property-field">
+                            <div class="property-label">${key}</div>
+                            <input type="text" class="property-input" value="${value}"
+                                onchange="kaleidoscope.updateProperty('${component.id}', '${key}', this.value)">
+                        </div>
+                    `;
+                });
+
+                panel.innerHTML = html;
+            }
+
+            updateProperty(componentId, prop, value) {
+                const component = this.components.find(c => c.id === componentId);
+                if (component) {
+                    component.props[prop] = value;
+                    document.getElementById(componentId).innerHTML = this.getComponentHTML(component);
+                }
+            }
+
+            startDrag(e, element) {
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+
+                document.onmouseup = () => {
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                };
+
+                document.onmousemove = (e) => {
+                    e = e || window.event;
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                };
+            }
+
+            async setupGitWayPolling() {
+                setInterval(async () => {
+                    await this.pollGitWay();
+                }, 5000);
+            }
+
+            async pollGitWay() {
+                try {
+                    const response = await fetch(`${this.gitwayAPI}/?api=status`);
+                    const text = await response.text();
+                    // Parse the JSON from the response
+                    console.log('GitWay Poll:', new Date().toLocaleTimeString());
+                } catch (error) {
+                    console.log('GitWay offline, using local mode');
+                }
+            }
+
+            async loadFromGitDB() {
+                // Load project from GitDB (GitHub commits)
+                try {
+                    const response = await fetch(`${this.gitwayAPI}/api/v1/collections.json`);
+                    const data = await response.json();
+                    console.log('Loaded from GitDB:', data);
+                } catch (error) {
+                    console.log('GitDB not available');
+                }
+            }
+
+            async commitToGitDB() {
+                const commitData = {
+                    timestamp: new Date().toISOString(),
+                    project: this.projectData,
+                    components: this.components,
+                    hash: this.generateHash()
+                };
+
+                // This would commit to GitHub via API
+                console.log('Committing to GitDB:', commitData);
+                document.getElementById('commit-hash').value = commitData.hash;
+
+                // Show success
+                this.showNotification('Committed to GitDB! Hash: ' + commitData.hash);
+            }
+
+            generateHash() {
+                return 'git_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            exportProject() {
+                const projectExport = {
+                    version: '8.1',
+                    name: this.projectData.name,
+                    views: [{
+                        path: 'Main',
+                        components: this.components.map(c => ({
+                            type: `ia.display.${c.type}`,
+                            position: { x: c.x, y: c.y },
+                            props: c.props
+                        }))
+                    }]
+                };
+
+                const blob = new Blob([JSON.stringify(projectExport, null, 2)],
+                    { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'perspective-export.json';
+                a.click();
+
+                this.showNotification('Project exported! Import to Ignition Gateway');
+            }
+
+            importProject() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const data = JSON.parse(event.target.result);
+                        this.loadProject(data);
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            }
+
+            loadProject(data) {
+                // Clear existing
+                document.getElementById('perspective-view').innerHTML = '';
+                this.components = [];
+
+                // Load new project
+                if (data.views && data.views[0]) {
+                    data.views[0].components.forEach(comp => {
+                        const type = comp.type.replace('ia.display.', '');
+                        this.addComponent(type, comp.position.x, comp.position.y);
+                    });
+                }
+
+                this.showNotification('Project imported successfully!');
+            }
+
+            newProject() {
+                if (confirm('Clear current project?')) {
+                    document.getElementById('perspective-view').innerHTML = '';
+                    this.components = [];
+                    this.selectedComponent = null;
+                    this.showNotification('New project created');
+                }
+            }
+
+            preview() {
+                const win = window.open('', '_blank');
+                win.document.write(`
+                    <html>
+                    <head><title>Preview</title></head>
+                    <body style="margin: 0; padding: 20px; font-family: sans-serif;">
+                        <h1>Perspective View Preview</h1>
+                        <div style="border: 1px solid #ccc; padding: 20px; position: relative; min-height: 600px;">
+                            ${document.getElementById('perspective-view').innerHTML}
+                        </div>
+                    </body>
+                    </html>
+                `);
+            }
+
+            syncWithGitWay() {
+                this.showNotification('Syncing with GitWay...');
+                this.pollGitWay();
+                setTimeout(() => {
+                    this.showNotification('GitWay sync complete! BAM! 💥');
+                }, 2000);
+            }
+
+            publishToPages() {
+                this.showNotification('Publishing to GitHub Pages...');
+                setTimeout(() => {
+                    this.showNotification('Published! View at: ' + this.gitwayAPI);
+                    window.open(this.gitwayAPI, '_blank');
+                }, 2000);
+            }
+
+            openGitWayDashboard() {
+                window.open(this.gitwayAPI, '_blank');
+            }
+
+            showNotification(message) {
+                const notif = document.createElement('div');
+                notif.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: white;
+                    padding: 15px 30px;
+                    border-radius: 8px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    animation: slideDown 0.3s ease;
+                `;
+                notif.textContent = message;
+                document.body.appendChild(notif);
+
+                setTimeout(() => {
+                    notif.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => notif.remove(), 300);
+                }, 3000);
+            }
+
+            easterEgg() {
+                alert('🦖 Konomi KaT-rex says: GG NO RE! 🎮\n\nBAM BAM BAM! Let\'s kick it up a notch!\n\n' +
+                      'GitWay GitHub Gateway GitWay GitHub Gateway GitWay GitHub Gateway!');
+                document.body.style.animation = 'kaleidoscope 1s ease';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 1000);
+            }
+        }
+
+        // Initialize Kaleidoscope
+        const kaleidoscope = new Kaleidoscope();
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100px); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

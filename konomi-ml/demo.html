@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KonomiML + GitDB - MEGA State Engine Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .state-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .state-indicator {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .state-indicator:hover {
+            transform: scale(1.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .state-indicator.active {
+            background: rgba(0, 255, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .state-indicator.error {
+            background: rgba(255, 0, 0, 0.3);
+            animation: error-pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+
+        @keyframes error-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .state-indicator:hover .tooltip {
+            opacity: 1;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .workflow-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .history-log {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .history-entry {
+            padding: 5px;
+            margin: 2px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        #current-state-display {
+            font-size: 4em;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .driver-selector {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .driver-button {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .driver-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .driver-button.active {
+            background: rgba(0, 255, 0, 0.3);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠⚡ KonomiML MEGA State Engine</h1>
+        <div class="subtitle">Pack ML on AI Steroids with GitDB Integration</div>
+        <div class="subtitle">Developed by Konomi Systems - konomi-systems.com</div>
+
+        <div id="current-state-display">⏸️</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="grid">
+            <!-- Stats Card -->
+            <div class="card">
+                <h2>📊 System Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-value" id="total-states">0</div>
+                        <div class="stat-label">Total States</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="transitions">0</div>
+                        <div class="stat-label">Transitions</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="active-dbs">0</div>
+                        <div class="stat-label">Databases</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="errors">0</div>
+                        <div class="stat-label">Errors</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Control -->
+            <div class="card">
+                <h2>🗄️ Database Control</h2>
+                <div class="driver-selector">
+                    <div class="driver-button" data-driver="mysql">🐬 MySQL</div>
+                    <div class="driver-button" data-driver="postgres">🐘 PostgreSQL</div>
+                    <div class="driver-button" data-driver="mariadb">🦭 MariaDB</div>
+                </div>
+                <div class="control-panel">
+                    <button onclick="connectDB()">Connect DB</button>
+                    <button onclick="beginTransaction()">Begin TXN</button>
+                    <button onclick="executeQuery()">Execute Query</button>
+                    <button onclick="commitTransaction()">Commit</button>
+                    <button onclick="rollbackTransaction()">Rollback</button>
+                </div>
+            </div>
+
+            <!-- Workflow Control -->
+            <div class="card">
+                <h2>🔄 Workflows</h2>
+                <div class="control-panel">
+                    <button class="workflow-button" onclick="runWorkflow('ai_training')">
+                        🤖 AI Training Pipeline
+                    </button>
+                    <button class="workflow-button" onclick="runWorkflow('database_cycle')">
+                        💾 Database Cycle
+                    </button>
+                    <button class="workflow-button" onclick="runWorkflow('error_recovery')">
+                        🏥 Error Recovery
+                    </button>
+                    <button class="workflow-button" onclick="runMegaDemo()">
+                        🌟 MEGA DEMO
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- State Categories -->
+        <div class="grid">
+            <div class="card">
+                <h2>🎮 System States</h2>
+                <div class="state-grid" id="system-states"></div>
+            </div>
+            <div class="card">
+                <h2>🤖 AI/ML States</h2>
+                <div class="state-grid" id="ai-states"></div>
+            </div>
+            <div class="card">
+                <h2>💾 Database States</h2>
+                <div class="state-grid" id="db-states"></div>
+            </div>
+            <div class="card">
+                <h2>📝 Git States</h2>
+                <div class="state-grid" id="git-states"></div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+            <h2>📜 State History</h2>
+            <div class="history-log" id="history"></div>
+        </div>
+    </div>
+
+    <!-- Load GitDB driver -->
+    <script src="../gitdb/gitdb-driver.js"></script>
+    <!-- Load KonomiML Bridge -->
+    <script src="konomi-bridge.js"></script>
+
+    <script>
+        // Initialize KonomiML
+        let konomi;
+        let selectedDriver = 'mysql';
+        let currentDB = null;
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            konomi = new KonomiMLBridge();
+            konomi.initializeGitDB();
+            initializeUI();
+            updateStats();
+        });
+
+        // Initialize UI
+        function initializeUI() {
+            // Populate state grids
+            const categories = {
+                'system-states': [0, 99],
+                'ai-states': [100, 299],
+                'db-states': [300, 399],
+                'git-states': [400, 499]
+            };
+
+            for (const [elementId, [min, max]] of Object.entries(categories)) {
+                const container = document.getElementById(elementId);
+                for (let i = min; i <= Math.min(max, min + 20); i++) {
+                    const state = konomi.megaStates.get(i);
+                    if (state) {
+                        const indicator = createStateIndicator(state);
+                        container.appendChild(indicator);
+                    }
+                }
+            }
+
+            // Driver selection
+            document.querySelectorAll('.driver-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.driver-button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedDriver = btn.dataset.driver;
+                });
+            });
+
+            // Listen for state changes
+            window.addEventListener('konomi-state-change', (e) => {
+                const { state, transition } = e.detail;
+                updateCurrentState(state);
+                addToHistory(state);
+                updateStats();
+                updateProgress(transition);
+            });
+        }
+
+        // Create state indicator
+        function createStateIndicator(state) {
+            const div = document.createElement('div');
+            div.className = 'state-indicator';
+            div.textContent = state.emoji;
+            div.dataset.stateId = state.id;
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = `${state.name}: ${state.description}`;
+            div.appendChild(tooltip);
+
+            div.addEventListener('click', () => {
+                konomi.transitionTo(state.id, 'Manual transition');
+            });
+
+            return div;
+        }
+
+        // Update current state display
+        function updateCurrentState(state) {
+            document.getElementById('current-state-display').textContent = state.emoji;
+
+            // Update indicators
+            document.querySelectorAll('.state-indicator').forEach(indicator => {
+                indicator.classList.remove('active', 'error');
+                if (parseInt(indicator.dataset.stateId) === state.id) {
+                    indicator.classList.add(state.id >= 900 ? 'error' : 'active');
+                }
+            });
+        }
+
+        // Add to history
+        function addToHistory(state) {
+            const history = document.getElementById('history');
+            const entry = document.createElement('div');
+            entry.className = 'history-entry';
+            entry.innerHTML = `
+                <span>${new Date().toLocaleTimeString()}</span>
+                <span>${state.emoji}</span>
+                <span>${state.name}</span>
+            `;
+            history.insertBefore(entry, history.firstChild);
+
+            // Keep history limited
+            while (history.children.length > 20) {
+                history.removeChild(history.lastChild);
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const dashboard = konomi.getStateDashboard();
+            document.getElementById('total-states').textContent = dashboard.totalStates;
+            document.getElementById('transitions').textContent = dashboard.historyCount;
+            document.getElementById('active-dbs').textContent = dashboard.connections.length;
+            document.getElementById('errors').textContent = dashboard.errorCount;
+        }
+
+        // Update progress bar
+        function updateProgress(transition) {
+            const progress = document.getElementById('progress');
+            const percent = (transition.toState % 100) * 1.5;
+            progress.style.width = `${Math.min(100, percent)}%`;
+        }
+
+        // Database operations
+        async function connectDB() {
+            const dbName = `KonomiDB_${selectedDriver}`;
+            currentDB = await konomi.connectDatabase(dbName, selectedDriver);
+        }
+
+        async function beginTransaction() {
+            if (!currentDB) {
+                alert('Connect to a database first!');
+                return;
+            }
+            await konomi.transitionTo(311, 'Beginning transaction');
+            await konomi.transitionTo(312, 'Transaction active');
+        }
+
+        async function executeQuery() {
+            if (!currentDB) {
+                alert('Connect to a database first!');
+                return;
+            }
+            await konomi.executeQuery(currentDB, 'SELECT * FROM test_table');
+        }
+
+        async function commitTransaction() {
+            if (!currentDB) {
+                alert('Connect to a database first!');
+                return;
+            }
+            await konomi.transitionTo(314, 'Committing');
+            await konomi.transitionTo(315, 'Committed');
+        }
+
+        async function rollbackTransaction() {
+            if (!currentDB) {
+                alert('Connect to a database first!');
+                return;
+            }
+            await konomi.transitionTo(316, 'Rolling back');
+            await konomi.transitionTo(317, 'Rolled back');
+        }
+
+        // Run workflow
+        async function runWorkflow(name) {
+            await konomi.executeMegaWorkflow(name);
+        }
+
+        // Run mega demo
+        async function runMegaDemo() {
+            // Epic state transition sequence
+            const sequences = [
+                // Boot sequence
+                [0, 1, 2, 3, 4, 5],
+                // AI sequence
+                [100, 101, 102, 110, 117, 125],
+                // Database sequence
+                [300, 301, 303, 311, 312, 320, 323, 330, 314, 315],
+                // Git sequence
+                [400, 401, 402, 403, 410, 432, 433],
+                // Error and recovery
+                [903, 960, 961, 963],
+                // Complete
+                [5, 6, 7]
+            ];
+
+            for (const sequence of sequences) {
+                for (const stateId of sequence) {
+                    await konomi.transitionTo(stateId, 'MEGA DEMO');
+                    await konomi.sleep(300);
+                }
+                await konomi.sleep(500);
+            }
+
+            // Fireworks!
+            document.getElementById('current-state-display').textContent = '🎆';
+            setTimeout(() => {
+                document.getElementById('current-state-display').textContent = '✨';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

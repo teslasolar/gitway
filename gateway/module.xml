@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+    <module>
+        <id>com.github.gitway.jdbc</id>
+        <name>GitWay Database Drivers</name>
+        <description>GitHub-backed database drivers for Ignition. Use Git commits as database transactions.</description>
+        <version>1.0.0</version>
+        <requiredignitionversion>8.1.0</requiredignitionversion>
+        <requiredframeworkversion>8</requiredframeworkversion>
+        <license>MIT</license>
+        <documentation>https://github.com/teslasolar/gitway/docs</documentation>
+
+        <hook scope="G">
+            <class>com.github.gitway.gateway.GitDBGatewayHook</class>
+        </hook>
+
+        <hook scope="D">
+            <class>com.github.gitway.designer.GitDBDesignerHook</class>
+        </hook>
+
+        <hook scope="C">
+            <class>com.github.gitway.client.GitDBClientHook</class>
+        </hook>
+
+        <jar scope="G">gitway-gateway.jar</jar>
+        <jar scope="GD">gitway-common.jar</jar>
+        <jar scope="DC">gitway-designer.jar</jar>
+        <jar scope="C">gitway-client.jar</jar>
+
+        <depends scope="G">com.inductiveautomation.sqlbridge</depends>
+
+        <exports>
+            <export>com.github.gitway.api</export>
+            <export>com.github.gitway.drivers</export>
+        </exports>
+
+        <rpc>
+            <class>com.github.gitway.gateway.GitDBRPC</class>
+            <methods>
+                <method>runQuery</method>
+                <method>runPrepUpdate</method>
+                <method>beginTransaction</method>
+                <method>commitTransaction</method>
+                <method>rollbackTransaction</method>
+                <method>getCommitHistory</method>
+                <method>syncWithGitHub</method>
+            </methods>
+        </rpc>
+
+        <drivers>
+            <driver>
+                <classname>com.github.gitdb.mysql.Driver</classname>
+                <name>GitDB MySQL</name>
+                <description>MySQL-compatible GitDB driver</description>
+                <urlformat>gitdb:mysql://{host}:{port}/{database}</urlformat>
+            </driver>
+            <driver>
+                <classname>com.github.gitdb.mssql.SQLServerDriver</classname>
+                <name>GitDB SQL Server</name>
+                <description>Microsoft SQL Server-compatible GitDB driver</description>
+                <urlformat>gitdb:sqlserver://{host}:{port};databaseName={database}</urlformat>
+            </driver>
+            <driver>
+                <classname>com.github.gitdb.postgresql.Driver</classname>
+                <name>GitDB PostgreSQL</name>
+                <description>PostgreSQL-compatible GitDB driver</description>
+                <urlformat>gitdb:postgresql://{host}:{port}/{database}</urlformat>
+            </driver>
+            <driver>
+                <classname>com.github.gitdb.oracle.OracleDriver</classname>
+                <name>GitDB Oracle</name>
+                <description>Oracle-compatible GitDB driver</description>
+                <urlformat>gitdb:oracle:thin:@{host}:{port}:{sid}</urlformat>
+            </driver>
+            <driver>
+                <classname>com.github.gitdb.mariadb.Driver</classname>
+                <name>GitDB MariaDB</name>
+                <description>MariaDB-compatible GitDB driver</description>
+                <urlformat>gitdb:mariadb://{host}:{port}/{database}</urlformat>
+            </driver>
+        </drivers>
+
+        <properties>
+            <property name="github.token" type="string" encrypted="true">
+                <description>GitHub Personal Access Token for API access</description>
+            </property>
+            <property name="github.repository" type="string">
+                <description>GitHub repository (owner/name)</description>
+                <default>teslasolar/gitway</default>
+            </property>
+            <property name="github.branch" type="string">
+                <description>Git branch to use for database storage</description>
+                <default>main</default>
+            </property>
+            <property name="commit.autoCommit" type="boolean">
+                <description>Automatically commit transactions</description>
+                <default>true</default>
+            </property>
+            <property name="commit.batchSize" type="int">
+                <description>Number of operations to batch before commit</description>
+                <default>100</default>
+            </property>
+            <property name="cache.enabled" type="boolean">
+                <description>Enable local caching of Git data</description>
+                <default>true</default>
+            </property>
+            <property name="cache.ttl" type="int">
+                <description>Cache TTL in seconds</description>
+                <default>300</default>
+            </property>
+        </properties>
+
+        <scripts>
+            <script scope="G">
+                <name>system.gitdb</name>
+                <functions>
+                    <function>
+                        <name>getCommit</name>
+                        <description>Get a specific commit by SHA</description>
+                        <arguments>
+                            <arg name="sha" type="String"/>
+                        </arguments>
+                        <returns>PyDataSet</returns>
+                    </function>
+                    <function>
+                        <name>getHistory</name>
+                        <description>Get commit history</description>
+                        <arguments>
+                            <arg name="limit" type="Integer" default="100"/>
+                            <arg name="offset" type="Integer" default="0"/>
+                        </arguments>
+                        <returns>PyDataSet</returns>
+                    </function>
+                    <function>
+                        <name>revert</name>
+                        <description>Revert to a specific commit</description>
+                        <arguments>
+                            <arg name="sha" type="String"/>
+                        </arguments>
+                        <returns>Boolean</returns>
+                    </function>
+                    <function>
+                        <name>sync</name>
+                        <description>Sync with GitHub repository</description>
+                        <arguments/>
+                        <returns>Boolean</returns>
+                    </function>
+                    <function>
+                        <name>getDiff</name>
+                        <description>Get diff between two commits</description>
+                        <arguments>
+                            <arg name="sha1" type="String"/>
+                            <arg name="sha2" type="String"/>
+                        </arguments>
+                        <returns>String</returns>
+                    </function>
+                </functions>
+            </script>
+        </scripts>
+
+        <gatewayconfig>
+            <record>
+                <name>GitDBSettings</name>
+                <category>Databases</category>
+                <subcategory>GitDB</subcategory>
+                <fields>
+                    <field name="enabled" type="boolean"/>
+                    <field name="githubToken" type="string" encrypted="true"/>
+                    <field name="repository" type="string"/>
+                    <field name="branch" type="string"/>
+                    <field name="autoCommit" type="boolean"/>
+                    <field name="batchSize" type="int"/>
+                    <field name="cacheEnabled" type="boolean"/>
+                    <field name="cacheTTL" type="int"/>
+                </fields>
+            </record>
+        </gatewayconfig>
+    </module>
+</modules>

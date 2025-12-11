@@ -1,0 +1,20 @@
+{
+  "connection": {
+    "protocol": "http",
+    "host": "pred",
+    "port": 8088,
+    "gatewayContext": ""
+  },
+  "authentication": {
+    "type": "api-key",
+    "apiKey": "1:vsPLwDA-NH8Y9RMqHiWOlQKSF4ptdGEQ3e7zhTGj7lU",
+    "username": "admin",
+    "password": "Yukihime1337!"
+  },
+  "api": {
+    "basePath": "",
+    "endpoints": {
+      "status": "/StatusPing"
+    }
+  }
+}

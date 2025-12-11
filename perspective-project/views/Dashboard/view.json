@@ -1,0 +1,104 @@
+{
+  "name": "Dashboard",
+  "path": "/gitway/dashboard",
+  "title": "GitWay Dashboard",
+  "viewType": "responsive",
+  "params": {},
+  "root": {
+    "type": "FlexContainer",
+    "props": {
+      "direction": "column",
+      "style": {
+        "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "padding": "20px"
+      }
+    },
+    "children": [
+      {
+        "type": "custom.GitWayHeader",
+        "props": {
+          "title": "GitWay Control Center",
+          "subtitle": "Unified Gateway Interface"
+        }
+      },
+      {
+        "type": "FlexContainer",
+        "props": {
+          "direction": "row",
+          "wrap": true,
+          "justify": "space-around",
+          "style": {
+            "gap": "20px",
+            "marginTop": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "custom.StatusCard",
+            "props": {
+              "title": "Gateway Status",
+              "icon": "material/cloud_done",
+              "binding": {
+                "type": "tag",
+                "path": "[System]Gateway/Status"
+              }
+            }
+          },
+          {
+            "type": "custom.MetricCard",
+            "props": {
+              "title": "Active Tags",
+              "icon": "material/label",
+              "value": {
+                "binding": {
+                  "type": "expression",
+                  "expression": "len(system.tag.browse('[default]').results)"
+                }
+              }
+            }
+          },
+          {
+            "type": "custom.MetricCard",
+            "props": {
+              "title": "Bridge Status",
+              "icon": "material/sync",
+              "value": {
+                "binding": {
+                  "type": "property",
+                  "path": "session.custom.bridgeConnected"
+                }
+              }
+            }
+          },
+          {
+            "type": "custom.MetricCard",
+            "props": {
+              "title": "GitHub Sync",
+              "icon": "material/backup",
+              "value": "Active"
+            }
+          }
+        ]
+      },
+      {
+        "type": "custom.ComponentGrid",
+        "props": {
+          "components": {
+            "binding": {
+              "type": "script",
+              "script": "return self.session.custom.discoveredComponents"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "custom": {
+    "gitway": {
+      "githubCompatible": true,
+      "standalone": true,
+      "apiEndpoint": "/gitway/api",
+      "websocketEndpoint": "ws://localhost:3001"
+    }
+  }
+}

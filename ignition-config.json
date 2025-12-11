@@ -1,0 +1,51 @@
+{
+  "connection": {
+    "protocol": "https",
+    "host": "localhost",
+    "port": 8088,
+    "gatewayContext": "main",
+    "timeout": 30000,
+    "retryAttempts": 3,
+    "retryDelay": 1000
+  },
+  "authentication": {
+    "type": "basic",
+    "username": "",
+    "password": "",
+    "apiKey": "",
+    "tokenEndpoint": "/system/webdev/auth/token"
+  },
+  "api": {
+    "basePath": "/system/webdev",
+    "version": "v1",
+    "endpoints": {
+      "status": "/status",
+      "tags": "/tags",
+      "history": "/history",
+      "alarms": "/alarms",
+      "projects": "/projects",
+      "perspective": "/perspective",
+      "named-queries": "/named-queries"
+    }
+  },
+  "tagProvider": {
+    "default": "default",
+    "historyProvider": "default",
+    "alarmJournal": "default"
+  },
+  "polling": {
+    "enabled": false,
+    "interval": 5000,
+    "tagGroups": []
+  },
+  "logging": {
+    "level": "info",
+    "file": "ignition-api.log",
+    "console": true
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": 60000,
+    "maxSize": 100
+  }
+}

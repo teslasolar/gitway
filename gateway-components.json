@@ -1,0 +1,94 @@
+{
+  "gateway": {
+    "host": "pred",
+    "port": 8088,
+    "protocol": "http",
+    "discovered": "2025-12-10T22:13:16.113Z"
+  },
+  "components": {
+    "endpoints": [
+      {
+        "path": "/StatusPing",
+        "name": "status",
+        "type": "system",
+        "available": true,
+        "response": 200
+      }
+    ],
+    "modules": [],
+    "tagProviders": [
+      {
+        "name": "default",
+        "type": "standard"
+      }
+    ],
+    "projects": [],
+    "databases": [
+      {
+        "name": "default",
+        "type": "unknown"
+      }
+    ],
+    "devices": [],
+    "alarmJournals": [
+      {
+        "name": "default",
+        "type": "standard"
+      }
+    ]
+  },
+  "capabilities": {},
+  "apiEndpoints": {
+    "status": "/StatusPing"
+  },
+  "features": {
+    "tags": true,
+    "history": false,
+    "alarms": true,
+    "database": true,
+    "perspective": false,
+    "vision": false,
+    "reporting": false,
+    "opcua": false,
+    "mqtt": false,
+    "webdev": false
+  },
+  "tagConfig": {
+    "providers": [
+      {
+        "name": "default",
+        "type": "standard"
+      }
+    ],
+    "operations": {
+      "read": null,
+      "write": null,
+      "browse": null
+    }
+  },
+  "alarmConfig": {
+    "journals": [
+      {
+        "name": "default",
+        "type": "standard"
+      }
+    ],
+    "operations": {
+      "query": null,
+      "acknowledge": null,
+      "history": null
+    }
+  },
+  "databaseConfig": {
+    "connections": [
+      {
+        "name": "default",
+        "type": "unknown"
+      }
+    ],
+    "operations": {
+      "query": null,
+      "namedQuery": null
+    }
+  }
+}

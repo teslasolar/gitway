@@ -1,0 +1,61 @@
+{
+  "name": "GitWay",
+  "title": "GitWay - GitHub to Gateway Bridge",
+  "description": "Unified interface for Ignition that works both as Perspective project and GitHub Pages site",
+  "version": "1.0.0",
+  "author": "GitWay Team",
+  "enabled": true,
+  "inheritable": true,
+  "resources": {
+    "icon": "material/cloud_sync",
+    "primaryColor": "#667eea",
+    "secondaryColor": "#764ba2"
+  },
+  "general": {
+    "sessionTimeout": 900,
+    "maxSessions": 100,
+    "pageStartup": "/gitway/dashboard",
+    "defaultTheme": "dark",
+    "mobileOptimized": true
+  },
+  "perspective": {
+    "dockingConfig": {
+      "enabled": true,
+      "position": "left",
+      "autoHide": false
+    },
+    "navbar": {
+      "enabled": true,
+      "position": "top"
+    }
+  },
+  "webdev": {
+    "enabled": true,
+    "mountPath": "/gitway",
+    "cors": {
+      "enabled": true,
+      "allowedOrigins": [
+        "https://*.github.io",
+        "http://localhost:*",
+        "http://127.0.0.1:*"
+      ]
+    }
+  },
+  "github": {
+    "pagesUrl": "https://yourusername.github.io/gitway/",
+    "repository": "https://github.com/yourusername/gitway",
+    "syncEnabled": true
+  },
+  "components": {
+    "gateway": {
+      "discovery": true,
+      "autoConfig": true,
+      "caching": true
+    },
+    "bridge": {
+      "websocket": true,
+      "restApi": true,
+      "port": 3001
+    }
+  }
+}

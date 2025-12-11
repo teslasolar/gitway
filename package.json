@@ -1,0 +1,33 @@
+{
+  "name": "gitway-ignition-bridge",
+  "version": "1.0.0",
+  "description": "Bridge server connecting Ignition SCADA to GitHub Pages via WebSocket",
+  "main": "bridge-server.js",
+  "scripts": {
+    "start": "node bridge-server.js",
+    "test": "node test-connection.js",
+    "test-api": "node test-ignition-api.js",
+    "dev": "nodemon bridge-server.js",
+    "install-deps": "npm install express cors ws"
+  },
+  "keywords": [
+    "ignition",
+    "scada",
+    "websocket",
+    "opc-ua",
+    "bridge"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.22.1",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

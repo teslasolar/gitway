@@ -1,0 +1,425 @@
+{
+  "views": {
+    "dashboard": {
+      "id": "dashboard",
+      "title": "Dashboard",
+      "icon": "🏠",
+      "layout": "grid",
+      "components": [
+        {
+          "type": "metric-card",
+          "id": "gateway-status",
+          "props": {
+            "title": "Gateway Status",
+            "icon": "🌐",
+            "dataSource": "gateway.status",
+            "format": "state"
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "active-tags",
+          "props": {
+            "title": "Active Tags",
+            "icon": "🏷️",
+            "dataSource": "tags.count",
+            "format": "number"
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "gitdb-records",
+          "props": {
+            "title": "GitDB Records",
+            "icon": "💾",
+            "dataSource": "gitdb.count",
+            "format": "number"
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "sync-status",
+          "props": {
+            "title": "Sync Status",
+            "icon": "🔄",
+            "dataSource": "sync.status",
+            "format": "badge"
+          }
+        },
+        {
+          "type": "activity-feed",
+          "id": "activity",
+          "props": {
+            "title": "Recent Activity",
+            "maxItems": 50,
+            "dataSource": "events.recent"
+          }
+        }
+      ]
+    },
+    "tags": {
+      "id": "tags",
+      "title": "Tag Monitor",
+      "icon": "📊",
+      "layout": "flex",
+      "components": [
+        {
+          "type": "control-bar",
+          "id": "tag-controls",
+          "props": {
+            "controls": [
+              {
+                "type": "input",
+                "id": "tag-path",
+                "placeholder": "Enter tag path (e.g., [default]Path/To/Tag)"
+              },
+              {
+                "type": "button",
+                "id": "add-tag",
+                "label": "Add Tag",
+                "action": "addTag",
+                "style": "primary"
+              },
+              {
+                "type": "button",
+                "id": "sync-tags",
+                "label": "Sync to GitDB",
+                "action": "syncToGitDB",
+                "style": "success"
+              }
+            ]
+          }
+        },
+        {
+          "type": "tag-grid",
+          "id": "tag-display",
+          "props": {
+            "dataSource": "tags.all",
+            "columns": "auto",
+            "showQuality": true,
+            "showTimestamp": true,
+            "updateInterval": 1000
+          }
+        }
+      ]
+    },
+    "gitdb": {
+      "id": "gitdb",
+      "title": "GitDB Manager",
+      "icon": "🗄️",
+      "layout": "split",
+      "components": [
+        {
+          "type": "control-bar",
+          "id": "gitdb-controls",
+          "props": {
+            "controls": [
+              {
+                "type": "select",
+                "id": "collection",
+                "options": [
+                  { "value": "tags", "label": "Tags" },
+                  { "value": "alarms", "label": "Alarms" },
+                  { "value": "history", "label": "History" },
+                  { "value": "config", "label": "Configuration" }
+                ]
+              },
+              {
+                "type": "button",
+                "id": "load-collection",
+                "label": "Load",
+                "action": "loadCollection"
+              },
+              {
+                "type": "button",
+                "id": "create-record",
+                "label": "Create New",
+                "action": "createRecord"
+              }
+            ]
+          }
+        },
+        {
+          "type": "data-table",
+          "id": "gitdb-table",
+          "props": {
+            "dataSource": "gitdb.currentCollection",
+            "columns": "auto",
+            "sortable": true,
+            "filterable": true,
+            "paginated": true,
+            "pageSize": 20
+          }
+        }
+      ]
+    },
+    "history": {
+      "id": "history",
+      "title": "Historical Data",
+      "icon": "📈",
+      "layout": "vertical",
+      "components": [
+        {
+          "type": "control-bar",
+          "id": "history-controls",
+          "props": {
+            "controls": [
+              {
+                "type": "input",
+                "id": "history-tag",
+                "placeholder": "Tag path"
+              },
+              {
+                "type": "datetime",
+                "id": "history-start",
+                "label": "Start"
+              },
+              {
+                "type": "datetime",
+                "id": "history-end",
+                "label": "End"
+              },
+              {
+                "type": "button",
+                "id": "query-history",
+                "label": "Query",
+                "action": "queryHistory"
+              }
+            ]
+          }
+        },
+        {
+          "type": "chart",
+          "id": "history-chart",
+          "props": {
+            "type": "line",
+            "dataSource": "history.data",
+            "xAxis": "timestamp",
+            "yAxis": "value",
+            "height": 400
+          }
+        }
+      ]
+    },
+    "config": {
+      "id": "config",
+      "title": "Configuration",
+      "icon": "⚙️",
+      "layout": "form",
+      "components": [
+        {
+          "type": "form-section",
+          "id": "github-config",
+          "props": {
+            "title": "GitHub Configuration",
+            "fields": [
+              {
+                "type": "input",
+                "id": "github-owner",
+                "label": "Owner",
+                "dataBinding": "config.github.owner"
+              },
+              {
+                "type": "input",
+                "id": "github-repo",
+                "label": "Repository",
+                "dataBinding": "config.github.repo"
+              },
+              {
+                "type": "password",
+                "id": "github-token",
+                "label": "Token",
+                "dataBinding": "config.github.token"
+              }
+            ]
+          }
+        },
+        {
+          "type": "form-section",
+          "id": "ignition-config",
+          "props": {
+            "title": "Ignition Bridge",
+            "fields": [
+              {
+                "type": "input",
+                "id": "bridge-url",
+                "label": "Bridge URL",
+                "dataBinding": "config.bridge.url",
+                "default": "http://localhost:3001"
+              },
+              {
+                "type": "button",
+                "id": "test-connection",
+                "label": "Test Connection",
+                "action": "testConnection"
+              }
+            ]
+          }
+        },
+        {
+          "type": "button-group",
+          "id": "config-actions",
+          "props": {
+            "buttons": [
+              {
+                "id": "save-config",
+                "label": "Save Configuration",
+                "action": "saveConfig",
+                "style": "primary"
+              },
+              {
+                "id": "export-config",
+                "label": "Export",
+                "action": "exportConfig"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "sidebar": {
+    "panels": [
+      {
+        "id": "quick-actions",
+        "title": "Quick Actions",
+        "components": [
+          {
+            "type": "button",
+            "label": "Discover Components",
+            "action": "discoverComponents",
+            "icon": "🔍"
+          },
+          {
+            "type": "button",
+            "label": "Sync All Data",
+            "action": "syncAll",
+            "icon": "🔄"
+          },
+          {
+            "type": "button",
+            "label": "Export to GitHub",
+            "action": "exportData",
+            "icon": "📤"
+          }
+        ]
+      },
+      {
+        "id": "live-stats",
+        "title": "Live Statistics",
+        "components": [
+          {
+            "type": "stat",
+            "label": "CPU Usage",
+            "dataSource": "stats.cpu"
+          },
+          {
+            "type": "stat",
+            "label": "Memory",
+            "dataSource": "stats.memory"
+          },
+          {
+            "type": "stat",
+            "label": "API Calls",
+            "dataSource": "stats.apiCalls"
+          },
+          {
+            "type": "stat",
+            "label": "Uptime",
+            "dataSource": "stats.uptime"
+          }
+        ]
+      },
+      {
+        "id": "console",
+        "title": "Console",
+        "components": [
+          {
+            "type": "terminal",
+            "id": "console-output",
+            "height": 200,
+            "maxLines": 100
+          }
+        ]
+      }
+    ]
+  },
+  "theme": {
+    "colors": {
+      "primary": "#667eea",
+      "secondary": "#764ba2",
+      "success": "#10b981",
+      "danger": "#ef4444",
+      "warning": "#f59e0b",
+      "dark": "#1f2937",
+      "light": "#f3f4f6"
+    },
+    "fonts": {
+      "main": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "mono": "'Courier New', Courier, monospace"
+    }
+  },
+  "dataSources": {
+    "gateway": {
+      "type": "ignition",
+      "url": "${config.bridge.url}/api",
+      "polling": 5000
+    },
+    "gitdb": {
+      "type": "github",
+      "owner": "${config.github.owner}",
+      "repo": "${config.github.repo}",
+      "token": "${config.github.token}"
+    },
+    "websocket": {
+      "type": "ws",
+      "url": "ws://localhost:3001"
+    }
+  },
+  "actions": {
+    "addTag": {
+      "type": "function",
+      "handler": "GitWay.addTag"
+    },
+    "syncToGitDB": {
+      "type": "function",
+      "handler": "GitWay.syncToGitDB"
+    },
+    "loadCollection": {
+      "type": "function",
+      "handler": "GitWay.loadCollection"
+    },
+    "createRecord": {
+      "type": "function",
+      "handler": "GitWay.createRecord"
+    },
+    "queryHistory": {
+      "type": "function",
+      "handler": "GitWay.queryHistory"
+    },
+    "saveConfig": {
+      "type": "function",
+      "handler": "GitWay.saveConfig"
+    },
+    "exportConfig": {
+      "type": "function",
+      "handler": "GitWay.exportConfig"
+    },
+    "discoverComponents": {
+      "type": "function",
+      "handler": "GitWay.discoverComponents"
+    },
+    "syncAll": {
+      "type": "function",
+      "handler": "GitWay.syncAll"
+    },
+    "exportData": {
+      "type": "function",
+      "handler": "GitWay.exportData"
+    },
+    "testConnection": {
+      "type": "function",
+      "handler": "GitWay.testConnection"
+    }
+  }
+}

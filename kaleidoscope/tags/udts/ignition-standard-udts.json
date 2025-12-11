@@ -1,0 +1,1323 @@
+{
+  "name": "Ignition Standard UDTs",
+  "tagType": "UdtType",
+  "tags": [
+    {
+      "name": "_System",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "Gateway",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Performance",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "CpuUsage",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Performance/CpuUsage}",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                },
+                {
+                  "name": "MemoryUsage",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Performance/MemoryUsage}",
+                  "dataType": "Float8",
+                  "engUnit": "MB"
+                },
+                {
+                  "name": "ThreadCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Performance/ThreadCount}",
+                  "dataType": "Int4"
+                }
+              ]
+            },
+            {
+              "name": "Licensing",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "LicenseMode",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Licensing/LicenseMode}",
+                  "dataType": "String"
+                },
+                {
+                  "name": "TrialTimeRemaining",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Licensing/TrialTimeRemaining}",
+                  "dataType": "Int8",
+                  "engUnit": "ms"
+                }
+              ]
+            },
+            {
+              "name": "Database",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "ConnectionCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Database/ConnectionCount}",
+                  "dataType": "Int4"
+                },
+                {
+                  "name": "QueryCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Database/QueryCount}",
+                  "dataType": "Int8"
+                }
+              ]
+            },
+            {
+              "name": "Redundancy",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Role",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Redundancy/Role}",
+                  "dataType": "String"
+                },
+                {
+                  "name": "IsActive",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Redundancy/IsActive}",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "ActivityLevel",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Gateway/Redundancy/ActivityLevel}",
+                  "dataType": "String"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "GatewayName": {
+              "dataType": "String",
+              "value": "Ignition"
+            }
+          }
+        },
+        {
+          "name": "Client",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "System",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "UserName",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/System/UserName}",
+                  "dataType": "String"
+                },
+                {
+                  "name": "HostName",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/System/HostName}",
+                  "dataType": "String"
+                },
+                {
+                  "name": "IPAddress",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/System/IPAddress}",
+                  "dataType": "String"
+                },
+                {
+                  "name": "ScreenResolution",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/System/ScreenResolution}",
+                  "dataType": "String"
+                }
+              ]
+            },
+            {
+              "name": "Performance",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "FPSActual",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/Performance/FPSActual}",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "MemoryUsage",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{[System]Client/Performance/MemoryUsage}",
+                  "dataType": "Float8",
+                  "engUnit": "MB"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Device",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Status",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]Devices/{DeviceName}/Status}",
+              "dataType": "String"
+            },
+            {
+              "name": "Connected",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]Devices/{DeviceName}/Connected}",
+              "dataType": "Boolean"
+            },
+            {
+              "name": "Driver",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]Devices/{DeviceName}/Driver}",
+              "dataType": "String"
+            },
+            {
+              "name": "ResponseTime",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]Devices/{DeviceName}/ResponseTime}",
+              "dataType": "Float8",
+              "engUnit": "ms"
+            }
+          ],
+          "parameters": {
+            "DeviceName": {
+              "dataType": "String",
+              "value": "Device1"
+            }
+          }
+        },
+        {
+          "name": "OPCConnection",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "ServerState",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]OPC/Connections/{ConnectionName}/ServerState}",
+              "dataType": "String"
+            },
+            {
+              "name": "Connected",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]OPC/Connections/{ConnectionName}/Connected}",
+              "dataType": "Boolean"
+            },
+            {
+              "name": "ItemCount",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]OPC/Connections/{ConnectionName}/ItemCount}",
+              "dataType": "Int4"
+            },
+            {
+              "name": "UpdateRate",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{[System]OPC/Connections/{ConnectionName}/UpdateRate}",
+              "dataType": "Int4",
+              "engUnit": "ms"
+            }
+          ],
+          "parameters": {
+            "ConnectionName": {
+              "dataType": "String",
+              "value": "OPC1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "_Industrial",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "Motor",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Status",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Running",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Running",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Fault",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Fault",
+                  "dataType": "Boolean",
+                  "alarms": [
+                    {
+                      "name": "Fault",
+                      "enabled": true,
+                      "priority": "High",
+                      "displayPath": "{DisplayPath}",
+                      "label": "{DisplayPath} Fault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Auto",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Auto",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Remote",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Remote",
+                  "dataType": "Boolean"
+                }
+              ]
+            },
+            {
+              "name": "Control",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Start_CMD",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Start_CMD",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Stop_CMD",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Stop_CMD",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Reset_CMD",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Reset_CMD",
+                  "dataType": "Boolean"
+                }
+              ]
+            },
+            {
+              "name": "Feedback",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Speed",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Speed",
+                  "dataType": "Float8",
+                  "engUnit": "RPM"
+                },
+                {
+                  "name": "Current",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Current",
+                  "dataType": "Float8",
+                  "engUnit": "A"
+                },
+                {
+                  "name": "Power",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Power",
+                  "dataType": "Float8",
+                  "engUnit": "kW"
+                },
+                {
+                  "name": "Runtime",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Runtime",
+                  "dataType": "Float8",
+                  "engUnit": "Hours"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "Motor1"
+            },
+            "DisplayPath": {
+              "dataType": "String",
+              "value": "Area/Motor1"
+            },
+            "Documentation": {
+              "dataType": "String",
+              "value": ""
+            }
+          }
+        },
+        {
+          "name": "Valve",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Status",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "OpenLS",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/OpenLS",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "CloseLS",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/CloseLS",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Fault",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Fault",
+                  "dataType": "Boolean",
+                  "alarms": [
+                    {
+                      "name": "Fault",
+                      "enabled": true,
+                      "priority": "High",
+                      "displayPath": "{DisplayPath}",
+                      "label": "{DisplayPath} Fault"
+                    }
+                  ]
+                },
+                {
+                  "name": "Auto",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Auto",
+                  "dataType": "Boolean"
+                }
+              ]
+            },
+            {
+              "name": "Control",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Open_CMD",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Open_CMD",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Close_CMD",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Close_CMD",
+                  "dataType": "Boolean"
+                }
+              ]
+            },
+            {
+              "name": "Feedback",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Position",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Position",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "Valve1"
+            },
+            "DisplayPath": {
+              "dataType": "String",
+              "value": "Area/Valve1"
+            }
+          }
+        },
+        {
+          "name": "Tank",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Level",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/Level",
+              "dataType": "Float8",
+              "engUnit": "%",
+              "alarms": [
+                {
+                  "name": "HiHi",
+                  "enabled": true,
+                  "priority": "Critical",
+                  "setpointA": 95,
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Level HiHi"
+                },
+                {
+                  "name": "Hi",
+                  "enabled": true,
+                  "priority": "High",
+                  "setpointA": 85,
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Level Hi"
+                },
+                {
+                  "name": "Lo",
+                  "enabled": true,
+                  "priority": "High",
+                  "setpointA": 15,
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Level Lo"
+                },
+                {
+                  "name": "LoLo",
+                  "enabled": true,
+                  "priority": "Critical",
+                  "setpointA": 5,
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Level LoLo"
+                }
+              ]
+            },
+            {
+              "name": "Temperature",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/Temperature",
+              "dataType": "Float8",
+              "engUnit": "°C"
+            },
+            {
+              "name": "Pressure",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/Pressure",
+              "dataType": "Float8",
+              "engUnit": "PSI"
+            },
+            {
+              "name": "Volume",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{Level} * {Capacity} / 100",
+              "dataType": "Float8",
+              "engUnit": "gal"
+            },
+            {
+              "name": "InletValve",
+              "tagType": "UdtInstance",
+              "udtParentType": "Valve",
+              "parameters": {
+                "Device": "{Device}",
+                "BasePath": "{BasePath}/InletValve",
+                "DisplayPath": "{DisplayPath}/Inlet"
+              }
+            },
+            {
+              "name": "OutletValve",
+              "tagType": "UdtInstance",
+              "udtParentType": "Valve",
+              "parameters": {
+                "Device": "{Device}",
+                "BasePath": "{BasePath}/OutletValve",
+                "DisplayPath": "{DisplayPath}/Outlet"
+              }
+            },
+            {
+              "name": "AgitatorMotor",
+              "tagType": "UdtInstance",
+              "udtParentType": "Motor",
+              "parameters": {
+                "Device": "{Device}",
+                "BasePath": "{BasePath}/Agitator",
+                "DisplayPath": "{DisplayPath}/Agitator"
+              }
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "Tank1"
+            },
+            "DisplayPath": {
+              "dataType": "String",
+              "value": "Area/Tank1"
+            },
+            "Capacity": {
+              "dataType": "Float8",
+              "value": 10000
+            }
+          }
+        },
+        {
+          "name": "PID_Loop",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "PV",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/PV",
+              "dataType": "Float8",
+              "engUnit": "{EngUnit}"
+            },
+            {
+              "name": "SP",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/SP",
+              "dataType": "Float8",
+              "engUnit": "{EngUnit}"
+            },
+            {
+              "name": "CV",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/CV",
+              "dataType": "Float8",
+              "engUnit": "%"
+            },
+            {
+              "name": "Mode",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/Mode",
+              "dataType": "String"
+            },
+            {
+              "name": "Tuning",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Kp",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Kp",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "Ki",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Ki",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "Kd",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Kd",
+                  "dataType": "Float8"
+                }
+              ]
+            },
+            {
+              "name": "Error",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "{SP} - {PV}",
+              "dataType": "Float8",
+              "engUnit": "{EngUnit}"
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "PID1"
+            },
+            "EngUnit": {
+              "dataType": "String",
+              "value": "°C"
+            },
+            "DisplayPath": {
+              "dataType": "String",
+              "value": "Area/PID1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "_Production",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "ProductionLine",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "OEE",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Availability",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                },
+                {
+                  "name": "Performance",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                },
+                {
+                  "name": "Quality",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                },
+                {
+                  "name": "Overall",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{Availability} * {Performance} * {Quality} / 10000",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                }
+              ]
+            },
+            {
+              "name": "Production",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "CurrentCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/CurrentCount",
+                  "dataType": "Int4"
+                },
+                {
+                  "name": "TargetCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Int4"
+                },
+                {
+                  "name": "GoodCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/GoodCount",
+                  "dataType": "Int4"
+                },
+                {
+                  "name": "RejectCount",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/RejectCount",
+                  "dataType": "Int4"
+                },
+                {
+                  "name": "Rate",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Rate",
+                  "dataType": "Float8",
+                  "engUnit": "pcs/min"
+                }
+              ]
+            },
+            {
+              "name": "State",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/State",
+              "dataType": "Int4",
+              "documentation": "PackML State (0=Stopped, 1=Starting, 2=Idle, 3=Suspended, 4=Execute, 5=Stopping, 6=Aborting, 7=Aborted, 8=Holding, 9=Held)"
+            },
+            {
+              "name": "CurrentProduct",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/CurrentProduct",
+              "dataType": "String"
+            },
+            {
+              "name": "CurrentBatch",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/CurrentBatch",
+              "dataType": "String"
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "Line1"
+            },
+            "LineName": {
+              "dataType": "String",
+              "value": "Production Line 1"
+            }
+          }
+        },
+        {
+          "name": "PackMLState",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "State",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{BasePath}/State",
+              "dataType": "Int4"
+            },
+            {
+              "name": "StateName",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "case(\n  {State},\n  0, \"Stopped\",\n  1, \"Starting\",\n  2, \"Idle\",\n  3, \"Suspended\",\n  4, \"Execute\",\n  5, \"Stopping\",\n  6, \"Aborting\",\n  7, \"Aborted\",\n  8, \"Holding\",\n  9, \"Held\",\n  10, \"Unholding\",\n  11, \"Suspending\",\n  12, \"Unsuspending\",\n  13, \"Resetting\",\n  14, \"Completing\",\n  15, \"Complete\",\n  \"Unknown\"\n)",
+              "dataType": "String"
+            },
+            {
+              "name": "Commands",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Start",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Commands/Start",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Stop",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Commands/Stop",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Hold",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Commands/Hold",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Reset",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Commands/Reset",
+                  "dataType": "Boolean"
+                },
+                {
+                  "name": "Abort",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Commands/Abort",
+                  "dataType": "Boolean"
+                }
+              ]
+            },
+            {
+              "name": "Admin",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "MachineSpeed",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Admin/MachineSpeed",
+                  "dataType": "Float8",
+                  "engUnit": "%"
+                },
+                {
+                  "name": "ProductID",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Admin/ProductID",
+                  "dataType": "String"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "PackML"
+            },
+            "MachineName": {
+              "dataType": "String",
+              "value": "Machine1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "_Alarms",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "AlarmGroup",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "ActiveCount",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "len([.]*/Alarm.IsActive)",
+              "dataType": "Int4"
+            },
+            {
+              "name": "UnackedCount",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "len([.]*/Alarm.IsUnacked)",
+              "dataType": "Int4"
+            },
+            {
+              "name": "HighestPriority",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "max([.]*/Alarm.Priority)",
+              "dataType": "Int4"
+            },
+            {
+              "name": "ShelvedCount",
+              "tagType": "AtomicTag",
+              "valueSource": "expr",
+              "expression": "len([.]*/Alarm.IsShelved)",
+              "dataType": "Int4"
+            },
+            {
+              "name": "GroupAcknowledge",
+              "tagType": "AtomicTag",
+              "valueSource": "memory",
+              "dataType": "Boolean"
+            },
+            {
+              "name": "GroupReset",
+              "tagType": "AtomicTag",
+              "valueSource": "memory",
+              "dataType": "Boolean"
+            }
+          ],
+          "parameters": {
+            "GroupName": {
+              "dataType": "String",
+              "value": "AlarmGroup1"
+            },
+            "Area": {
+              "dataType": "String",
+              "value": "Area1"
+            }
+          }
+        },
+        {
+          "name": "ProcessAlarm",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Value",
+              "tagType": "AtomicTag",
+              "valueSource": "opc",
+              "opcPath": "ns=1;s=[{Device}]{TagPath}",
+              "dataType": "Float8",
+              "engUnit": "{EngUnit}",
+              "alarms": [
+                {
+                  "name": "HiHi",
+                  "enabled": "{HiHiEnabled}",
+                  "priority": "Critical",
+                  "setpointA": "{HiHiSP}",
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} HiHi Alarm"
+                },
+                {
+                  "name": "Hi",
+                  "enabled": "{HiEnabled}",
+                  "priority": "High",
+                  "setpointA": "{HiSP}",
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Hi Alarm"
+                },
+                {
+                  "name": "Lo",
+                  "enabled": "{LoEnabled}",
+                  "priority": "High",
+                  "setpointA": "{LoSP}",
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} Lo Alarm"
+                },
+                {
+                  "name": "LoLo",
+                  "enabled": "{LoLoEnabled}",
+                  "priority": "Critical",
+                  "setpointA": "{LoLoSP}",
+                  "displayPath": "{DisplayPath}",
+                  "label": "{DisplayPath} LoLo Alarm"
+                }
+              ]
+            },
+            {
+              "name": "Setpoints",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "HiHi",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "value": "{HiHiSP}",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "Hi",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "value": "{HiSP}",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "Lo",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "value": "{LoSP}",
+                  "dataType": "Float8"
+                },
+                {
+                  "name": "LoLo",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "value": "{LoLoSP}",
+                  "dataType": "Float8"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "PLC1"
+            },
+            "TagPath": {
+              "dataType": "String",
+              "value": "Process/Temperature"
+            },
+            "DisplayPath": {
+              "dataType": "String",
+              "value": "Area/Temperature"
+            },
+            "EngUnit": {
+              "dataType": "String",
+              "value": "°C"
+            },
+            "HiHiSP": {
+              "dataType": "Float8",
+              "value": 100
+            },
+            "HiSP": {
+              "dataType": "Float8",
+              "value": 90
+            },
+            "LoSP": {
+              "dataType": "Float8",
+              "value": 10
+            },
+            "LoLoSP": {
+              "dataType": "Float8",
+              "value": 0
+            },
+            "HiHiEnabled": {
+              "dataType": "Boolean",
+              "value": true
+            },
+            "HiEnabled": {
+              "dataType": "Boolean",
+              "value": true
+            },
+            "LoEnabled": {
+              "dataType": "Boolean",
+              "value": true
+            },
+            "LoLoEnabled": {
+              "dataType": "Boolean",
+              "value": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "_Energy",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "PowerMeter",
+          "tagType": "UdtType",
+          "tags": [
+            {
+              "name": "Voltage",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "L1",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/V_L1",
+                  "dataType": "Float8",
+                  "engUnit": "V"
+                },
+                {
+                  "name": "L2",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/V_L2",
+                  "dataType": "Float8",
+                  "engUnit": "V"
+                },
+                {
+                  "name": "L3",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/V_L3",
+                  "dataType": "Float8",
+                  "engUnit": "V"
+                },
+                {
+                  "name": "Average",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "({L1} + {L2} + {L3}) / 3",
+                  "dataType": "Float8",
+                  "engUnit": "V"
+                }
+              ]
+            },
+            {
+              "name": "Current",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "L1",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/I_L1",
+                  "dataType": "Float8",
+                  "engUnit": "A"
+                },
+                {
+                  "name": "L2",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/I_L2",
+                  "dataType": "Float8",
+                  "engUnit": "A"
+                },
+                {
+                  "name": "L3",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/I_L3",
+                  "dataType": "Float8",
+                  "engUnit": "A"
+                },
+                {
+                  "name": "Total",
+                  "tagType": "AtomicTag",
+                  "valueSource": "expr",
+                  "expression": "{L1} + {L2} + {L3}",
+                  "dataType": "Float8",
+                  "engUnit": "A"
+                }
+              ]
+            },
+            {
+              "name": "Power",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Active",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/kW",
+                  "dataType": "Float8",
+                  "engUnit": "kW"
+                },
+                {
+                  "name": "Reactive",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/kVAR",
+                  "dataType": "Float8",
+                  "engUnit": "kVAR"
+                },
+                {
+                  "name": "Apparent",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/kVA",
+                  "dataType": "Float8",
+                  "engUnit": "kVA"
+                },
+                {
+                  "name": "PowerFactor",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/PF",
+                  "dataType": "Float8"
+                }
+              ]
+            },
+            {
+              "name": "Energy",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Total",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/kWh_Total",
+                  "dataType": "Float8",
+                  "engUnit": "kWh"
+                },
+                {
+                  "name": "Today",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "kWh"
+                },
+                {
+                  "name": "Yesterday",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "kWh"
+                },
+                {
+                  "name": "ThisMonth",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "dataType": "Float8",
+                  "engUnit": "kWh"
+                }
+              ]
+            },
+            {
+              "name": "Demand",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Current",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/Demand",
+                  "dataType": "Float8",
+                  "engUnit": "kW"
+                },
+                {
+                  "name": "Peak",
+                  "tagType": "AtomicTag",
+                  "valueSource": "opc",
+                  "opcPath": "ns=1;s=[{Device}]{BasePath}/PeakDemand",
+                  "dataType": "Float8",
+                  "engUnit": "kW"
+                }
+              ]
+            }
+          ],
+          "parameters": {
+            "Device": {
+              "dataType": "String",
+              "value": "ModbusTCP1"
+            },
+            "BasePath": {
+              "dataType": "String",
+              "value": "Meter1"
+            },
+            "MeterName": {
+              "dataType": "String",
+              "value": "Main Power Meter"
+            },
+            "Location": {
+              "dataType": "String",
+              "value": "Main Switchgear"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

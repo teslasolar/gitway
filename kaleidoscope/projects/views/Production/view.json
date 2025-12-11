@@ -1,0 +1,210 @@
+{
+  "name": "Production",
+  "title": "Production Overview",
+  "description": "Real-time production monitoring and OEE tracking",
+  "icon": "mdi-factory",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "view": {
+    "type": "dock-layout",
+    "props": {
+      "params": {
+        "title": "Production Overview",
+        "showNorth": true,
+        "showWest": true,
+        "showSouth": true,
+        "northContent": {
+          "template": "header-dock",
+          "params": {
+            "currentScope": "Production"
+          }
+        },
+        "westContent": {
+          "template": "navigation-dock",
+          "params": {
+            "title": "Production Areas",
+            "items": [
+              {
+                "label": "Line 1",
+                "icon": "mdi-factory",
+                "path": "/production/line1"
+              },
+              {
+                "label": "Line 2",
+                "icon": "mdi-factory",
+                "path": "/production/line2"
+              },
+              {
+                "label": "Line 3",
+                "icon": "mdi-factory",
+                "path": "/production/line3"
+              },
+              {
+                "label": "Packaging",
+                "icon": "mdi-package",
+                "path": "/production/packaging"
+              }
+            ]
+          }
+        },
+        "southContent": {
+          "template": "status-dock",
+          "params": {
+            "showCpuUsage": false,
+            "showTagCount": true
+          }
+        },
+        "mainContent": {
+          "type": "container",
+          "children": [
+            {
+              "type": "grid",
+              "props": {
+                "columns": 4,
+                "gap": "20px",
+                "style": {
+                  "marginBottom": "20px"
+                }
+              },
+              "children": [
+                {
+                  "type": "metric-card",
+                  "props": {
+                    "title": "Overall OEE",
+                    "value": "{{tags.[default]Production/OEE/Overall}}",
+                    "unit": "%",
+                    "target": 85,
+                    "icon": "mdi-chart-line",
+                    "color": "{{tags.[default]Production/OEE/Overall >= 85 ? '#10b981' : tags.[default]Production/OEE/Overall >= 70 ? '#f59e0b' : '#ef4444'}}"
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "props": {
+                    "title": "Production Rate",
+                    "value": "{{tags.[default]Production/Rate/Current}}",
+                    "unit": "pcs/hr",
+                    "target": 1000,
+                    "icon": "mdi-speedometer"
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "props": {
+                    "title": "Good Count",
+                    "value": "{{tags.[default]Production/Count/Good}}",
+                    "unit": "pcs",
+                    "icon": "mdi-check-circle",
+                    "color": "#10b981"
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "props": {
+                    "title": "Reject Rate",
+                    "value": "{{tags.[default]Production/Quality/RejectRate}}",
+                    "unit": "%",
+                    "icon": "mdi-alert",
+                    "color": "{{tags.[default]Production/Quality/RejectRate <= 1 ? '#10b981' : tags.[default]Production/Quality/RejectRate <= 3 ? '#f59e0b' : '#ef4444'}}"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "flex",
+              "props": {
+                "gap": "20px"
+              },
+              "children": [
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Production Trend",
+                    "style": {
+                      "flex": 2,
+                      "minHeight": "300px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "time-series-chart",
+                      "props": {
+                        "pens": [
+                          {
+                            "name": "Production Rate",
+                            "tagPath": "[default]Production/Rate/Current",
+                            "color": "#3b82f6"
+                          },
+                          {
+                            "name": "Target",
+                            "tagPath": "[default]Production/Rate/Target",
+                            "color": "#10b981",
+                            "style": "dashed"
+                          }
+                        ],
+                        "timeRange": "8h",
+                        "height": 250
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "card",
+                  "props": {
+                    "title": "Line Status",
+                    "style": {
+                      "flex": 1,
+                      "minHeight": "300px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "table",
+                      "props": {
+                        "columns": [
+                          {"field": "line", "header": "Line"},
+                          {"field": "status", "header": "Status"},
+                          {"field": "oee", "header": "OEE %"}
+                        ],
+                        "data": [
+                          {"line": "Line 1", "status": "Running", "oee": 87},
+                          {"line": "Line 2", "status": "Running", "oee": 82},
+                          {"line": "Line 3", "status": "Stopped", "oee": 0},
+                          {"line": "Packaging", "status": "Running", "oee": 91}
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Shift Performance",
+                "style": {
+                  "marginTop": "20px"
+                }
+              },
+              "children": [
+                {
+                  "type": "bar-chart",
+                  "props": {
+                    "data": [
+                      {"shift": "Morning", "production": 3200, "target": 3000},
+                      {"shift": "Afternoon", "production": 2800, "target": 3000},
+                      {"shift": "Night", "production": 2900, "target": 3000}
+                    ],
+                    "xKey": "shift",
+                    "yKeys": ["production", "target"],
+                    "height": 200
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

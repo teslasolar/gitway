@@ -1,0 +1,205 @@
+{
+  "name": "Maintenance",
+  "title": "Maintenance Management",
+  "description": "Equipment maintenance tracking and work orders",
+  "icon": "mdi-wrench",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "column",
+      "gap": "0"
+    },
+    "children": [
+      {
+        "type": "header",
+        "props": {
+          "style": {
+            "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            "color": "white",
+            "padding": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "label",
+            "props": {
+              "text": "Maintenance Management",
+              "style": {
+                "fontSize": "24px",
+                "fontWeight": "bold"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "padding": "20px",
+            "background": "#f9fafb"
+          }
+        },
+        "children": [
+          {
+            "type": "grid",
+            "props": {
+              "columns": 4,
+              "gap": "15px",
+              "style": {
+                "marginBottom": "20px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Active WOs",
+                  "value": "{{tags.[default]Maintenance/WorkOrders/Active}}",
+                  "icon": "mdi-clipboard-text",
+                  "color": "#3b82f6"
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Overdue",
+                  "value": "{{tags.[default]Maintenance/WorkOrders/Overdue}}",
+                  "icon": "mdi-alert",
+                  "color": "#ef4444"
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Scheduled Today",
+                  "value": "{{tags.[default]Maintenance/Scheduled/Today}}",
+                  "icon": "mdi-calendar-today",
+                  "color": "#f59e0b"
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "MTBF",
+                  "value": "{{tags.[default]Maintenance/Metrics/MTBF}}",
+                  "unit": "hrs",
+                  "icon": "mdi-timer",
+                  "color": "#10b981"
+                }
+              }
+            ]
+          },
+          {
+            "type": "tabs",
+            "props": {
+              "tabs": [
+                {
+                  "label": "Work Orders",
+                  "icon": "mdi-clipboard-list",
+                  "content": {
+                    "type": "table",
+                    "props": {
+                      "columns": [
+                        {"field": "wo_number", "header": "WO #", "width": "100px"},
+                        {"field": "equipment", "header": "Equipment"},
+                        {"field": "description", "header": "Description"},
+                        {"field": "priority", "header": "Priority", "width": "100px"},
+                        {"field": "status", "header": "Status", "width": "120px"},
+                        {"field": "assigned", "header": "Assigned To"},
+                        {"field": "due_date", "header": "Due Date"}
+                      ],
+                      "data": "{{tags.[default]Maintenance/WorkOrders/List}}",
+                      "sortable": true,
+                      "filterable": true,
+                      "pageable": true,
+                      "pageSize": 10
+                    }
+                  }
+                },
+                {
+                  "label": "Equipment Status",
+                  "icon": "mdi-engine",
+                  "content": {
+                    "type": "grid",
+                    "props": {
+                      "columns": 3,
+                      "gap": "15px"
+                    },
+                    "children": [
+                      {
+                        "type": "equipment-panel",
+                        "props": {
+                          "equipmentType": "motor",
+                          "name": "Main Motor",
+                          "tagPrefix": "[default]Equipment/Motor1",
+                          "showInterlocks": true
+                        }
+                      },
+                      {
+                        "type": "equipment-panel",
+                        "props": {
+                          "equipmentType": "pump",
+                          "name": "Feed Pump",
+                          "tagPrefix": "[default]Equipment/Pump1",
+                          "showInterlocks": true
+                        }
+                      },
+                      {
+                        "type": "equipment-panel",
+                        "props": {
+                          "equipmentType": "conveyor",
+                          "name": "Conveyor 1",
+                          "tagPrefix": "[default]Equipment/Conveyor1",
+                          "showInterlocks": true
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "label": "PM Schedule",
+                  "icon": "mdi-calendar-check",
+                  "content": {
+                    "type": "calendar",
+                    "props": {
+                      "events": "{{tags.[default]Maintenance/Schedule/Events}}",
+                      "view": "month",
+                      "eventColor": {
+                        "PM": "#10b981",
+                        "Inspection": "#3b82f6",
+                        "Calibration": "#f59e0b",
+                        "Shutdown": "#ef4444"
+                      }
+                    }
+                  }
+                },
+                {
+                  "label": "Spare Parts",
+                  "icon": "mdi-package-variant",
+                  "content": {
+                    "type": "table",
+                    "props": {
+                      "columns": [
+                        {"field": "part_number", "header": "Part #"},
+                        {"field": "description", "header": "Description"},
+                        {"field": "quantity", "header": "Qty"},
+                        {"field": "min_stock", "header": "Min"},
+                        {"field": "location", "header": "Location"},
+                        {"field": "reorder", "header": "Reorder"}
+                      ],
+                      "data": "{{tags.[default]Maintenance/SpareParts/Inventory}}",
+                      "highlightLowStock": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

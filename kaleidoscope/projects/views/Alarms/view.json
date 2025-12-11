@@ -1,0 +1,210 @@
+{
+  "name": "Alarms",
+  "title": "Alarm Management",
+  "description": "Real-time alarm monitoring and acknowledgment",
+  "icon": "mdi-alert",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "height": "100vh",
+        "background": "#1f2937"
+      }
+    },
+    "children": [
+      {
+        "type": "alarm-banner",
+        "props": {
+          "maxAlarms": 1,
+          "priorities": ["critical", "high"],
+          "acknowledgeable": true,
+          "autoHide": false,
+          "style": {
+            "position": "fixed",
+            "top": 0,
+            "width": "100%",
+            "zIndex": 1000
+          }
+        }
+      },
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "padding": "60px 20px 20px 20px"
+          }
+        },
+        "children": [
+          {
+            "type": "grid",
+            "props": {
+              "columns": 5,
+              "gap": "15px",
+              "style": {
+                "marginBottom": "20px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Active",
+                  "value": "{{tags.[default]Alarms/Active/Count}}",
+                  "icon": "mdi-alert-circle",
+                  "color": "#ef4444",
+                  "style": {
+                    "background": "rgba(239, 68, 68, 0.1)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Unacked",
+                  "value": "{{tags.[default]Alarms/Unacknowledged/Count}}",
+                  "icon": "mdi-alert-octagon",
+                  "color": "#f59e0b",
+                  "style": {
+                    "background": "rgba(245, 158, 11, 0.1)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Critical",
+                  "value": "{{tags.[default]Alarms/Priority/Critical}}",
+                  "icon": "mdi-alert-box",
+                  "color": "#dc2626",
+                  "style": {
+                    "background": "rgba(220, 38, 38, 0.1)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "High",
+                  "value": "{{tags.[default]Alarms/Priority/High}}",
+                  "icon": "mdi-alert",
+                  "color": "#f97316",
+                  "style": {
+                    "background": "rgba(249, 115, 22, 0.1)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Medium",
+                  "value": "{{tags.[default]Alarms/Priority/Medium}}",
+                  "icon": "mdi-information",
+                  "color": "#eab308",
+                  "style": {
+                    "background": "rgba(234, 179, 8, 0.1)"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "card",
+            "props": {
+              "title": "Active Alarms",
+              "style": {
+                "background": "#374151",
+                "color": "white",
+                "marginBottom": "20px"
+              }
+            },
+            "children": [
+              {
+                "type": "alarm-table",
+                "props": {
+                  "columns": [
+                    {"field": "timestamp", "header": "Time", "width": "150px"},
+                    {"field": "priority", "header": "Priority", "width": "80px"},
+                    {"field": "source", "header": "Source"},
+                    {"field": "displayPath", "header": "Path"},
+                    {"field": "label", "header": "Description"},
+                    {"field": "state", "header": "State", "width": "100px"},
+                    {"field": "ackUser", "header": "Ack By", "width": "100px"}
+                  ],
+                  "data": "{{tags.[default]Alarms/Active/List}}",
+                  "rowColor": {
+                    "critical": "#dc2626",
+                    "high": "#f97316",
+                    "medium": "#eab308",
+                    "low": "#3b82f6"
+                  },
+                  "acknowledgeable": true,
+                  "filterable": true,
+                  "sortable": true,
+                  "height": 300
+                }
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "gap": "20px"
+            },
+            "children": [
+              {
+                "type": "card",
+                "props": {
+                  "title": "Alarm Trend (24h)",
+                  "style": {
+                    "flex": 2,
+                    "background": "#374151",
+                    "color": "white"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "area-chart",
+                    "props": {
+                      "data": "{{tags.[default]Alarms/History/Hourly}}",
+                      "xKey": "hour",
+                      "yKeys": ["critical", "high", "medium", "low"],
+                      "colors": ["#dc2626", "#f97316", "#eab308", "#3b82f6"],
+                      "height": 200,
+                      "stacked": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "card",
+                "props": {
+                  "title": "Top Alarms",
+                  "style": {
+                    "flex": 1,
+                    "background": "#374151",
+                    "color": "white"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "table",
+                    "props": {
+                      "columns": [
+                        {"field": "alarm", "header": "Alarm"},
+                        {"field": "count", "header": "Count"}
+                      ],
+                      "data": "{{tags.[default]Alarms/Statistics/TopAlarms}}",
+                      "height": 200
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

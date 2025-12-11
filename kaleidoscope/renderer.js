@@ -170,7 +170,7 @@ class KaleidoscopeRenderer {
         `;
 
         // Add available views
-        const views = ['Dashboard', 'Gateway', 'Integration', 'Tags', 'GitDB'];
+        const views = ['Dashboard', 'Production', 'Maintenance', 'Alarms', 'Reports', 'Energy', 'Gateway', 'Tags', 'GitDB', 'Integration'];
         views.forEach(view => {
             const option = document.createElement('option');
             option.value = view;

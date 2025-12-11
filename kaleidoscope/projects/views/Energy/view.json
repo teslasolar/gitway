@@ -1,0 +1,306 @@
+{
+  "name": "Energy",
+  "title": "Energy Management",
+  "description": "Real-time energy monitoring and efficiency tracking",
+  "icon": "mdi-lightning-bolt",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "background": "linear-gradient(135deg, #0f766e 0%, #134e4a 100%)",
+        "minHeight": "100vh"
+      }
+    },
+    "children": [
+      {
+        "type": "container",
+        "props": {
+          "style": {
+            "padding": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "label",
+            "props": {
+              "text": "Energy Management System",
+              "style": {
+                "fontSize": "28px",
+                "fontWeight": "bold",
+                "color": "white",
+                "marginBottom": "20px"
+              }
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 5,
+              "gap": "15px",
+              "style": {
+                "marginBottom": "20px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Current Load",
+                  "value": "{{tags.[default]Energy/Power/Current}}",
+                  "unit": "kW",
+                  "icon": "mdi-flash",
+                  "color": "#fbbf24",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.9)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Today's Usage",
+                  "value": "{{tags.[default]Energy/Consumption/Today}}",
+                  "unit": "kWh",
+                  "icon": "mdi-counter",
+                  "color": "#3b82f6",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.9)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Peak Demand",
+                  "value": "{{tags.[default]Energy/Demand/Peak}}",
+                  "unit": "kW",
+                  "icon": "mdi-arrow-up-thick",
+                  "color": "#ef4444",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.9)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Power Factor",
+                  "value": "{{tags.[default]Energy/PowerFactor}}",
+                  "unit": "",
+                  "icon": "mdi-sine-wave",
+                  "color": "#10b981",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.9)"
+                  }
+                }
+              },
+              {
+                "type": "metric-card",
+                "props": {
+                  "title": "Cost Today",
+                  "value": "{{tags.[default]Energy/Cost/Today}}",
+                  "unit": "$",
+                  "icon": "mdi-currency-usd",
+                  "color": "#8b5cf6",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.9)"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "type": "flex",
+            "props": {
+              "gap": "20px",
+              "style": {
+                "marginBottom": "20px"
+              }
+            },
+            "children": [
+              {
+                "type": "card",
+                "props": {
+                  "title": "Real-Time Power",
+                  "style": {
+                    "flex": 2,
+                    "background": "rgba(255, 255, 255, 0.95)"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "time-series-chart",
+                    "props": {
+                      "pens": [
+                        {
+                          "name": "Total Power",
+                          "tagPath": "[default]Energy/Power/Total",
+                          "color": "#fbbf24"
+                        },
+                        {
+                          "name": "Baseline",
+                          "tagPath": "[default]Energy/Power/Baseline",
+                          "color": "#94a3b8",
+                          "style": "dashed"
+                        }
+                      ],
+                      "timeRange": "1h",
+                      "height": 250,
+                      "updateRate": 5000
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "card",
+                "props": {
+                  "title": "Distribution",
+                  "style": {
+                    "flex": 1,
+                    "background": "rgba(255, 255, 255, 0.95)"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "pie-chart",
+                    "props": {
+                      "data": [
+                        {"name": "Production", "value": 45, "color": "#3b82f6"},
+                        {"name": "HVAC", "value": 25, "color": "#10b981"},
+                        {"name": "Lighting", "value": 15, "color": "#fbbf24"},
+                        {"name": "Compressed Air", "value": 10, "color": "#f97316"},
+                        {"name": "Other", "value": 5, "color": "#6b7280"}
+                      ],
+                      "height": 250,
+                      "showLabels": true,
+                      "showLegend": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 2,
+              "gap": "20px"
+            },
+            "children": [
+              {
+                "type": "card",
+                "props": {
+                  "title": "Transformer Status",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.95)"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "table",
+                    "props": {
+                      "columns": [
+                        {"field": "name", "header": "Transformer"},
+                        {"field": "load", "header": "Load %"},
+                        {"field": "temp", "header": "Temp °C"},
+                        {"field": "status", "header": "Status"}
+                      ],
+                      "data": [
+                        {"name": "TR-01", "load": 75, "temp": 65, "status": "Normal"},
+                        {"name": "TR-02", "load": 82, "temp": 68, "status": "Normal"},
+                        {"name": "TR-03", "load": 45, "temp": 55, "status": "Normal"}
+                      ],
+                      "height": 200
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "card",
+                "props": {
+                  "title": "Energy Efficiency",
+                  "style": {
+                    "background": "rgba(255, 255, 255, 0.95)"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "grid",
+                    "props": {
+                      "columns": 2,
+                      "gap": "10px"
+                    },
+                    "children": [
+                      {
+                        "type": "gauge",
+                        "props": {
+                          "value": "{{tags.[default]Energy/Efficiency/Overall}}",
+                          "min": 0,
+                          "max": 100,
+                          "label": "Overall",
+                          "size": 100,
+                          "thresholds": [
+                            {"value": 0, "color": "#ef4444"},
+                            {"value": 60, "color": "#f59e0b"},
+                            {"value": 80, "color": "#10b981"}
+                          ]
+                        }
+                      },
+                      {
+                        "type": "gauge",
+                        "props": {
+                          "value": "{{tags.[default]Energy/Efficiency/Motors}}",
+                          "min": 0,
+                          "max": 100,
+                          "label": "Motors",
+                          "size": 100,
+                          "thresholds": [
+                            {"value": 0, "color": "#ef4444"},
+                            {"value": 60, "color": "#f59e0b"},
+                            {"value": 80, "color": "#10b981"}
+                          ]
+                        }
+                      },
+                      {
+                        "type": "gauge",
+                        "props": {
+                          "value": "{{tags.[default]Energy/Efficiency/HVAC}}",
+                          "min": 0,
+                          "max": 100,
+                          "label": "HVAC",
+                          "size": 100,
+                          "thresholds": [
+                            {"value": 0, "color": "#ef4444"},
+                            {"value": 60, "color": "#f59e0b"},
+                            {"value": 80, "color": "#10b981"}
+                          ]
+                        }
+                      },
+                      {
+                        "type": "gauge",
+                        "props": {
+                          "value": "{{tags.[default]Energy/Efficiency/Lighting}}",
+                          "min": 0,
+                          "max": 100,
+                          "label": "Lighting",
+                          "size": 100,
+                          "thresholds": [
+                            {"value": 0, "color": "#ef4444"},
+                            {"value": 60, "color": "#f59e0b"},
+                            {"value": 80, "color": "#10b981"}
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

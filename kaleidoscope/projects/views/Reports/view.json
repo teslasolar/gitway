@@ -1,0 +1,329 @@
+{
+  "name": "Reports",
+  "title": "Reports & Analytics",
+  "description": "Production reports and data analytics",
+  "icon": "mdi-file-chart",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "column",
+      "gap": "0"
+    },
+    "children": [
+      {
+        "type": "header",
+        "props": {
+          "style": {
+            "background": "white",
+            "padding": "20px",
+            "borderBottom": "1px solid #e5e7eb"
+          }
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "justify": "space-between",
+              "align": "center"
+            },
+            "children": [
+              {
+                "type": "label",
+                "props": {
+                  "text": "Reports & Analytics",
+                  "style": {
+                    "fontSize": "24px",
+                    "fontWeight": "bold",
+                    "color": "#1f2937"
+                  }
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "gap": "10px"
+                },
+                "children": [
+                  {
+                    "type": "date-picker",
+                    "props": {
+                      "label": "From",
+                      "value": "{{today - 7d}}",
+                      "style": {
+                        "width": "150px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "date-picker",
+                    "props": {
+                      "label": "To",
+                      "value": "{{today}}",
+                      "style": {
+                        "width": "150px"
+                      }
+                    }
+                  },
+                  {
+                    "type": "button",
+                    "props": {
+                      "text": "Generate",
+                      "icon": "mdi-refresh",
+                      "variant": "primary"
+                    }
+                  },
+                  {
+                    "type": "button",
+                    "props": {
+                      "text": "Export",
+                      "icon": "mdi-download",
+                      "variant": "secondary"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "tabs",
+        "props": {
+          "style": {
+            "flex": 1,
+            "background": "#f9fafb"
+          },
+          "tabs": [
+            {
+              "label": "Production Report",
+              "icon": "mdi-factory",
+              "content": {
+                "type": "container",
+                "props": {
+                  "style": {
+                    "padding": "20px"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "grid",
+                    "props": {
+                      "columns": 3,
+                      "gap": "20px",
+                      "style": {
+                        "marginBottom": "20px"
+                      }
+                    },
+                    "children": [
+                      {
+                        "type": "card",
+                        "props": {
+                          "title": "Total Production"
+                        },
+                        "children": [
+                          {
+                            "type": "label",
+                            "props": {
+                              "text": "{{tags.[default]Reports/Production/Total}}",
+                              "style": {
+                                "fontSize": "36px",
+                                "fontWeight": "bold",
+                                "color": "#10b981"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "card",
+                        "props": {
+                          "title": "Average OEE"
+                        },
+                        "children": [
+                          {
+                            "type": "gauge",
+                            "props": {
+                              "value": "{{tags.[default]Reports/OEE/Average}}",
+                              "min": 0,
+                              "max": 100,
+                              "size": 120
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "card",
+                        "props": {
+                          "title": "Quality Rate"
+                        },
+                        "children": [
+                          {
+                            "type": "label",
+                            "props": {
+                              "text": "{{tags.[default]Reports/Quality/Rate}}%",
+                              "style": {
+                                "fontSize": "36px",
+                                "fontWeight": "bold",
+                                "color": "#3b82f6"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "card",
+                    "props": {
+                      "title": "Daily Production"
+                    },
+                    "children": [
+                      {
+                        "type": "bar-chart",
+                        "props": {
+                          "data": "{{tags.[default]Reports/Production/Daily}}",
+                          "xKey": "date",
+                          "yKeys": ["production", "target"],
+                          "colors": ["#3b82f6", "#10b981"],
+                          "height": 300
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Quality Report",
+              "icon": "mdi-quality-high",
+              "content": {
+                "type": "container",
+                "props": {
+                  "style": {
+                    "padding": "20px"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "flex",
+                    "props": {
+                      "gap": "20px"
+                    },
+                    "children": [
+                      {
+                        "type": "card",
+                        "props": {
+                          "title": "Defect Pareto",
+                          "style": {
+                            "flex": 1
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "pareto-chart",
+                            "props": {
+                              "data": "{{tags.[default]Reports/Quality/Defects}}",
+                              "categoryKey": "type",
+                              "valueKey": "count",
+                              "height": 300
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "card",
+                        "props": {
+                          "title": "SPC Chart",
+                          "style": {
+                            "flex": 1
+                          }
+                        },
+                        "children": [
+                          {
+                            "type": "spc-chart",
+                            "props": {
+                              "data": "{{tags.[default]Reports/Quality/SPC}}",
+                              "ucl": 10.5,
+                              "lcl": 9.5,
+                              "target": 10,
+                              "height": 300
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Energy Report",
+              "icon": "mdi-lightning-bolt",
+              "content": {
+                "type": "container",
+                "props": {
+                  "style": {
+                    "padding": "20px"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "card",
+                    "props": {
+                      "title": "Energy Consumption"
+                    },
+                    "children": [
+                      {
+                        "type": "area-chart",
+                        "props": {
+                          "data": "{{tags.[default]Reports/Energy/Hourly}}",
+                          "xKey": "hour",
+                          "yKeys": ["power", "baseline"],
+                          "colors": ["#f59e0b", "#94a3b8"],
+                          "height": 300
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Custom Report",
+              "icon": "mdi-file-document-edit",
+              "content": {
+                "type": "container",
+                "props": {
+                  "style": {
+                    "padding": "20px"
+                  }
+                },
+                "children": [
+                  {
+                    "type": "card",
+                    "props": {
+                      "title": "Report Builder"
+                    },
+                    "children": [
+                      {
+                        "type": "label",
+                        "props": {
+                          "text": "Select tags and date range to create custom reports",
+                          "style": {
+                            "color": "#6b7280"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

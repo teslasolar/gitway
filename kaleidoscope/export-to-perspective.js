@@ -145,6 +145,25 @@ class PerspectiveExporter {
      * Convert a Kaleidoscope view to Perspective format
      */
     convertView(kaleidoscopeView) {
+        // Ensure root component has proper structure
+        let rootComponent = this.convertComponent(kaleidoscopeView.view);
+
+        // If no root component, create a default container
+        if (!rootComponent) {
+            rootComponent = {
+                "type": "ia.container.flex",
+                "meta": {
+                    "name": "root"
+                },
+                "position": {},
+                "custom": {},
+                "props": {
+                    "direction": "column"
+                },
+                "children": []
+            };
+        }
+
         return {
             "custom": {},
             "params": {},
@@ -152,9 +171,10 @@ class PerspectiveExporter {
                 "defaultSize": {
                     "width": 1920,
                     "height": 1080
-                }
+                },
+                "path": kaleidoscopeView.name || "View"
             },
-            "root": this.convertComponent(kaleidoscopeView.view)
+            "root": rootComponent
         };
     }
 
@@ -164,24 +184,36 @@ class PerspectiveExporter {
     convertComponent(component) {
         if (!component) return null;
 
+        // Special handling for dock-layout - extract main content
+        if (component.type === 'dock-layout' && component.props?.params?.mainContent) {
+            return this.convertComponent(component.props.params.mainContent);
+        }
+
         const perspectiveType = this.componentMapping[component.type] || 'ia.container.flex';
+
+        // Ensure meta.name is always a valid string
+        const componentName = (component.props?.name || component.type || 'Component').toString();
 
         const perspectiveComponent = {
             "type": perspectiveType,
             "meta": {
-                "name": component.props?.name || component.type
+                "name": componentName
             },
             "position": {},
             "custom": {},
-            "props": this.convertProps(component.type, component.props || {}),
-            "children": []
+            "props": this.convertProps(component.type, component.props || {})
         };
 
-        // Convert children recursively
-        if (component.children && Array.isArray(component.children)) {
+        // Only add children array if there are actual children
+        if (component.children && Array.isArray(component.children) && component.children.length > 0) {
             perspectiveComponent.children = component.children
                 .map(child => this.convertComponent(child))
                 .filter(child => child !== null);
+        } else {
+            // Perspective requires empty children array for containers
+            if (perspectiveType.includes('container') || perspectiveType === 'ia.container.flex') {
+                perspectiveComponent.children = [];
+            }
         }
 
         return perspectiveComponent;
@@ -193,44 +225,58 @@ class PerspectiveExporter {
     convertProps(type, props) {
         const perspectiveProps = {};
 
+        // Helper to ensure string values
+        const ensureString = (val) => {
+            if (val === null || val === undefined) return '';
+            return String(val);
+        };
+
+        // Helper to parse numeric values safely
+        const parseValue = (val) => {
+            if (typeof val === 'string' && val.includes('{{')) {
+                return 0; // Default value for tag bindings
+            }
+            return parseFloat(val) || 0;
+        };
+
         switch(type) {
             case 'label':
-                perspectiveProps.text = props.text || '';
+                perspectiveProps.text = ensureString(props.text);
                 if (props.style) {
                     perspectiveProps.style = this.convertStyle(props.style);
                 }
                 break;
 
             case 'button':
-                perspectiveProps.text = props.text || '';
+                perspectiveProps.text = ensureString(props.text);
                 perspectiveProps.primary = props.variant === 'primary';
                 if (props.icon) {
                     perspectiveProps.icon = {
-                        path: props.icon,
-                        color: props.style?.color || ''
+                        path: ensureString(props.icon),
+                        color: ensureString(props.style?.color)
                     };
                 }
                 break;
 
             case 'gauge':
-                perspectiveProps.value = props.value || 0;
-                perspectiveProps.min = props.min || 0;
-                perspectiveProps.max = props.max || 100;
-                perspectiveProps.label = props.label || '';
+                perspectiveProps.value = parseValue(props.value);
+                perspectiveProps.min = parseValue(props.min);
+                perspectiveProps.max = parseValue(props.max) || 100;
+                perspectiveProps.label = ensureString(props.label);
                 break;
 
             case 'table':
                 if (props.columns) {
                     perspectiveProps.columns = props.columns.map(col => ({
-                        field: col.field,
-                        header: col.header || col.field,
+                        field: ensureString(col.field),
+                        header: ensureString(col.header || col.field),
                         editable: false,
                         resizable: true,
                         sortable: true
                     }));
                 }
                 if (props.data) {
-                    perspectiveProps.data = props.data;
+                    perspectiveProps.data = props.data || [];
                 }
                 break;
 
@@ -259,9 +305,9 @@ class PerspectiveExporter {
             case 'tabs':
                 if (props.tabs) {
                     perspectiveProps.tabs = props.tabs.map(tab => ({
-                        name: tab.label,
-                        text: tab.label,
-                        icon: tab.icon ? { path: tab.icon } : null
+                        name: ensureString(tab.label),
+                        text: ensureString(tab.label),
+                        icon: tab.icon ? { path: ensureString(tab.icon) } : null
                     }));
                 }
                 break;

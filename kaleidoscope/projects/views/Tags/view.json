@@ -1,0 +1,530 @@
+{
+  "name": "Tags",
+  "title": "Tag Monitor & Management",
+  "description": "Real-time tag monitoring and management interface",
+  "type": "flex",
+  "props": {
+    "direction": "column",
+    "style": {
+      "background": "linear-gradient(135deg, #0f766e 0%, #134e4a 100%)",
+      "minHeight": "100vh",
+      "padding": "0"
+    }
+  },
+  "children": [
+    {
+      "type": "header",
+      "props": {
+        "style": {
+          "background": "rgba(255,255,255,0.1)",
+          "backdropFilter": "blur(10px)",
+          "padding": "15px 30px",
+          "borderBottom": "1px solid rgba(255,255,255,0.2)"
+        }
+      },
+      "children": [
+        {
+          "type": "flex",
+          "props": {
+            "justify": "space-between",
+            "align": "center"
+          },
+          "children": [
+            {
+              "type": "label",
+              "props": {
+                "text": "🏷️ Tag Management System",
+                "style": {
+                  "fontSize": "24px",
+                  "fontWeight": "bold",
+                  "color": "white"
+                }
+              }
+            },
+            {
+              "type": "flex",
+              "props": {
+                "gap": "15px",
+                "align": "center"
+              },
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Total Tags",
+                    "value": "{{tags.count}}",
+                    "style": {
+                      "color": "white"
+                    }
+                  }
+                },
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Active",
+                    "value": "{{tags.active}}",
+                    "style": {
+                      "color": "#10b981"
+                    }
+                  }
+                },
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Alarms",
+                    "value": "{{tags.alarms}}",
+                    "style": {
+                      "color": "#ef4444"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "props": {
+        "style": {
+          "padding": "20px"
+        }
+      },
+      "children": [
+        {
+          "type": "card",
+          "props": {
+            "style": {
+              "marginBottom": "20px"
+            }
+          },
+          "children": [
+            {
+              "type": "flex",
+              "props": {
+                "gap": "15px",
+                "align": "flex-end"
+              },
+              "children": [
+                {
+                  "type": "input",
+                  "props": {
+                    "id": "tag-search",
+                    "placeholder": "Search tags... (e.g., [default]Process/Temperature)",
+                    "style": {
+                      "flex": 1
+                    }
+                  }
+                },
+                {
+                  "type": "select",
+                  "props": {
+                    "id": "tag-provider",
+                    "label": "Provider",
+                    "options": [
+                      { "value": "default", "label": "[default]" },
+                      { "value": "gitway", "label": "[GitWay]" },
+                      { "value": "system", "label": "[System]" }
+                    ],
+                    "style": {
+                      "width": "150px"
+                    }
+                  }
+                },
+                {
+                  "type": "select",
+                  "props": {
+                    "id": "tag-type",
+                    "label": "Type",
+                    "options": [
+                      { "value": "all", "label": "All Types" },
+                      { "value": "memory", "label": "Memory" },
+                      { "value": "opc", "label": "OPC" },
+                      { "value": "expression", "label": "Expression" },
+                      { "value": "query", "label": "Query" }
+                    ],
+                    "style": {
+                      "width": "150px"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "Add Tag",
+                    "icon": "mdi-plus",
+                    "primary": true,
+                    "onClick": {
+                      "action": "openTagEditor"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "Import",
+                    "icon": "mdi-import",
+                    "onClick": {
+                      "action": "importTags"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "Export",
+                    "icon": "mdi-export",
+                    "onClick": {
+                      "action": "exportTags"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "flex",
+          "props": {
+            "gap": "20px",
+            "style": {
+              "height": "calc(100vh - 250px)"
+            }
+          },
+          "children": [
+            {
+              "type": "card",
+              "props": {
+                "title": "Tag Browser",
+                "icon": "mdi-folder-outline",
+                "style": {
+                  "width": "300px",
+                  "overflow": "auto"
+                }
+              },
+              "children": [
+                {
+                  "type": "tree",
+                  "props": {
+                    "id": "tag-tree",
+                    "data": [
+                      {
+                        "label": "[default]",
+                        "icon": "mdi-folder",
+                        "children": [
+                          {
+                            "label": "Process",
+                            "icon": "mdi-folder",
+                            "children": [
+                              { "label": "Temperature", "icon": "mdi-thermometer", "value": "85.3°F" },
+                              { "label": "Pressure", "icon": "mdi-gauge", "value": "45.2 PSI" },
+                              { "label": "Flow", "icon": "mdi-waves", "value": "125.5 GPM" }
+                            ]
+                          },
+                          {
+                            "label": "Tanks",
+                            "icon": "mdi-folder",
+                            "children": [
+                              { "label": "Tank1/Level", "icon": "mdi-cup", "value": "65%" },
+                              { "label": "Tank2/Level", "icon": "mdi-cup", "value": "82%" }
+                            ]
+                          },
+                          {
+                            "label": "Motors",
+                            "icon": "mdi-folder",
+                            "children": [
+                              { "label": "Motor1/Running", "icon": "mdi-engine", "value": "true" },
+                              { "label": "Motor1/Speed", "icon": "mdi-speedometer", "value": "1750 RPM" }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "label": "[GitWay]",
+                        "icon": "mdi-folder",
+                        "children": [
+                          {
+                            "label": "Test",
+                            "icon": "mdi-folder",
+                            "children": [
+                              { "label": "Integration/Status", "icon": "mdi-check", "value": "Active" }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "label": "[System]",
+                        "icon": "mdi-folder",
+                        "children": [
+                          {
+                            "label": "Gateway",
+                            "icon": "mdi-folder",
+                            "children": [
+                              { "label": "Status", "icon": "mdi-heart-pulse", "value": "Running" },
+                              { "label": "Memory", "icon": "mdi-memory", "value": "512 MB" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "onSelect": {
+                      "action": "selectTag"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Tag Monitor",
+                "icon": "mdi-monitor-dashboard",
+                "style": {
+                  "flex": 1
+                }
+              },
+              "children": [
+                {
+                  "type": "tabs",
+                  "props": {
+                    "tabs": [
+                      { "id": "realtime", "label": "Real-time", "icon": "mdi-pulse" },
+                      { "id": "history", "label": "History", "icon": "mdi-chart-line" },
+                      { "id": "alarms", "label": "Alarms", "icon": "mdi-alert" }
+                    ]
+                  },
+                  "children": [
+                    {
+                      "type": "tabPanel",
+                      "props": { "tabId": "realtime" },
+                      "children": [
+                        {
+                          "type": "table",
+                          "props": {
+                            "columns": [
+                              { "key": "tagPath", "label": "Tag Path", "width": "300px" },
+                              { "key": "value", "label": "Value", "width": "150px", "editable": true },
+                              { "key": "quality", "label": "Quality", "width": "100px" },
+                              { "key": "timestamp", "label": "Timestamp", "width": "200px" },
+                              { "key": "dataType", "label": "Type", "width": "100px" },
+                              { "key": "actions", "label": "Actions", "width": "150px" }
+                            ],
+                            "data": [
+                              {
+                                "tagPath": "[default]Process/Temperature",
+                                "value": "85.3",
+                                "quality": "Good",
+                                "timestamp": "2024-12-11 10:15:23",
+                                "dataType": "Float",
+                                "actions": ["Edit", "History", "Delete"]
+                              },
+                              {
+                                "tagPath": "[default]Process/Pressure",
+                                "value": "45.2",
+                                "quality": "Good",
+                                "timestamp": "2024-12-11 10:15:23",
+                                "dataType": "Float",
+                                "actions": ["Edit", "History", "Delete"]
+                              },
+                              {
+                                "tagPath": "[default]Motors/Motor1/Running",
+                                "value": "true",
+                                "quality": "Good",
+                                "timestamp": "2024-12-11 10:15:23",
+                                "dataType": "Boolean",
+                                "actions": ["Edit", "History", "Delete"]
+                              },
+                              {
+                                "tagPath": "[default]Tanks/Tank1/Level",
+                                "value": "65",
+                                "quality": "Good",
+                                "timestamp": "2024-12-11 10:15:23",
+                                "dataType": "Int",
+                                "actions": ["Edit", "History", "Delete"]
+                              }
+                            ],
+                            "selectable": true,
+                            "sortable": true,
+                            "refreshInterval": 1000
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tabPanel",
+                      "props": { "tabId": "history" },
+                      "children": [
+                        {
+                          "type": "timeSeriesChart",
+                          "props": {
+                            "height": 400,
+                            "pens": [
+                              {
+                                "tagPath": "[default]Process/Temperature",
+                                "label": "Temperature",
+                                "color": "#ef4444",
+                                "units": "°F"
+                              },
+                              {
+                                "tagPath": "[default]Process/Pressure",
+                                "label": "Pressure",
+                                "color": "#3b82f6",
+                                "units": "PSI",
+                                "yAxis": "right"
+                              }
+                            ],
+                            "timeRange": "1h",
+                            "showLegend": true
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tabPanel",
+                      "props": { "tabId": "alarms" },
+                      "children": [
+                        {
+                          "type": "alarmTable",
+                          "props": {
+                            "columns": [
+                              { "key": "priority", "label": "Priority", "width": "80px" },
+                              { "key": "timestamp", "label": "Time", "width": "150px" },
+                              { "key": "source", "label": "Source", "width": "250px" },
+                              { "key": "message", "label": "Message", "flex": true },
+                              { "key": "state", "label": "State", "width": "100px" }
+                            ],
+                            "data": [
+                              {
+                                "priority": "High",
+                                "timestamp": "10:12:45",
+                                "source": "[default]Process/Temperature",
+                                "message": "Temperature exceeds high limit (85°F > 80°F)",
+                                "state": "Active"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Tag Properties",
+                "icon": "mdi-cog",
+                "style": {
+                  "width": "350px"
+                }
+              },
+              "children": [
+                {
+                  "type": "form",
+                  "props": {
+                    "fields": [
+                      {
+                        "type": "input",
+                        "label": "Tag Path",
+                        "id": "tagPath",
+                        "value": "[default]Process/Temperature",
+                        "readonly": true
+                      },
+                      {
+                        "type": "select",
+                        "label": "Data Type",
+                        "id": "dataType",
+                        "options": ["Float", "Int", "Boolean", "String"],
+                        "value": "Float"
+                      },
+                      {
+                        "type": "input",
+                        "label": "Engineering Units",
+                        "id": "engUnits",
+                        "value": "°F"
+                      },
+                      {
+                        "type": "number",
+                        "label": "Min Value",
+                        "id": "minValue",
+                        "value": 0
+                      },
+                      {
+                        "type": "number",
+                        "label": "Max Value",
+                        "id": "maxValue",
+                        "value": 100
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "Enable History",
+                        "id": "historyEnabled",
+                        "value": true
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "Enable Alarms",
+                        "id": "alarmsEnabled",
+                        "value": true
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "flex",
+                  "props": {
+                    "gap": "10px",
+                    "justify": "flex-end",
+                    "style": {
+                      "marginTop": "20px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Save",
+                        "primary": true,
+                        "onClick": {
+                          "action": "saveTagProperties"
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "Cancel",
+                        "onClick": {
+                          "action": "cancelEdit"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scripts": {
+    "onStartup": "initializeTagMonitor",
+    "actions": {
+      "selectTag": "handleTagSelection",
+      "openTagEditor": "showTagEditorModal",
+      "importTags": "importTagsFromFile",
+      "exportTags": "exportTagsToFile",
+      "saveTagProperties": "saveTagConfiguration"
+    }
+  },
+  "bindings": {
+    "tags": {
+      "source": "gateway",
+      "path": "/tags",
+      "refresh": 1000
+    }
+  }
+}

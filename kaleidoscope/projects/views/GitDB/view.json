@@ -1,0 +1,693 @@
+{
+  "name": "GitDB",
+  "title": "GitDB Database Manager",
+  "description": "Git-based database management system",
+  "type": "flex",
+  "props": {
+    "direction": "column",
+    "style": {
+      "background": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+      "minHeight": "100vh",
+      "padding": "0"
+    }
+  },
+  "children": [
+    {
+      "type": "header",
+      "props": {
+        "style": {
+          "background": "rgba(255,255,255,0.05)",
+          "backdropFilter": "blur(10px)",
+          "padding": "15px 30px",
+          "borderBottom": "1px solid rgba(255,255,255,0.1)"
+        }
+      },
+      "children": [
+        {
+          "type": "flex",
+          "props": {
+            "justify": "space-between",
+            "align": "center"
+          },
+          "children": [
+            {
+              "type": "flex",
+              "props": {
+                "gap": "20px",
+                "align": "center"
+              },
+              "children": [
+                {
+                  "type": "label",
+                  "props": {
+                    "text": "🗄️ GitDB Manager",
+                    "style": {
+                      "fontSize": "24px",
+                      "fontWeight": "bold",
+                      "color": "white"
+                    }
+                  }
+                },
+                {
+                  "type": "badge",
+                  "props": {
+                    "text": "Git-Powered Database",
+                    "color": "green",
+                    "style": {
+                      "fontSize": "12px"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "flex",
+              "props": {
+                "gap": "20px",
+                "align": "center"
+              },
+              "children": [
+                {
+                  "type": "statusIndicator",
+                  "props": {
+                    "label": "Sync Status",
+                    "value": "Synced",
+                    "color": "green"
+                  }
+                },
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Collections",
+                    "value": "12",
+                    "style": {
+                      "color": "white"
+                    }
+                  }
+                },
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Records",
+                    "value": "1,247",
+                    "style": {
+                      "color": "white"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "Sync to GitHub",
+                    "icon": "mdi-sync",
+                    "color": "green",
+                    "onClick": {
+                      "action": "syncToGitHub"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "container",
+      "props": {
+        "style": {
+          "padding": "20px"
+        }
+      },
+      "children": [
+        {
+          "type": "flex",
+          "props": {
+            "gap": "20px",
+            "style": {
+              "height": "calc(100vh - 120px)"
+            }
+          },
+          "children": [
+            {
+              "type": "card",
+              "props": {
+                "title": "Database Explorer",
+                "icon": "mdi-database-outline",
+                "style": {
+                  "width": "280px",
+                  "overflow": "auto"
+                }
+              },
+              "children": [
+                {
+                  "type": "tree",
+                  "props": {
+                    "id": "db-tree",
+                    "data": [
+                      {
+                        "label": "Production",
+                        "icon": "mdi-database",
+                        "expanded": true,
+                        "children": [
+                          {
+                            "label": "Collections",
+                            "icon": "mdi-folder-table",
+                            "expanded": true,
+                            "children": [
+                              { "label": "tags", "icon": "mdi-table", "count": "542" },
+                              { "label": "alarms", "icon": "mdi-table", "count": "89" },
+                              { "label": "history", "icon": "mdi-table", "count": "10,234" },
+                              { "label": "recipes", "icon": "mdi-table", "count": "45" },
+                              { "label": "users", "icon": "mdi-table", "count": "12" },
+                              { "label": "config", "icon": "mdi-table", "count": "156" }
+                            ]
+                          },
+                          {
+                            "label": "Branches",
+                            "icon": "mdi-source-branch",
+                            "children": [
+                              { "label": "main", "icon": "mdi-source-commit", "active": true },
+                              { "label": "develop", "icon": "mdi-source-commit" },
+                              { "label": "feature/new-schema", "icon": "mdi-source-commit" }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Development",
+                        "icon": "mdi-database",
+                        "children": [
+                          {
+                            "label": "Collections",
+                            "icon": "mdi-folder-table",
+                            "children": [
+                              { "label": "test_data", "icon": "mdi-table", "count": "100" },
+                              { "label": "mock_tags", "icon": "mdi-table", "count": "50" }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "label": "Backup",
+                        "icon": "mdi-database",
+                        "children": [
+                          {
+                            "label": "Snapshots",
+                            "icon": "mdi-backup-restore",
+                            "children": [
+                              { "label": "2024-12-11_10:00", "icon": "mdi-clock" },
+                              { "label": "2024-12-10_22:00", "icon": "mdi-clock" },
+                              { "label": "2024-12-10_10:00", "icon": "mdi-clock" }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "onSelect": {
+                      "action": "selectCollection"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "style": {
+                  "flex": 1,
+                  "overflow": "hidden"
+                }
+              },
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "direction": "column",
+                    "style": {
+                      "height": "100%"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "controlBar",
+                      "props": {
+                        "style": {
+                          "padding": "15px",
+                          "background": "#f3f4f6",
+                          "borderBottom": "1px solid #e5e7eb"
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "flex",
+                          "props": {
+                            "gap": "15px",
+                            "align": "center"
+                          },
+                          "children": [
+                            {
+                              "type": "select",
+                              "props": {
+                                "id": "driver-select",
+                                "label": "Driver",
+                                "value": "mysql",
+                                "options": [
+                                  { "value": "mysql", "label": "MySQL" },
+                                  { "value": "postgresql", "label": "PostgreSQL" },
+                                  { "value": "sqlserver", "label": "SQL Server" },
+                                  { "value": "oracle", "label": "Oracle" },
+                                  { "value": "mariadb", "label": "MariaDB" }
+                                ],
+                                "style": {
+                                  "width": "150px"
+                                }
+                              }
+                            },
+                            {
+                              "type": "input",
+                              "props": {
+                                "id": "search",
+                                "placeholder": "Search records...",
+                                "style": {
+                                  "flex": 1
+                                }
+                              }
+                            },
+                            {
+                              "type": "button",
+                              "props": {
+                                "text": "New Record",
+                                "icon": "mdi-plus",
+                                "primary": true,
+                                "onClick": {
+                                  "action": "createRecord"
+                                }
+                              }
+                            },
+                            {
+                              "type": "button",
+                              "props": {
+                                "text": "Import",
+                                "icon": "mdi-database-import",
+                                "onClick": {
+                                  "action": "importData"
+                                }
+                              }
+                            },
+                            {
+                              "type": "button",
+                              "props": {
+                                "text": "Export",
+                                "icon": "mdi-database-export",
+                                "onClick": {
+                                  "action": "exportData"
+                                }
+                              }
+                            },
+                            {
+                              "type": "button",
+                              "props": {
+                                "text": "Commit",
+                                "icon": "mdi-git",
+                                "color": "green",
+                                "onClick": {
+                                  "action": "commitChanges"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "tabs",
+                      "props": {
+                        "tabs": [
+                          { "id": "data", "label": "Data View", "icon": "mdi-table" },
+                          { "id": "query", "label": "Query Builder", "icon": "mdi-database-search" },
+                          { "id": "sql", "label": "SQL Editor", "icon": "mdi-code-tags" },
+                          { "id": "schema", "label": "Schema", "icon": "mdi-file-tree" },
+                          { "id": "history", "label": "Git History", "icon": "mdi-history" }
+                        ],
+                        "style": {
+                          "flex": 1,
+                          "overflow": "hidden"
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "tabPanel",
+                          "props": {
+                            "tabId": "data",
+                            "style": {
+                              "height": "100%",
+                              "overflow": "auto"
+                            }
+                          },
+                          "children": [
+                            {
+                              "type": "dataGrid",
+                              "props": {
+                                "columns": [
+                                  { "key": "id", "label": "ID", "width": "80px", "sortable": true },
+                                  { "key": "tagPath", "label": "Tag Path", "width": "250px", "sortable": true, "editable": true },
+                                  { "key": "value", "label": "Value", "width": "150px", "editable": true },
+                                  { "key": "dataType", "label": "Type", "width": "100px" },
+                                  { "key": "quality", "label": "Quality", "width": "100px" },
+                                  { "key": "timestamp", "label": "Modified", "width": "180px", "sortable": true },
+                                  { "key": "author", "label": "Author", "width": "150px" },
+                                  { "key": "commit", "label": "Commit", "width": "100px" }
+                                ],
+                                "data": [
+                                  {
+                                    "id": 1,
+                                    "tagPath": "[default]Process/Temperature",
+                                    "value": "85.3",
+                                    "dataType": "Float",
+                                    "quality": "Good",
+                                    "timestamp": "2024-12-11 10:15:23",
+                                    "author": "admin",
+                                    "commit": "a3f5c2d"
+                                  },
+                                  {
+                                    "id": 2,
+                                    "tagPath": "[default]Process/Pressure",
+                                    "value": "45.2",
+                                    "dataType": "Float",
+                                    "quality": "Good",
+                                    "timestamp": "2024-12-11 10:14:15",
+                                    "author": "operator",
+                                    "commit": "a3f5c2d"
+                                  },
+                                  {
+                                    "id": 3,
+                                    "tagPath": "[default]Motors/Motor1/Running",
+                                    "value": "true",
+                                    "dataType": "Boolean",
+                                    "quality": "Good",
+                                    "timestamp": "2024-12-11 09:45:00",
+                                    "author": "system",
+                                    "commit": "b2e4a1f"
+                                  },
+                                  {
+                                    "id": 4,
+                                    "tagPath": "[default]Alarms/HighTemp",
+                                    "value": "Active",
+                                    "dataType": "String",
+                                    "quality": "Good",
+                                    "timestamp": "2024-12-11 10:12:45",
+                                    "author": "alarm_system",
+                                    "commit": "a3f5c2d"
+                                  }
+                                ],
+                                "selectable": true,
+                                "multiSelect": true,
+                                "pagination": true,
+                                "pageSize": 25,
+                                "editable": true,
+                                "onCellEdit": {
+                                  "action": "updateRecord"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tabPanel",
+                          "props": { "tabId": "query" },
+                          "children": [
+                            {
+                              "type": "queryBuilder",
+                              "props": {
+                                "fields": [
+                                  { "name": "tagPath", "label": "Tag Path", "type": "string" },
+                                  { "name": "value", "label": "Value", "type": "number" },
+                                  { "name": "quality", "label": "Quality", "type": "select", "options": ["Good", "Bad", "Uncertain"] },
+                                  { "name": "timestamp", "label": "Timestamp", "type": "datetime" }
+                                ],
+                                "onExecute": {
+                                  "action": "executeQuery"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tabPanel",
+                          "props": { "tabId": "sql" },
+                          "children": [
+                            {
+                              "type": "splitPanel",
+                              "props": {
+                                "split": "horizontal",
+                                "defaultSize": "60%"
+                              },
+                              "children": [
+                                {
+                                  "type": "codeEditor",
+                                  "props": {
+                                    "id": "sql-editor",
+                                    "language": "sql",
+                                    "theme": "dark",
+                                    "value": "-- Enter SQL query here\nSELECT * FROM tags \nWHERE quality = 'Good' \nORDER BY timestamp DESC \nLIMIT 100;",
+                                    "style": {
+                                      "height": "300px"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "flex",
+                                  "props": {
+                                    "direction": "column",
+                                    "style": {
+                                      "padding": "10px"
+                                    }
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "flex",
+                                      "props": {
+                                        "gap": "10px",
+                                        "style": {
+                                          "marginBottom": "10px"
+                                        }
+                                      },
+                                      "children": [
+                                        {
+                                          "type": "button",
+                                          "props": {
+                                            "text": "Execute",
+                                            "icon": "mdi-play",
+                                            "primary": true,
+                                            "onClick": {
+                                              "action": "executeSql"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "button",
+                                          "props": {
+                                            "text": "Format",
+                                            "icon": "mdi-format-align-left",
+                                            "onClick": {
+                                              "action": "formatSql"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "button",
+                                          "props": {
+                                            "text": "Save Query",
+                                            "icon": "mdi-content-save",
+                                            "onClick": {
+                                              "action": "saveQuery"
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "queryResults",
+                                      "props": {
+                                        "id": "sql-results",
+                                        "style": {
+                                          "flex": 1,
+                                          "overflow": "auto"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tabPanel",
+                          "props": { "tabId": "schema" },
+                          "children": [
+                            {
+                              "type": "schemaViewer",
+                              "props": {
+                                "schema": {
+                                  "tags": {
+                                    "columns": [
+                                      { "name": "id", "type": "INTEGER", "primary": true },
+                                      { "name": "tagPath", "type": "VARCHAR(255)", "unique": true },
+                                      { "name": "value", "type": "TEXT" },
+                                      { "name": "dataType", "type": "VARCHAR(50)" },
+                                      { "name": "quality", "type": "VARCHAR(20)" },
+                                      { "name": "timestamp", "type": "DATETIME" },
+                                      { "name": "author", "type": "VARCHAR(100)" },
+                                      { "name": "commit", "type": "VARCHAR(40)" }
+                                    ],
+                                    "indexes": [
+                                      { "name": "idx_tagPath", "columns": ["tagPath"] },
+                                      { "name": "idx_timestamp", "columns": ["timestamp"] }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "tabPanel",
+                          "props": { "tabId": "history" },
+                          "children": [
+                            {
+                              "type": "commitHistory",
+                              "props": {
+                                "commits": [
+                                  {
+                                    "hash": "a3f5c2d",
+                                    "message": "Update process tags",
+                                    "author": "admin",
+                                    "date": "2024-12-11 10:15:23",
+                                    "changes": "+4 -2"
+                                  },
+                                  {
+                                    "hash": "b2e4a1f",
+                                    "message": "Motor status update",
+                                    "author": "system",
+                                    "date": "2024-12-11 09:45:00",
+                                    "changes": "+1 -0"
+                                  },
+                                  {
+                                    "hash": "c5d8e3a",
+                                    "message": "Initial database setup",
+                                    "author": "admin",
+                                    "date": "2024-12-10 14:30:00",
+                                    "changes": "+542 -0"
+                                  }
+                                ],
+                                "actions": [
+                                  { "label": "View", "action": "viewCommit" },
+                                  { "label": "Revert", "action": "revertCommit" },
+                                  { "label": "Cherry-pick", "action": "cherryPick" }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Database Info",
+                "icon": "mdi-information",
+                "style": {
+                  "width": "300px"
+                }
+              },
+              "children": [
+                {
+                  "type": "list",
+                  "props": {
+                    "items": [
+                      { "label": "Database", "value": "Production" },
+                      { "label": "Collection", "value": "tags" },
+                      { "label": "Records", "value": "542" },
+                      { "label": "Size", "value": "2.4 MB" },
+                      { "label": "Last Commit", "value": "10 min ago" },
+                      { "label": "Branch", "value": "main" },
+                      { "label": "Ahead/Behind", "value": "↑2 ↓0" }
+                    ]
+                  }
+                },
+                {
+                  "type": "divider",
+                  "props": {
+                    "style": {
+                      "margin": "15px 0"
+                    }
+                  }
+                },
+                {
+                  "type": "label",
+                  "props": {
+                    "text": "Recent Activity",
+                    "style": {
+                      "fontSize": "14px",
+                      "fontWeight": "bold",
+                      "marginBottom": "10px"
+                    }
+                  }
+                },
+                {
+                  "type": "activityFeed",
+                  "props": {
+                    "items": [
+                      {
+                        "time": "10:15",
+                        "message": "admin updated 4 records",
+                        "type": "update"
+                      },
+                      {
+                        "time": "09:45",
+                        "message": "system added Motor1 status",
+                        "type": "create"
+                      },
+                      {
+                        "time": "09:30",
+                        "message": "Synced with GitHub",
+                        "type": "sync"
+                      }
+                    ],
+                    "maxItems": 10
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scripts": {
+    "onStartup": "initializeGitDB",
+    "actions": {
+      "selectCollection": "loadCollection",
+      "createRecord": "showRecordEditor",
+      "updateRecord": "saveRecord",
+      "executeQuery": "runQueryBuilder",
+      "executeSql": "runSqlQuery",
+      "commitChanges": "gitCommit",
+      "syncToGitHub": "gitPushToRemote",
+      "importData": "importFromFile",
+      "exportData": "exportToFile"
+    }
+  },
+  "bindings": {
+    "gitdb": {
+      "source": "gitdb",
+      "refresh": 5000
+    }
+  }
+}

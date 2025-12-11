@@ -312,6 +312,65 @@
       "required": false,
       "default": 1.0,
       "description": "Polygon/polyline simplification level"
+    },
+    "geofenceZones": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Geofencing zones for boundary monitoring",
+      "itemSchema": {
+        "name": "string (unique identifier)",
+        "enabled": "boolean",
+        "type": "polygon|circle",
+        "points": "array of {lat, lng} (for polygons)",
+        "center": "{lat, lng} (for circles)",
+        "radius": "number (meters, for circles)",
+        "fillColor": "string",
+        "strokeColor": "string",
+        "opacity": "number (0-1)",
+        "alertOnEntry": "boolean",
+        "alertOnExit": "boolean"
+      }
+    },
+    "assetTracking": {
+      "type": "object",
+      "required": false,
+      "default": {},
+      "description": "Asset tracking configuration",
+      "schema": {
+        "enabled": "boolean",
+        "assets": "array of asset objects",
+        "updateInterval": "number (ms)",
+        "showTrails": "boolean",
+        "trailLength": "number (points)"
+      }
+    },
+    "heatmapLayers": {
+      "type": "array",
+      "required": false,
+      "default": [],
+      "description": "Heatmap visualization layers",
+      "itemSchema": {
+        "name": "string",
+        "enabled": "boolean",
+        "points": "array of {lat, lng, intensity}",
+        "radius": "number (pixels)",
+        "blur": "number (pixels)",
+        "maxIntensity": "number",
+        "gradient": "object (color stops)"
+      }
+    },
+    "markerClustering": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable marker clustering for better performance"
+    },
+    "clusterRadius": {
+      "type": "number",
+      "required": false,
+      "default": 80,
+      "description": "Cluster radius in pixels"
     }
   },
   "view": {
@@ -379,11 +438,29 @@
         "ui": {
           "markers": "{{params.markers}}",
           "popups": "{{params.popups}}",
-          "viewLayers": "{{params.viewLayers}}"
+          "viewLayers": "{{params.viewLayers}}",
+          "markerClustering": {
+            "enabled": "{{params.markerClustering}}",
+            "radius": "{{params.clusterRadius}}",
+            "maxClusterRadius": 80,
+            "spiderfyOnMaxZoom": true,
+            "showCoverageOnHover": true,
+            "zoomToBoundsOnClick": true
+          }
         },
         "other": {
-          "geoJSON": "{{params.geoJSON}}"
+          "geoJSON": "{{params.geoJSON}}",
+          "heatmap": "{{params.heatmapLayers}}"
         },
+        "geofencing": {
+          "zones": "{{params.geofenceZones}}",
+          "monitoring": {
+            "enabled": true,
+            "checkInterval": 1000,
+            "alertSound": false
+          }
+        },
+        "assetTracking": "{{params.assetTracking}}",
         "hideViewMarkersOnZoom": "{{params.hideViewMarkersOnZoom}}"
       },
       "style": {
@@ -443,11 +520,15 @@
         "invalidateSize() - Refresh after container resize"
       ],
       "events": [
-        "onMarkerClick - Returns marker name",
+        "onMarkerClick - Returns marker name and coordinates",
         "onMapClick - Returns lat/lng coordinates",
         "onMouseMove - Fires during mouse movement",
         "onZoomEnd - Fires after zoom completes",
-        "onMoveEnd - Fires after pan completes"
+        "onMoveEnd - Fires after pan completes",
+        "onGeofenceEnter - Fires when asset enters geofence zone",
+        "onGeofenceExit - Fires when asset exits geofence zone",
+        "onAssetUpdate - Fires when tracked asset position updates",
+        "onClusterClick - Fires when marker cluster is clicked"
       ],
       "tileProviders": {
         "OpenStreetMap": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -468,8 +549,17 @@
         "Facility and site maps",
         "Route planning and navigation",
         "Territory and zone management",
-        "Weather and environmental monitoring"
-      ]
+        "Weather and environmental monitoring",
+        "Geofencing and boundary alerts",
+        "Fleet management and dispatch",
+        "Heatmap visualization for density analysis"
+      ],
+      "enhancedFeatures": {
+        "geofencing": "Monitor assets within defined geographic boundaries with entry/exit alerts",
+        "assetTracking": "Real-time tracking of multiple assets with position history trails",
+        "heatmaps": "Visualize data density and intensity patterns across geographic areas",
+        "markerClustering": "Automatic grouping of nearby markers for improved performance and clarity"
+      }
     }
   }
 }

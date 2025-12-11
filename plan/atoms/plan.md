@@ -2,8 +2,6 @@
 
 ## 🔲 TODO
 <!-- Priority tasks -->
-- [ ] `HIGH` Add Table component
-- [ ] `HIGH` Add Map component
 - [ ] `MED` Create Barcode Scanner
 - [ ] `MED` Add Audio component
 - [ ] `LOW` Add Signature Pad
@@ -14,6 +12,8 @@
 
 ## ✅ DONE (Auto-purge: 24h)
 <!-- Completed items auto-delete -->
+- [x] `HIGH` Enhanced Table component with export functionality
+- [x] `HIGH` Enhanced Map component with geofencing, asset tracking, heatmaps
 
 ## 📝 Notes
 - All atoms must match Ignition props exactly

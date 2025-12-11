@@ -1,16 +1,16 @@
 # System Plan
 
 ## 🔲 TODO
-- [ ] `bridge-server` - Optimize WebSocket handling
-- [ ] `tag-provider` - Implement tag subscriptions
 - [ ] `historian` - Add query interface
 - [ ] `auth` - User authentication system
-- [ ] `cache` - Tag value caching layer
 
 ## 🔨 IN PROGRESS
 - [ ] Testing bridge server connection
 
 ## ✅ DONE (Auto-purge: 24h)
+- [x] `bridge-server` - Optimized WebSocket with heartbeat, pooling, buffering
+- [x] `tag-provider` - Implemented tag subscriptions with batching
+- [x] `cache` - Added response caching layer with TTL
 
 ## 🔧 Infrastructure
 - Gateway connections

@@ -1,0 +1,214 @@
+{
+  "id": "alarm-banner",
+  "name": "Alarm Banner",
+  "description": "Active alarm strip combining indicator, label, and button to show highest priority alarm",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Molecule",
+  "parameters": {
+    "maxAlarms": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Maximum alarms to display in banner"
+    },
+    "priorities": {
+      "type": "array",
+      "required": false,
+      "default": ["critical", "high", "medium", "low"],
+      "description": "Alarm priority levels to include"
+    },
+    "acknowledgeable": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show acknowledge button"
+    },
+    "alarmSource": {
+      "type": "string",
+      "required": false,
+      "default": "*",
+      "description": "Alarm source filter"
+    },
+    "autoHide": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Auto-hide when no active alarms"
+    },
+    "showCount": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show total alarm count"
+    }
+  },
+  "view": {
+    "type": "container",
+    "props": {
+      "style": {
+        "width": "100%",
+        "height": "60px",
+        "padding": "10px 20px",
+        "background": "{{alarms.length > 0 ? (alarms[0].severity === 'critical' ? '#ef4444' : alarms[0].severity === 'high' ? '#f59e0b' : alarms[0].severity === 'medium' ? '#eab308' : '#3b82f6') : '#10b981'}}",
+        "borderBottom": "2px solid rgba(0,0,0,0.1)",
+        "display": "{{params.autoHide && alarms.length === 0 ? 'none' : 'flex'}}",
+        "alignItems": "center",
+        "gap": "15px",
+        "transition": "all 0.3s ease"
+      }
+    },
+    "children": [
+      {
+        "type": "indicator",
+        "props": {
+          "tagPath": "{{alarms[0].severity}}",
+          "size": 24,
+          "shape": "circle",
+          "enableGlow": true,
+          "enablePulse": "{{alarms.length > 0}}",
+          "goodColor": "#ffffff",
+          "warningColor": "#ffffff",
+          "errorColor": "#ffffff",
+          "inactiveColor": "#ffffff"
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "2px",
+          "style": { "flex": "1" }
+        },
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "value": "{{alarms.length > 0 ? alarms[0].label : 'No Active Alarms'}}",
+              "style": {
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "color": "#ffffff",
+                "overflow": "hidden",
+                "textOverflow": "ellipsis",
+                "whiteSpace": "nowrap"
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "value": "{{alarms.length > 0 ? alarms[0].displayPath + ' - ' + new Date(alarms[0].timestamp).toLocaleTimeString() : 'All systems operational'}}",
+              "style": {
+                "fontSize": "12px",
+                "color": "rgba(255,255,255,0.9)",
+                "overflow": "hidden",
+                "textOverflow": "ellipsis",
+                "whiteSpace": "nowrap"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showCount && alarms.length > 1}}",
+          "children": [
+            {
+              "type": "container",
+              "props": {
+                "style": {
+                  "padding": "5px 12px",
+                  "background": "rgba(0,0,0,0.2)",
+                  "borderRadius": "12px"
+                }
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "value": "+{{alarms.length - 1}} more",
+                    "style": {
+                      "fontSize": "12px",
+                      "fontWeight": "600",
+                      "color": "#ffffff"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "gap": "10px"
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.acknowledgeable && alarms.length > 0 && !alarms[0].acknowledged}}",
+              "children": [
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "Acknowledge",
+                    "icon": "check",
+                    "style": "secondary",
+                    "onClick": {
+                      "action": "acknowledgeAlarm",
+                      "params": {
+                        "alarmId": "{{alarms[0].id}}"
+                      }
+                    },
+                    "width": "auto"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "props": {
+              "text": "View All",
+              "icon": "arrow_forward",
+              "iconPosition": "right",
+              "style": "link",
+              "onClick": {
+                "action": "openAlarmViewer"
+              },
+              "width": "auto",
+              "enabled": "{{alarms.length > 0}}"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "acknowledgeAlarm": {
+      "type": "gateway",
+      "method": "acknowledgeAlarm"
+    },
+    "openAlarmViewer": {
+      "type": "navigation",
+      "target": "alarms"
+    }
+  },
+  "subscriptions": [
+    {
+      "type": "alarms",
+      "source": "{{params.alarmSource}}",
+      "filter": {
+        "severity": "{{params.priorities}}",
+        "acknowledged": false
+      },
+      "limit": "{{params.maxAlarms}}",
+      "sort": "severity desc, timestamp desc",
+      "interval": 2000
+    }
+  ]
+}

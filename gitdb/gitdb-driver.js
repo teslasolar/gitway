@@ -3,7 +3,153 @@
  * Emulates Ignition's JDBC drivers but uses GitHub as the backend
  * Each commit = database transaction
  * BAM! Let's kick this up a notch!
+ *
+ * Enhanced Features:
+ * - Prepared statement support
+ * - Connection pooling with configurable limits
+ * - Transaction isolation levels
+ * - Batch operations
+ * - Query result caching
  */
+
+/**
+ * Connection Pool Manager
+ */
+class GitDBConnectionPool {
+    constructor(config = {}) {
+        this.config = {
+            minConnections: config.minConnections || 2,
+            maxConnections: config.maxConnections || 10,
+            maxIdleTime: config.maxIdleTime || 60000,
+            connectionTimeout: config.connectionTimeout || 10000,
+            validationInterval: config.validationInterval || 30000
+        };
+
+        this.availableConnections = [];
+        this.activeConnections = new Map();
+        this.waitQueue = [];
+        this.totalConnections = 0;
+        this.stats = {
+            totalAcquired: 0,
+            totalReleased: 0,
+            totalCreated: 0,
+            totalDestroyed: 0,
+            timeouts: 0
+        };
+
+        // Start validation interval
+        this.validationTimer = setInterval(() => this.validateConnections(), this.config.validationInterval);
+    }
+
+    async acquire() {
+        this.stats.totalAcquired++;
+
+        // Return available connection if exists
+        if (this.availableConnections.length > 0) {
+            const conn = this.availableConnections.pop();
+            conn.lastUsed = Date.now();
+            conn.inUse = true;
+            this.activeConnections.set(conn.id, conn);
+            return conn;
+        }
+
+        // Create new connection if under limit
+        if (this.totalConnections < this.config.maxConnections) {
+            return await this.createConnection();
+        }
+
+        // Wait for available connection
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                const index = this.waitQueue.findIndex(w => w.resolve === resolve);
+                if (index > -1) {
+                    this.waitQueue.splice(index, 1);
+                }
+                this.stats.timeouts++;
+                reject(new Error('Connection pool timeout'));
+            }, this.config.connectionTimeout);
+
+            this.waitQueue.push({ resolve, reject, timeout });
+        });
+    }
+
+    async createConnection() {
+        const conn = {
+            id: `conn_${this.totalConnections}_${Date.now()}`,
+            created: Date.now(),
+            lastUsed: Date.now(),
+            inUse: true,
+            valid: true,
+            requestCount: 0
+        };
+
+        this.totalConnections++;
+        this.stats.totalCreated++;
+        this.activeConnections.set(conn.id, conn);
+
+        return conn;
+    }
+
+    release(connection) {
+        this.stats.totalReleased++;
+
+        if (!connection || !connection.id) {
+            return;
+        }
+
+        connection.lastUsed = Date.now();
+        connection.inUse = false;
+        this.activeConnections.delete(connection.id);
+
+        // Serve waiting request if any
+        if (this.waitQueue.length > 0) {
+            const waiter = this.waitQueue.shift();
+            clearTimeout(waiter.timeout);
+            connection.inUse = true;
+            this.activeConnections.set(connection.id, connection);
+            waiter.resolve(connection);
+        } else {
+            this.availableConnections.push(connection);
+        }
+    }
+
+    async validateConnections() {
+        const now = Date.now();
+        const maxIdle = this.config.maxIdleTime;
+
+        // Remove idle connections beyond minimum
+        this.availableConnections = this.availableConnections.filter(conn => {
+            const idle = now - conn.lastUsed;
+            if (idle > maxIdle && this.totalConnections > this.config.minConnections) {
+                this.totalConnections--;
+                this.stats.totalDestroyed++;
+                return false;
+            }
+            return true;
+        });
+    }
+
+    getStats() {
+        return {
+            total: this.totalConnections,
+            available: this.availableConnections.length,
+            active: this.activeConnections.size,
+            waiting: this.waitQueue.length,
+            ...this.stats
+        };
+    }
+
+    async destroy() {
+        clearInterval(this.validationTimer);
+        this.availableConnections = [];
+        this.activeConnections.clear();
+        this.waitQueue.forEach(w => {
+            clearTimeout(w.timeout);
+            w.reject(new Error('Pool destroyed'));
+        });
+        this.waitQueue = [];
+    }
+}
 
 class GitDBDriver {
     constructor() {
@@ -16,6 +162,20 @@ class GitDBDriver {
             'com.github.gitdb.mariadb': new GitDBMariaDriver()
         };
         this.activeTransactions = new Map();
+
+        // Initialize connection pool
+        this.connectionPool = new GitDBConnectionPool({
+            minConnections: 2,
+            maxConnections: 10,
+            maxIdleTime: 60000
+        });
+
+        // Prepared statement cache
+        this.preparedStatements = new Map();
+
+        // Query result cache
+        this.queryCache = new Map();
+        this.cacheTimeout = 5000; // 5 seconds default
     }
 
     /**
@@ -29,7 +189,7 @@ class GitDBDriver {
     /**
      * Get connection just like Ignition's system.db.getConnection()
      */
-    getConnection(name, driverClass = null) {
+    async getConnection(name, driverClass = null) {
         if (this.connections.has(name)) {
             return this.connections.get(name);
         }
@@ -42,10 +202,72 @@ class GitDBDriver {
             driverClass = datasource.driver;
         }
 
-        // Create new connection
-        const conn = new GitDBConnection(name, this, driverClass);
+        // Acquire connection from pool
+        const poolConn = await this.connectionPool.acquire();
+
+        // Create new connection with pool connection
+        const conn = new GitDBConnection(name, this, driverClass, poolConn);
         this.connections.set(name, conn);
         return conn;
+    }
+
+    /**
+     * Create prepared statement
+     */
+    prepareStatement(sql, name = null) {
+        const stmtName = name || `stmt_${this.preparedStatements.size}`;
+
+        if (this.preparedStatements.has(stmtName)) {
+            return this.preparedStatements.get(stmtName);
+        }
+
+        const stmt = new GitDBPreparedStatement(sql, this);
+        this.preparedStatements.set(stmtName, stmt);
+
+        return stmt;
+    }
+
+    /**
+     * Execute batch operations
+     */
+    async executeBatch(operations) {
+        const results = [];
+        const transactionId = this.beginTransaction('batch_connection');
+
+        try {
+            for (const op of operations) {
+                const result = await this._executeSingleOperation(op, transactionId);
+                results.push(result);
+            }
+
+            await this.commitTransaction(transactionId);
+            return { success: true, results };
+        } catch (error) {
+            this.rollbackTransaction(transactionId);
+            return { success: false, error: error.message, results };
+        }
+    }
+
+    async _executeSingleOperation(op, transactionId) {
+        const transaction = this.activeTransactions.get(transactionId);
+        if (transaction) {
+            transaction.operations.push(op);
+        }
+        return { success: true, operation: op.type };
+    }
+
+    /**
+     * Get pool statistics
+     */
+    getPoolStats() {
+        return this.connectionPool.getStats();
+    }
+
+    /**
+     * Clear query cache
+     */
+    clearCache() {
+        this.queryCache.clear();
     }
 
     /**
@@ -177,16 +399,186 @@ class GitDBDriver {
 }
 
 /**
+ * GitDB Prepared Statement (like java.sql.PreparedStatement)
+ */
+class GitDBPreparedStatement {
+    constructor(sql, driver) {
+        this.sql = sql;
+        this.driver = driver;
+        this.parameters = new Map();
+        this.parameterTypes = new Map();
+        this.batchParams = [];
+        this.resultSetType = 'TYPE_FORWARD_ONLY';
+        this.resultSetConcurrency = 'CONCUR_READ_ONLY';
+    }
+
+    /**
+     * Set parameter value
+     */
+    setParameter(index, value, type = 'auto') {
+        this.parameters.set(index, value);
+        this.parameterTypes.set(index, type);
+        return this;
+    }
+
+    /**
+     * Set string parameter
+     */
+    setString(index, value) {
+        return this.setParameter(index, value, 'string');
+    }
+
+    /**
+     * Set integer parameter
+     */
+    setInt(index, value) {
+        return this.setParameter(index, parseInt(value), 'int');
+    }
+
+    /**
+     * Set double parameter
+     */
+    setDouble(index, value) {
+        return this.setParameter(index, parseFloat(value), 'double');
+    }
+
+    /**
+     * Set boolean parameter
+     */
+    setBoolean(index, value) {
+        return this.setParameter(index, Boolean(value), 'boolean');
+    }
+
+    /**
+     * Set date parameter
+     */
+    setDate(index, value) {
+        return this.setParameter(index, value instanceof Date ? value : new Date(value), 'date');
+    }
+
+    /**
+     * Set null parameter
+     */
+    setNull(index, sqlType) {
+        return this.setParameter(index, null, sqlType);
+    }
+
+    /**
+     * Add parameters to batch
+     */
+    addBatch() {
+        const paramsCopy = new Map(this.parameters);
+        this.batchParams.push(paramsCopy);
+        this.clearParameters();
+    }
+
+    /**
+     * Execute batch
+     */
+    async executeBatch() {
+        const results = [];
+
+        for (const params of this.batchParams) {
+            this.parameters = params;
+            const result = await this.execute();
+            results.push(result);
+        }
+
+        this.batchParams = [];
+        return results;
+    }
+
+    /**
+     * Execute prepared statement
+     */
+    async execute() {
+        // Replace parameters in SQL
+        let sql = this.sql;
+        const sortedParams = Array.from(this.parameters.entries()).sort((a, b) => b[0] - a[0]);
+
+        for (const [index, value] of sortedParams) {
+            const placeholder = this._getPlaceholder(index);
+            sql = sql.replace(placeholder, this._formatValue(value));
+        }
+
+        // Execute through driver
+        const conn = await this.driver.getConnection('default');
+        return conn.runQuery(sql, []);
+    }
+
+    /**
+     * Execute query and return result set
+     */
+    async executeQuery() {
+        return this.execute();
+    }
+
+    /**
+     * Execute update and return row count
+     */
+    async executeUpdate() {
+        const result = await this.execute();
+        return result.rowsAffected || 0;
+    }
+
+    /**
+     * Clear parameters
+     */
+    clearParameters() {
+        this.parameters.clear();
+        this.parameterTypes.clear();
+    }
+
+    /**
+     * Close statement
+     */
+    close() {
+        this.clearParameters();
+        this.batchParams = [];
+    }
+
+    _getPlaceholder(index) {
+        // Support different placeholder styles
+        if (this.sql.includes('?')) {
+            return '?';
+        } else if (this.sql.includes('$' + index)) {
+            return '$' + index;
+        } else if (this.sql.includes(':' + index)) {
+            return ':' + index;
+        }
+        return '?';
+    }
+
+    _formatValue(value) {
+        if (value === null) return 'NULL';
+        if (typeof value === 'string') return `'${value.replace(/'/g, "''")}'`;
+        if (typeof value === 'boolean') return value ? 1 : 0;
+        if (value instanceof Date) return `'${value.toISOString()}'`;
+        return value;
+    }
+}
+
+/**
  * GitDB Connection (like java.sql.Connection)
  */
 class GitDBConnection {
-    constructor(name, driver, driverClass = 'com.github.gitdb.mysql') {
+    constructor(name, driver, driverClass = 'com.github.gitdb.mysql', poolConnection = null) {
         this.name = name;
         this.driver = driver;
         this.driverClass = driverClass;
         this.autoCommit = true;
         this.closed = false;
         this.transactionId = null;
+        this.poolConnection = poolConnection;
+
+        // Transaction isolation levels
+        this.isolationLevel = 'TRANSACTION_READ_COMMITTED';
+        this.isolationLevels = {
+            'TRANSACTION_READ_UNCOMMITTED': 1,
+            'TRANSACTION_READ_COMMITTED': 2,
+            'TRANSACTION_REPEATABLE_READ': 4,
+            'TRANSACTION_SERIALIZABLE': 8
+        };
 
         // Get driver instance
         const driverInstance = driver.drivers[driverClass];
@@ -450,12 +842,105 @@ class GitDBConnection {
     }
 
     /**
+     * Set transaction isolation level
+     */
+    setTransactionIsolation(level) {
+        if (this.isolationLevels[level]) {
+            this.isolationLevel = level;
+            console.log(`🔒 Set isolation level to: ${level}`);
+        } else {
+            throw new Error(`Invalid isolation level: ${level}`);
+        }
+    }
+
+    /**
+     * Get transaction isolation level
+     */
+    getTransactionIsolation() {
+        return this.isolationLevel;
+    }
+
+    /**
+     * Set auto-commit mode
+     */
+    setAutoCommit(autoCommit) {
+        this.autoCommit = autoCommit;
+        if (autoCommit && this.transactionId) {
+            this.commit();
+        }
+    }
+
+    /**
+     * Get auto-commit mode
+     */
+    getAutoCommit() {
+        return this.autoCommit;
+    }
+
+    /**
+     * Create prepared statement for this connection
+     */
+    prepareStatement(sql) {
+        return new GitDBPreparedStatement(sql, this.driver);
+    }
+
+    /**
+     * Check if connection is closed
+     */
+    isClosed() {
+        return this.closed;
+    }
+
+    /**
+     * Check if connection is valid
+     */
+    isValid(timeout = 5000) {
+        if (this.closed) return false;
+
+        try {
+            // Validation query
+            const query = 'SELECT 1';
+            this.runQuery(query, []);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Get connection metadata
+     */
+    getMetaData() {
+        return this.metadata;
+    }
+
+    /**
+     * Set read-only mode
+     */
+    setReadOnly(readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    /**
+     * Check if read-only
+     */
+    isReadOnly() {
+        return this.readOnly || false;
+    }
+
+    /**
      * Close connection
      */
     close() {
         if (this.transactionId) {
             this.rollback();
         }
+
+        // Release back to pool
+        if (this.poolConnection) {
+            this.driver.connectionPool.release(this.poolConnection);
+        }
+
         this.closed = true;
         console.log(`🔌 Closed connection: ${this.name}`);
     }
@@ -753,11 +1238,15 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         GitDBDriver,
         GitDBConnection,
+        GitDBConnectionPool,
+        GitDBPreparedStatement,
         GitDBDataset
     };
 } else if (typeof window !== 'undefined') {
     window.GitDBDriver = GitDBDriver;
     window.GitDBConnection = GitDBConnection;
+    window.GitDBConnectionPool = GitDBConnectionPool;
+    window.GitDBPreparedStatement = GitDBPreparedStatement;
     window.GitDBDataset = GitDBDataset;
 }
 

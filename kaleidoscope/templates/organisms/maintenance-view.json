@@ -1,0 +1,197 @@
+{
+  "id": "maintenance-view",
+  "name": "Maintenance View",
+  "description": "Work order management page with equipment status, active work orders, and maintenance schedule",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Pages",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Maintenance Management",
+      "description": "Page title"
+    },
+    "equipmentFilter": {
+      "type": "array",
+      "required": false,
+      "default": ["All"],
+      "description": "Equipment types to filter"
+    },
+    "dateRange": {
+      "type": "string",
+      "required": false,
+      "default": "7d",
+      "description": "Date range for work orders"
+    },
+    "showCompleted": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show completed work orders"
+    },
+    "tagPrefix": {
+      "type": "string",
+      "required": false,
+      "default": "[default]Maintenance",
+      "description": "Base tag path for maintenance data"
+    },
+    "updateRate": {
+      "type": "number",
+      "required": false,
+      "default": 10000,
+      "description": "Update rate in milliseconds"
+    }
+  },
+  "view": {
+    "type": "dock-layout",
+    "props": {
+      "params": {
+        "title": "{{params.title}}",
+        "showNorth": true,
+        "showWest": true,
+        "showEast": true,
+        "mainContent": {
+          "template": "maintenance-content",
+          "params": {
+            "equipmentFilter": "{{params.equipmentFilter}}",
+            "dateRange": "{{params.dateRange}}",
+            "showCompleted": "{{params.showCompleted}}",
+            "tagPrefix": "{{params.tagPrefix}}",
+            "updateRate": "{{params.updateRate}}"
+          }
+        }
+      }
+    }
+  },
+  "content": {
+    "id": "maintenance-content",
+    "view": {
+      "type": "container",
+      "props": {
+        "style": {
+          "padding": "20px",
+          "background": "#f9fafb",
+          "minHeight": "100%"
+        }
+      },
+      "children": [
+        {
+          "type": "grid",
+          "props": {
+            "columns": 4,
+            "gap": "20px",
+            "style": {"marginBottom": "30px"}
+          },
+          "children": [
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Active Work Orders",
+                "value": "{{tags.[params.tagPrefix]/ActiveCount}}",
+                "icon": "mdi-clipboard-text",
+                "color": "#3b82f6"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Overdue",
+                "value": "{{tags.[params.tagPrefix]/OverdueCount}}",
+                "icon": "mdi-alert-circle",
+                "color": "#ef4444"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Scheduled",
+                "value": "{{tags.[params.tagPrefix]/ScheduledCount}}",
+                "icon": "mdi-calendar-clock",
+                "color": "#10b981"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Equipment Health",
+                "value": "{{tags.[params.tagPrefix]/EquipmentHealth}}",
+                "unit": "%",
+                "icon": "mdi-heart-pulse",
+                "color": "{{tags.[params.tagPrefix]/EquipmentHealth >= 80 ? '#10b981' : '#f59e0b'}}"
+              }
+            }
+          ]
+        },
+        {
+          "type": "flex",
+          "props": {
+            "gap": "20px",
+            "style": {"marginBottom": "30px"}
+          },
+          "children": [
+            {
+              "type": "equipment-panel",
+              "props": {
+                "title": "Equipment Status",
+                "filter": "{{params.equipmentFilter}}",
+                "tagPath": "{{params.tagPrefix}}/Equipment",
+                "updateRate": "{{params.updateRate}}",
+                "style": {"flex": 1}
+              }
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Maintenance Schedule",
+                "style": {"flex": 1}
+              },
+              "children": [
+                {
+                  "type": "table",
+                  "props": {
+                    "columns": [
+                      {"field": "equipment", "header": "Equipment"},
+                      {"field": "task", "header": "Task"},
+                      {"field": "due", "header": "Due Date"},
+                      {"field": "status", "header": "Status"}
+                    ],
+                    "data": "{{tags.[params.tagPrefix]/Schedule}}",
+                    "sortable": true,
+                    "pageable": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "Active Work Orders"
+          },
+          "children": [
+            {
+              "type": "table",
+              "props": {
+                "columns": [
+                  {"field": "id", "header": "WO #", "width": "80px"},
+                  {"field": "equipment", "header": "Equipment"},
+                  {"field": "type", "header": "Type"},
+                  {"field": "priority", "header": "Priority"},
+                  {"field": "assignee", "header": "Assignee"},
+                  {"field": "status", "header": "Status"},
+                  {"field": "dueDate", "header": "Due Date"}
+                ],
+                "data": "{{tags.[params.tagPrefix]/WorkOrders.filter(wo => params.showCompleted || wo.status !== 'Completed')}}",
+                "striped": true,
+                "sortable": true,
+                "pageable": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

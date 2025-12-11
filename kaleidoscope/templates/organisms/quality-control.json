@@ -1,0 +1,227 @@
+{
+  "id": "quality-control",
+  "name": "Quality Control",
+  "description": "Quality inspection page with SPC charts, inspection checklist, and defect tracking",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Pages",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Quality Control",
+      "description": "Page title"
+    },
+    "productLine": {
+      "type": "string",
+      "required": false,
+      "default": "Line 1",
+      "description": "Production line to monitor"
+    },
+    "shiftData": {
+      "type": "string",
+      "required": false,
+      "default": "current",
+      "description": "Shift data to display (current, day, night)"
+    },
+    "specLimits": {
+      "type": "object",
+      "required": false,
+      "default": {"ucl": 105, "lcl": 95, "usl": 110, "lsl": 90},
+      "description": "Statistical process control limits"
+    },
+    "tagPrefix": {
+      "type": "string",
+      "required": false,
+      "default": "[default]Quality",
+      "description": "Base tag path for quality data"
+    },
+    "updateRate": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Update rate in milliseconds"
+    },
+    "showTrends": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show trend analysis"
+    }
+  },
+  "view": {
+    "type": "tabs",
+    "props": {
+      "tabs": [
+        {
+          "label": "SPC Dashboard",
+          "id": "spc",
+          "content": {
+            "template": "spc-content",
+            "params": {
+              "productLine": "{{params.productLine}}",
+              "specLimits": "{{params.specLimits}}",
+              "tagPrefix": "{{params.tagPrefix}}",
+              "updateRate": "{{params.updateRate}}"
+            }
+          }
+        },
+        {
+          "label": "Inspections",
+          "id": "inspections",
+          "content": {
+            "template": "inspection-content",
+            "params": {
+              "productLine": "{{params.productLine}}",
+              "shiftData": "{{params.shiftData}}",
+              "tagPrefix": "{{params.tagPrefix}}"
+            }
+          }
+        },
+        {
+          "label": "Defect Tracking",
+          "id": "defects",
+          "content": {
+            "template": "defect-content",
+            "params": {
+              "productLine": "{{params.productLine}}",
+              "tagPrefix": "{{params.tagPrefix}}",
+              "showTrends": "{{params.showTrends}}"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "content": {
+    "id": "spc-content",
+    "view": {
+      "type": "container",
+      "props": {
+        "style": {"padding": "20px", "background": "#f9fafb"}
+      },
+      "children": [
+        {
+          "type": "grid",
+          "props": {
+            "columns": 4,
+            "gap": "20px",
+            "style": {"marginBottom": "30px"}
+          },
+          "children": [
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Cpk",
+                "value": "{{tags.[params.tagPrefix]/[params.productLine]/Cpk}}",
+                "icon": "mdi-chart-bell-curve",
+                "color": "{{tags.[params.tagPrefix]/[params.productLine]/Cpk >= 1.33 ? '#10b981' : '#f59e0b'}}"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Defect Rate",
+                "value": "{{tags.[params.tagPrefix]/[params.productLine]/DefectRate}}",
+                "unit": "%",
+                "icon": "mdi-alert",
+                "color": "#ef4444"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "First Pass Yield",
+                "value": "{{tags.[params.tagPrefix]/[params.productLine]/FPY}}",
+                "unit": "%",
+                "icon": "mdi-check-circle",
+                "color": "#10b981"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Samples Tested",
+                "value": "{{tags.[params.tagPrefix]/[params.productLine]/SampleCount}}",
+                "icon": "mdi-test-tube",
+                "color": "#3b82f6"
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "Statistical Process Control Chart",
+            "style": {"marginBottom": "30px"}
+          },
+          "children": [
+            {
+              "type": "spc-chart",
+              "props": {
+                "height": 400,
+                "tagPath": "{{params.tagPrefix}}/[params.productLine]/ProcessValue",
+                "ucl": "{{params.specLimits.ucl}}",
+                "lcl": "{{params.specLimits.lcl}}",
+                "usl": "{{params.specLimits.usl}}",
+                "lsl": "{{params.specLimits.lsl}}",
+                "updateRate": "{{params.updateRate}}",
+                "showLimits": true,
+                "showCenter": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "flex",
+          "props": {
+            "gap": "20px"
+          },
+          "children": [
+            {
+              "type": "card",
+              "props": {
+                "title": "Defect Pareto",
+                "style": {"flex": 1}
+              },
+              "children": [
+                {
+                  "type": "bar-chart",
+                  "props": {
+                    "height": 300,
+                    "data": "{{tags.[params.tagPrefix]/[params.productLine]/DefectTypes}}",
+                    "xField": "type",
+                    "yField": "count",
+                    "showLabels": true
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "props": {
+                "title": "Quality Metrics",
+                "style": {"flex": 1}
+              },
+              "children": [
+                {
+                  "type": "table",
+                  "props": {
+                    "columns": [
+                      {"field": "metric", "header": "Metric"},
+                      {"field": "value", "header": "Value"},
+                      {"field": "target", "header": "Target"},
+                      {"field": "status", "header": "Status"}
+                    ],
+                    "data": "{{tags.[params.tagPrefix]/[params.productLine]/Metrics}}",
+                    "striped": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

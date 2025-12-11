@@ -1,0 +1,193 @@
+{
+  "id": "metric-card",
+  "name": "Metric Card",
+  "description": "KPI display combining label, gauge/indicator, and sparkline to show current value, target, and trend",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Molecule",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "Metric title/label",
+      "example": "Production Rate"
+    },
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for current value",
+      "example": "[default]KPI/ProductionRate"
+    },
+    "value": {
+      "type": "number",
+      "required": false,
+      "description": "Current value (alternative to tagPath)"
+    },
+    "target": {
+      "type": "number",
+      "required": false,
+      "description": "Target/goal value"
+    },
+    "unit": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering unit",
+      "example": "units/hr"
+    },
+    "history": {
+      "type": "array",
+      "required": false,
+      "description": "Historical data for sparkline trend"
+    },
+    "timeRange": {
+      "type": "string",
+      "required": false,
+      "default": "1h",
+      "description": "Time range for historical trend"
+    },
+    "min": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum value for gauge"
+    },
+    "max": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum value for gauge"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "style": {
+        "width": "300px",
+        "height": "200px",
+        "padding": "15px",
+        "background": "#ffffff",
+        "borderRadius": "8px",
+        "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "10px",
+          "style": { "height": "100%" }
+        },
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "value": "{{params.title}}",
+              "style": {
+                "fontSize": "14px",
+                "fontWeight": "600",
+                "color": "#666"
+              }
+            }
+          },
+          {
+            "type": "flex",
+            "props": {
+              "align": "center",
+              "gap": "15px",
+              "style": { "flex": "1" }
+            },
+            "children": [
+              {
+                "type": "gauge",
+                "props": {
+                  "value": "{{params.value || tags.[params.tagPath]}}",
+                  "min": "{{params.min}}",
+                  "max": "{{params.max}}",
+                  "target": "{{params.target}}",
+                  "style": {
+                    "width": "80px",
+                    "height": "80px"
+                  }
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "direction": "column",
+                  "gap": "5px",
+                  "style": { "flex": "1" }
+                },
+                "children": [
+                  {
+                    "type": "flex",
+                    "props": {
+                      "align": "baseline",
+                      "gap": "5px"
+                    },
+                    "children": [
+                      {
+                        "type": "text",
+                        "props": {
+                          "value": "{{(params.value || tags.[params.tagPath]).toFixed(1)}}",
+                          "style": {
+                            "fontSize": "32px",
+                            "fontWeight": "bold",
+                            "color": "#333"
+                          }
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "props": {
+                          "value": "{{params.unit}}",
+                          "style": {
+                            "fontSize": "14px",
+                            "color": "#999"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "conditional",
+                    "props": {
+                      "condition": "{{params.target}}",
+                      "children": [
+                        {
+                          "type": "text",
+                          "props": {
+                            "value": "Target: {{params.target}} {{params.unit}}",
+                            "style": {
+                              "fontSize": "12px",
+                              "color": "#666"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "sparkline",
+            "props": {
+              "tagPath": "{{params.tagPath}}",
+              "timeRange": "{{params.timeRange}}",
+              "width": "{{100}}",
+              "height": 40,
+              "showCurrentValue": false,
+              "style": {
+                "width": "100%",
+                "marginTop": "auto"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

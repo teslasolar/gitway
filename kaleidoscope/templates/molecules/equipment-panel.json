@@ -1,0 +1,291 @@
+{
+  "id": "equipment-panel",
+  "name": "Equipment Panel",
+  "description": "Equipment control group combining motor/pump controls with status indicators and interlocks",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Molecule",
+  "parameters": {
+    "equipmentType": {
+      "type": "string",
+      "required": true,
+      "description": "Equipment type",
+      "options": ["motor", "pump", "fan", "conveyor", "agitator"],
+      "default": "motor"
+    },
+    "tagPrefix": {
+      "type": "string",
+      "required": true,
+      "description": "Base tag path prefix",
+      "example": "[default]Equipment/Motor1"
+    },
+    "name": {
+      "type": "string",
+      "required": false,
+      "default": "Equipment",
+      "description": "Equipment display name"
+    },
+    "showInterlocks": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show interlock status panel"
+    },
+    "enableControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable control buttons"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.name}}",
+      "icon": "{{params.equipmentType === 'motor' ? 'mdi-engine' : params.equipmentType === 'pump' ? 'mdi-pump' : 'mdi-fan'}}",
+      "style": {
+        "width": "350px",
+        "minHeight": "250px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "15px"
+        },
+        "children": [
+          {
+            "type": "flex",
+            "props": {
+              "align": "center",
+              "gap": "15px"
+            },
+            "children": [
+              {
+                "type": "indicator",
+                "props": {
+                  "tagPath": "{{params.tagPrefix}}.status",
+                  "size": 32,
+                  "shape": "circle",
+                  "enableGlow": true,
+                  "enablePulse": true,
+                  "goodValue": "Running",
+                  "warningValue": "Starting",
+                  "errorValue": "Fault",
+                  "inactiveValue": "Stopped"
+                }
+              },
+              {
+                "type": "flex",
+                "props": {
+                  "direction": "column",
+                  "gap": "5px",
+                  "style": { "flex": "1" }
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "{{tags.[params.tagPrefix + '.status']}}",
+                      "style": {
+                        "fontSize": "18px",
+                        "fontWeight": "600"
+                      }
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "props": {
+                      "value": "{{tags.[params.tagPrefix + '.speed']}} RPM",
+                      "style": {
+                        "fontSize": "14px",
+                        "color": "#666"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.enableControl}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "gap": "10px",
+                    "justify": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "START",
+                        "icon": "play_arrow",
+                        "style": "success",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPrefix}}.cmd.start",
+                            "value": true
+                          }
+                        },
+                        "enabled": "{{tags.[params.tagPrefix + '.status'] !== 'Running' && (!params.showInterlocks || !tags.[params.tagPrefix + '.interlocks.active'])}}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "STOP",
+                        "icon": "stop",
+                        "style": "danger",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPrefix}}.cmd.stop",
+                            "value": true
+                          }
+                        },
+                        "enabled": "{{tags.[params.tagPrefix + '.status'] !== 'Stopped'}}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "RESET",
+                        "icon": "restart_alt",
+                        "style": "warning",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPrefix}}.cmd.reset",
+                            "value": true
+                          }
+                        },
+                        "enabled": "{{tags.[params.tagPrefix + '.status'] === 'Fault'}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showInterlocks}}",
+              "children": [
+                {
+                  "type": "container",
+                  "props": {
+                    "style": {
+                      "padding": "10px",
+                      "background": "#f9fafb",
+                      "borderRadius": "6px",
+                      "borderLeft": "3px solid {{tags.[params.tagPrefix + '.interlocks.active'] ? '#ef4444' : '#10b981'}}"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "flex",
+                      "props": {
+                        "direction": "column",
+                        "gap": "8px"
+                      },
+                      "children": [
+                        {
+                          "type": "text",
+                          "props": {
+                            "value": "Interlocks",
+                            "style": {
+                              "fontSize": "12px",
+                              "fontWeight": "600",
+                              "color": "#666"
+                            }
+                          }
+                        },
+                        {
+                          "type": "flex",
+                          "props": {
+                            "direction": "column",
+                            "gap": "5px"
+                          },
+                          "children": [
+                            {
+                              "type": "flex",
+                              "props": {
+                                "align": "center",
+                                "gap": "8px"
+                              },
+                              "children": [
+                                {
+                                  "type": "indicator",
+                                  "props": {
+                                    "tagPath": "{{params.tagPrefix}}.interlocks.emergency",
+                                    "size": 12,
+                                    "goodValue": false,
+                                    "errorValue": true
+                                  }
+                                },
+                                {
+                                  "type": "text",
+                                  "props": {
+                                    "value": "Emergency Stop",
+                                    "style": {
+                                      "fontSize": "11px"
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "type": "flex",
+                              "props": {
+                                "align": "center",
+                                "gap": "8px"
+                              },
+                              "children": [
+                                {
+                                  "type": "indicator",
+                                  "props": {
+                                    "tagPath": "{{params.tagPrefix}}.interlocks.permissive",
+                                    "size": 12,
+                                    "goodValue": true,
+                                    "errorValue": false
+                                  }
+                                },
+                                {
+                                  "type": "text",
+                                  "props": {
+                                    "value": "Permissives OK",
+                                    "style": {
+                                      "fontSize": "11px"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "actions": {
+    "writeTag": {
+      "type": "gateway",
+      "method": "writeTag"
+    }
+  }
+}

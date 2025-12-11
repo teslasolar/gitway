@@ -158,6 +158,24 @@
       "enum": ["single click", "double click", "long press"],
       "description": "Cell edit trigger"
     },
+    "enableExport": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Enable data export functionality"
+    },
+    "exportFormats": {
+      "type": "array",
+      "required": false,
+      "default": ["csv", "excel"],
+      "description": "Available export formats (csv, excel, pdf)"
+    },
+    "exportFilename": {
+      "type": "string",
+      "required": false,
+      "default": "table-export",
+      "description": "Default filename for exports"
+    },
     "enableSubviews": {
       "type": "boolean",
       "required": false,
@@ -200,6 +218,7 @@
         }
       },
       "pager": {
+        "enabled": "{{params.enablePaging}}",
         "options": "{{params.pagerOptions}}",
         "activeOption": "{{params.pageSize}}",
         "top": "{{params.pagerTop}}",
@@ -209,6 +228,16 @@
           "backgroundColor": "#f5f5f5",
           "borderTop": "1px solid #e0e0e0",
           "padding": "8px"
+        }
+      },
+      "export": {
+        "enabled": "{{params.enableExport}}",
+        "formats": "{{params.exportFormats}}",
+        "filename": "{{params.exportFilename}}",
+        "showButton": true,
+        "style": {
+          "buttonColor": "#1976d2",
+          "buttonTextColor": "#ffffff"
         }
       },
       "filter": {
@@ -321,6 +350,12 @@
           "script": ""
         },
         "onRowDoubleClick": {
+          "script": ""
+        },
+        "onColumnSort": {
+          "script": ""
+        },
+        "onExport": {
           "script": ""
         }
       }

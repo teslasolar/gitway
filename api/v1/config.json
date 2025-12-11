@@ -1,0 +1,24 @@
+{
+  "configuration": {
+    "gateway": {
+      "host": "pred",
+      "port": 8088,
+      "protocol": "http"
+    },
+    "bridge": {
+      "url": "http://localhost:3001",
+      "websocket": "ws://localhost:3001"
+    },
+    "github": {
+      "owner": "teslasolar",
+      "repo": "gitway",
+      "pages": "https://teslasolar.github.io/gitway"
+    },
+    "features": {
+      "gitdb": true,
+      "realtime": true,
+      "discovery": true,
+      "perspective": true
+    }
+  }
+}

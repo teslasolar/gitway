@@ -447,6 +447,7 @@
         /**
          * GitWay Dynamic Assembly System
          * Loads JSON configurations and builds UI like Perspective
+         * Also serves as API endpoint when accessed with ?api parameter
          */
         class GitWay {
             constructor() {
@@ -460,9 +461,183 @@
                 this.activities = [];
                 this.consoleLines = [];
                 this.subscriptions = new Map();
+
+                // API data
+                this.apiData = {
+                    status: {
+                        status: 'online',
+                        version: '1.0.0',
+                        name: 'GitWay API',
+                        timestamp: new Date().toISOString(),
+                        gateway: { connected: false, host: 'pred', port: 8088 }
+                    },
+                    config: {
+                        gateway: { host: 'pred', port: 8088, protocol: 'http' },
+                        bridge: { url: 'http://localhost:3001', websocket: 'ws://localhost:3001' },
+                        github: { owner: 'teslasolar', repo: 'gitway', pages: 'https://teslasolar.github.io/gitway' },
+                        features: { gitdb: true, realtime: true, discovery: true, perspective: true }
+                    },
+                    components: [
+                        { id: 'tag-monitor', name: 'Tag Monitor', type: 'monitor', version: '1.0.0' },
+                        { id: 'gitdb-manager', name: 'GitDB Manager', type: 'database', version: '1.0.0' },
+                        { id: 'history-viewer', name: 'History Viewer', type: 'analytics', version: '1.0.0' },
+                        { id: 'gateway-bridge', name: 'Gateway Bridge', type: 'connector', version: '1.0.0' }
+                    ],
+                    collections: {
+                        tags: { name: 'Tags', count: 0, schema: { tagPath: 'string', value: 'any', quality: 'string' } },
+                        alarms: { name: 'Alarms', count: 0, schema: { id: 'string', priority: 'number', state: 'string' } },
+                        history: { name: 'Historical Data', count: 0 },
+                        config: { name: 'Configuration', count: 0 }
+                    },
+                    manifest: {
+                        name: 'GitWay API',
+                        version: '1.0.0',
+                        description: 'Dynamic API served through index.html',
+                        baseUrl: location.origin + location.pathname,
+                        endpoints: ['/api/status', '/api/config', '/api/components', '/api/collections', '/api/manifest', '/api/views']
+                    }
+                };
+            }
+
+            /**
+             * Check if this is an API request and handle it
+             */
+            handleAPIRequest() {
+                const params = new URLSearchParams(window.location.search);
+                const apiPath = params.get('api');
+                const format = params.get('format') || 'json';
+
+                // Also check hash for API requests (e.g., #api/status)
+                const hashPath = window.location.hash.replace('#', '');
+                const requestPath = apiPath || (hashPath.startsWith('api/') ? hashPath : null);
+
+                if (requestPath) {
+                    // Parse the API path
+                    const pathParts = requestPath.replace('api/', '').split('/');
+                    const endpoint = pathParts[0];
+
+                    let responseData = null;
+
+                    // Route to appropriate data
+                    switch(endpoint) {
+                        case 'status':
+                            responseData = this.apiData.status;
+                            break;
+                        case 'config':
+                            responseData = this.apiData.config;
+                            break;
+                        case 'components':
+                            responseData = { components: this.apiData.components };
+                            break;
+                        case 'collections':
+                            responseData = { collections: this.apiData.collections };
+                            break;
+                        case 'manifest':
+                            responseData = this.apiData.manifest;
+                            break;
+                        case 'views':
+                            responseData = { views: this.views, sidebar: this.sidebar, theme: this.theme };
+                            break;
+                        case 'gateway':
+                            responseData = this.getGatewayStatus();
+                            break;
+                        case 'data':
+                            // Handle data endpoints (e.g., api/data/tags)
+                            const collection = pathParts[1];
+                            responseData = this.getCollectionData(collection);
+                            break;
+                        default:
+                            responseData = {
+                                error: 'Unknown endpoint',
+                                available: Object.keys(this.apiData.manifest.endpoints),
+                                requested: endpoint
+                            };
+                    }
+
+                    // Return JSON response
+                    if (format === 'json') {
+                        document.body.innerHTML = '';
+                        document.body.style.background = '#1f2937';
+                        document.body.style.color = '#10b981';
+                        document.body.style.fontFamily = 'monospace';
+                        document.body.style.padding = '20px';
+
+                        const pre = document.createElement('pre');
+                        pre.style.margin = '0';
+                        pre.textContent = JSON.stringify(responseData, null, 2);
+                        document.body.appendChild(pre);
+
+                        // Set content type
+                        const meta = document.createElement('meta');
+                        meta.httpEquiv = 'Content-Type';
+                        meta.content = 'application/json';
+                        document.head.appendChild(meta);
+
+                        // Add CORS headers via meta tags (limited effectiveness)
+                        const corsHeaders = [
+                            { name: 'Access-Control-Allow-Origin', content: '*' },
+                            { name: 'Access-Control-Allow-Methods', content: 'GET, POST, OPTIONS' },
+                            { name: 'Access-Control-Allow-Headers', content: 'Content-Type' }
+                        ];
+
+                        corsHeaders.forEach(header => {
+                            const meta = document.createElement('meta');
+                            meta.name = header.name;
+                            meta.content = header.content;
+                            document.head.appendChild(meta);
+                        });
+
+                        return true; // API request handled
+                    }
+                }
+
+                return false; // Not an API request
+            }
+
+            /**
+             * Get gateway status
+             */
+            getGatewayStatus() {
+                return {
+                    connected: this.ws && this.ws.readyState === WebSocket.OPEN,
+                    gateway: this.apiData.status.gateway,
+                    bridge: {
+                        url: this.bridgeUrl,
+                        websocket: this.ws ? 'connected' : 'disconnected'
+                    },
+                    timestamp: new Date().toISOString()
+                };
+            }
+
+            /**
+             * Get collection data
+             */
+            getCollectionData(collection) {
+                // This would normally fetch from the bridge server
+                // For now, return mock data
+                const mockData = {
+                    tags: {
+                        collection: 'tags',
+                        count: 0,
+                        data: []
+                    },
+                    alarms: {
+                        collection: 'alarms',
+                        count: 0,
+                        data: []
+                    }
+                };
+
+                return mockData[collection] || { error: 'Collection not found', collection: collection };
             }
 
             async initialize() {
+                // Check if this is an API request first
+                if (this.handleAPIRequest()) {
+                    // API request handled, don't build UI
+                    return;
+                }
+
                 try {
                     // Load configuration files
                     await this.loadConfiguration();

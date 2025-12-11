@@ -1,0 +1,58 @@
+{
+  "collections": {
+    "tags": {
+      "name": "Tags",
+      "description": "Ignition tag data",
+      "count": 0,
+      "schema": {
+        "tagPath": "string",
+        "value": "any",
+        "quality": "string",
+        "timestamp": "datetime"
+      },
+      "endpoints": {
+        "list": "/api/v1/data/tags/list.json",
+        "latest": "/api/v1/data/tags/latest.json"
+      }
+    },
+    "alarms": {
+      "name": "Alarms",
+      "description": "Active and historical alarms",
+      "count": 0,
+      "schema": {
+        "id": "string",
+        "displayPath": "string",
+        "priority": "number",
+        "state": "string",
+        "activeTime": "datetime",
+        "notes": "string"
+      },
+      "endpoints": {
+        "active": "/api/v1/data/alarms/active.json",
+        "history": "/api/v1/data/alarms/history.json"
+      }
+    },
+    "history": {
+      "name": "Historical Data",
+      "description": "Tag history data",
+      "count": 0,
+      "schema": {
+        "tagPath": "string",
+        "timestamp": "datetime",
+        "value": "number",
+        "quality": "string"
+      }
+    },
+    "config": {
+      "name": "Configuration",
+      "description": "System configuration",
+      "count": 0,
+      "schema": {
+        "key": "string",
+        "value": "any",
+        "type": "string",
+        "description": "string"
+      }
+    }
+  }
+}

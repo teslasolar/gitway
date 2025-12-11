@@ -1,0 +1,22 @@
+{
+  "status": "online",
+  "version": "1.0.0",
+  "name": "GitWay API",
+  "endpoints": {
+    "base": "https://teslasolar.github.io/gitway/api/v1",
+    "available": [
+      "/status.json",
+      "/config.json",
+      "/components.json",
+      "/tags.json",
+      "/collections.json",
+      "/manifest.json"
+    ]
+  },
+  "timestamp": "2024-12-10T22:00:00Z",
+  "gateway": {
+    "connected": false,
+    "host": "pred",
+    "port": 8088
+  }
+}

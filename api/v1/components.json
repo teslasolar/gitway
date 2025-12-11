@@ -1,0 +1,41 @@
+{
+  "components": [
+    {
+      "id": "tag-monitor",
+      "name": "Tag Monitor",
+      "type": "monitor",
+      "description": "Real-time tag monitoring component",
+      "version": "1.0.0",
+      "capabilities": ["read", "write", "subscribe"],
+      "config": {
+        "updateInterval": 1000,
+        "maxTags": 100
+      }
+    },
+    {
+      "id": "gitdb-manager",
+      "name": "GitDB Manager",
+      "type": "database",
+      "description": "GitHub-based database management",
+      "version": "1.0.0",
+      "capabilities": ["create", "read", "update", "delete", "query"],
+      "collections": ["tags", "alarms", "history", "config"]
+    },
+    {
+      "id": "history-viewer",
+      "name": "History Viewer",
+      "type": "analytics",
+      "description": "Historical data visualization",
+      "version": "1.0.0",
+      "capabilities": ["query", "chart", "export"]
+    },
+    {
+      "id": "gateway-bridge",
+      "name": "Gateway Bridge",
+      "type": "connector",
+      "description": "Ignition gateway bridge server",
+      "version": "1.0.0",
+      "capabilities": ["connect", "discover", "proxy"]
+    }
+  ]
+}

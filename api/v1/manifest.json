@@ -1,0 +1,60 @@
+{
+  "name": "GitWay API",
+  "version": "1.0.0",
+  "description": "JSON-based API for GitWay - Ignition SCADA Gateway Interface",
+  "baseUrl": "https://teslasolar.github.io/gitway",
+  "documentation": "https://teslasolar.github.io/gitway/api/docs",
+  "cors": true,
+  "authentication": "none",
+  "rateLimit": "unlimited",
+  "endpoints": {
+    "status": {
+      "path": "/api/v1/status.json",
+      "method": "GET",
+      "description": "Get API status and available endpoints"
+    },
+    "config": {
+      "path": "/api/v1/config.json",
+      "method": "GET",
+      "description": "Get configuration settings"
+    },
+    "components": {
+      "path": "/api/v1/components.json",
+      "method": "GET",
+      "description": "List available components"
+    },
+    "collections": {
+      "path": "/api/v1/collections.json",
+      "method": "GET",
+      "description": "List data collections and schemas"
+    },
+    "views": {
+      "path": "/views.json",
+      "method": "GET",
+      "description": "Get UI view configurations"
+    },
+    "gateway": {
+      "path": "/gateway-components.json",
+      "method": "GET",
+      "description": "Get discovered gateway components"
+    }
+  },
+  "dataEndpoints": {
+    "tags": {
+      "list": "/api/v1/data/tags/list.json",
+      "latest": "/api/v1/data/tags/latest.json"
+    },
+    "alarms": {
+      "active": "/api/v1/data/alarms/active.json",
+      "history": "/api/v1/data/alarms/history.json"
+    }
+  },
+  "websocket": {
+    "url": "ws://localhost:3001",
+    "description": "WebSocket endpoint for real-time updates (requires bridge server)"
+  },
+  "sdk": {
+    "javascript": "/api/gitway-client.js",
+    "example": "/api/example.html"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "tags": [
+    {
+      "name": "GitWay",
+      "tagType": "Folder",
+      "tags": [
+        {
+          "name": "Production",
+          "tagType": "Folder",
+          "tags": [
+            {
+              "name": "OEE",
+              "tagType": "AtomicTag",
+              "valueSource": "memory",
+              "value": 85,
+              "dataType": "Float8"
+            },
+            {
+              "name": "Count",
+              "tagType": "AtomicTag",
+              "valueSource": "memory",
+              "value": 1250,
+              "dataType": "Int4"
+            }
+          ]
+        },
+        {
+          "name": "Energy",
+          "tagType": "Folder",
+          "tags": [
+            {
+              "name": "Power",
+              "tagType": "Folder",
+              "tags": [
+                {
+                  "name": "Current",
+                  "tagType": "AtomicTag",
+                  "valueSource": "memory",
+                  "value": 450.5,
+                  "dataType": "Float8",
+                  "engUnit": "kW"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

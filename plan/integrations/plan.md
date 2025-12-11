@@ -8,9 +8,6 @@
 - [ ] GitHub Pages deployment
 
 ## ✅ DONE (Auto-purge: 24h)
-- [x] `ignition` - Full gateway API with connection pooling, retries, subscriptions
-- [x] `github` - Actions workflow automation with deploy CLI
-- [x] `gitdb` - Complete JDBC drivers with prepared statements, transactions
 
 ## 🔌 Connections
 - External systems

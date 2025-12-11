@@ -9,9 +9,6 @@
 - [ ] Testing repo-control
 
 ## ✅ DONE (Auto-purge: 24h)
-- [x] `metric-card` - Value + sparkline + target
-- [x] `equipment-panel` - Motor/pump control group
-- [x] `alarm-banner` - Active alarm strip
 
 ## 📐 Patterns
 - Molecules = 2-5 atoms combined

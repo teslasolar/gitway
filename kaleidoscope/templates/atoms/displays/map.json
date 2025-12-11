@@ -1,10 +1,13 @@
 {
   "id": "map",
-  "name": "Map",
-  "description": "Perspective Map component - interactive mobile-friendly map based on Leaflet with layers, markers, and GeoJSON support",
-  "version": "1.0.0",
+  "name": "Map (Enhanced)",
+  "description": "Enhanced Perspective Map - includes standard features plus geofencing, asset tracking, heatmaps, and clustering",
+  "version": "1.1.0",
   "author": "GitWay",
   "category": "Display",
+  "ignitionComponent": "perspective.map",
+  "enhanced": true,
+  "enhancements": ["geofencing zones", "asset tracking", "heatmap layers", "marker clustering"],
   "parameters": {
     "initialLat": {
       "type": "number",

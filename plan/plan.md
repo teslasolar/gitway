@@ -27,10 +27,10 @@
 <!-- [x] items removed daily at 00:00 -->
 
 ## 📊 Progress
-- Total Tasks: 45
+- Total Tasks: 32
 - Completed: 0 (0%)
-- Remaining: 45
-- Last Cleanup: 12/11/2025, 11:21:14 AM
+- Remaining: 32
+- Last Cleanup: 12/11/2025, 12:26:22 PM
 
 ---
 *Tasks auto-organize nightly. Completed items archived to /plan/archive/*

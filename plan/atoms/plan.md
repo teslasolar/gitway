@@ -12,8 +12,6 @@
 
 ## ✅ DONE (Auto-purge: 24h)
 <!-- Completed items auto-delete -->
-- [x] `HIGH` Enhanced Table component with export functionality
-- [x] `HIGH` Enhanced Map component with geofencing, asset tracking, heatmaps
 
 ## 📝 Notes
 - All atoms must match Ignition props exactly

@@ -8,9 +8,6 @@
 - [ ] Testing bridge server connection
 
 ## ✅ DONE (Auto-purge: 24h)
-- [x] `bridge-server` - Optimized WebSocket with heartbeat, pooling, buffering
-- [x] `tag-provider` - Implemented tag subscriptions with batching
-- [x] `cache` - Added response caching layer with TTL
 
 ## 🔧 Infrastructure
 - Gateway connections

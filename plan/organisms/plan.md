@@ -10,8 +10,6 @@
 - [ ] Testing industry-page params
 
 ## ✅ DONE (Auto-purge: 24h)
-- [x] `maintenance-view` - Work orders + equipment status
-- [x] `quality-control` - SPC charts + inspections
 
 ## 🏭 Templates
 - Full production pages

@@ -1,11 +1,13 @@
 {
   "id": "table",
-  "name": "Perspective Table",
-  "description": "Perspective Table component - displays database data in tabular form with sorting, filtering, paging, and editing capabilities",
-  "version": "1.0.0",
+  "name": "Perspective Table (Enhanced)",
+  "description": "Enhanced Perspective Table - includes standard features plus export functionality (CSV, Excel, PDF)",
+  "version": "1.1.0",
   "author": "GitWay",
   "category": "Display",
   "ignitionComponent": "perspective.table",
+  "enhanced": true,
+  "enhancements": ["export functionality", "advanced export formats"],
   "parameters": {
     "data": {
       "type": "array",

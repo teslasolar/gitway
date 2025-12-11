@@ -1,104 +1,353 @@
 {
   "name": "Dashboard",
-  "path": "/gitway/dashboard",
-  "title": "GitWay Dashboard",
-  "viewType": "responsive",
-  "params": {},
-  "root": {
-    "type": "FlexContainer",
-    "props": {
-      "direction": "column",
-      "style": {
-        "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        "padding": "20px"
+  "title": "System Monitor Dashboard",
+  "description": "Real-time system metrics and performance monitoring",
+  "type": "flex",
+  "props": {
+    "direction": "column",
+    "style": {
+      "background": "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+      "minHeight": "100vh",
+      "padding": "20px"
+    }
+  },
+  "children": [
+    {
+      "type": "label",
+      "props": {
+        "text": "📊 Live System Metrics",
+        "style": {
+          "fontSize": "28px",
+          "fontWeight": "bold",
+          "color": "#333",
+          "marginBottom": "20px",
+          "textAlign": "center"
+        }
       }
     },
-    "children": [
-      {
-        "type": "custom.GitWayHeader",
-        "props": {
-          "title": "GitWay Control Center",
-          "subtitle": "Unified Gateway Interface"
+    {
+      "type": "grid",
+      "props": {
+        "columns": 4,
+        "gap": "20px",
+        "style": {
+          "marginBottom": "20px"
         }
       },
-      {
-        "type": "FlexContainer",
-        "props": {
-          "direction": "row",
-          "wrap": true,
-          "justify": "space-around",
-          "style": {
-            "gap": "20px",
-            "marginTop": "20px"
+      "children": [
+        {
+          "type": "metric-card",
+          "id": "cpu-usage",
+          "props": {
+            "title": "CPU Usage",
+            "icon": "🔥",
+            "dataSource": "system.cpu.usage",
+            "format": "percent",
+            "realtime": true,
+            "sparkline": true
           }
         },
-        "children": [
-          {
-            "type": "custom.StatusCard",
-            "props": {
-              "title": "Gateway Status",
-              "icon": "material/cloud_done",
-              "binding": {
-                "type": "tag",
-                "path": "[System]Gateway/Status"
-              }
-            }
-          },
-          {
-            "type": "custom.MetricCard",
-            "props": {
-              "title": "Active Tags",
-              "icon": "material/label",
-              "value": {
-                "binding": {
-                  "type": "expression",
-                  "expression": "len(system.tag.browse('[default]').results)"
-                }
-              }
-            }
-          },
-          {
-            "type": "custom.MetricCard",
-            "props": {
-              "title": "Bridge Status",
-              "icon": "material/sync",
-              "value": {
-                "binding": {
-                  "type": "property",
-                  "path": "session.custom.bridgeConnected"
-                }
-              }
-            }
-          },
-          {
-            "type": "custom.MetricCard",
-            "props": {
-              "title": "GitHub Sync",
-              "icon": "material/backup",
-              "value": "Active"
-            }
+        {
+          "type": "metric-card",
+          "id": "memory-usage",
+          "props": {
+            "title": "Memory",
+            "icon": "💾",
+            "dataSource": "system.memory.percent",
+            "format": "percent",
+            "subtitle": "system.memory.used",
+            "realtime": true
           }
-        ]
-      },
-      {
-        "type": "custom.ComponentGrid",
-        "props": {
-          "components": {
-            "binding": {
-              "type": "script",
-              "script": "return self.session.custom.discoveredComponents"
-            }
+        },
+        {
+          "type": "metric-card",
+          "id": "network-speed",
+          "props": {
+            "title": "Network",
+            "icon": "📡",
+            "dataSource": "system.network.download",
+            "format": "bandwidth",
+            "subtitle": "system.network.latency",
+            "realtime": true
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "fps-monitor",
+          "props": {
+            "title": "Browser FPS",
+            "icon": "🎮",
+            "dataSource": "system.performance.fps",
+            "format": "number",
+            "subtitle": "frames per second",
+            "realtime": true,
+            "sparkline": true
           }
         }
-      }
-    ]
+      ]
+    },
+    {
+      "type": "grid",
+      "props": {
+        "columns": 4,
+        "gap": "20px",
+        "style": {
+          "marginBottom": "20px"
+        }
+      },
+      "children": [
+        {
+          "type": "metric-card",
+          "id": "cpu-temp",
+          "props": {
+            "title": "CPU Temperature",
+            "icon": "🌡️",
+            "dataSource": "system.cpu.temperature",
+            "format": "temperature",
+            "realtime": true
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "cpu-cores",
+          "props": {
+            "title": "CPU Cores",
+            "icon": "⚡",
+            "dataSource": "system.cpu.cores",
+            "format": "number",
+            "static": true
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "js-heap",
+          "props": {
+            "title": "JS Heap",
+            "icon": "📦",
+            "dataSource": "system.performance.jsHeapUsed",
+            "format": "bytes",
+            "subtitle": "system.performance.jsHeapLimit",
+            "realtime": true
+          }
+        },
+        {
+          "type": "metric-card",
+          "id": "network-type",
+          "props": {
+            "title": "Connection",
+            "icon": "🌐",
+            "dataSource": "system.browser.online",
+            "format": "status",
+            "subtitle": "system.network.effectiveType",
+            "realtime": true
+          }
+        }
+      ]
+    },
+    {
+      "type": "flex",
+      "props": {
+        "gap": "20px",
+        "style": {
+          "marginBottom": "20px"
+        }
+      },
+      "children": [
+        {
+          "type": "card",
+          "props": {
+            "title": "Gateway Connection",
+            "icon": "🏭",
+            "style": {
+              "flex": 1
+            }
+          },
+          "children": [
+            {
+              "type": "grid",
+              "props": {
+                "columns": 2,
+                "gap": "15px"
+              },
+              "children": [
+                {
+                  "type": "metric-card",
+                  "id": "gateway-status",
+                  "props": {
+                    "title": "Status",
+                    "icon": "🔌",
+                    "dataSource": "system.gateway.connected",
+                    "format": "status",
+                    "realtime": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "response-time",
+                  "props": {
+                    "title": "Response Time",
+                    "icon": "⏱️",
+                    "dataSource": "system.gateway.responseTime",
+                    "format": "number",
+                    "subtitle": "ms",
+                    "realtime": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "tag-count",
+                  "props": {
+                    "title": "Active Tags",
+                    "icon": "🏷️",
+                    "dataSource": "system.gateway.tagCount",
+                    "format": "number",
+                    "realtime": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "alarms-active",
+                  "props": {
+                    "title": "Active Alarms",
+                    "icon": "🚨",
+                    "dataSource": "system.gateway.alarmsActive",
+                    "format": "number",
+                    "realtime": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "System Information",
+            "icon": "💻",
+            "style": {
+              "flex": 1
+            }
+          },
+          "children": [
+            {
+              "type": "grid",
+              "props": {
+                "columns": 2,
+                "gap": "15px"
+              },
+              "children": [
+                {
+                  "type": "metric-card",
+                  "id": "platform",
+                  "props": {
+                    "title": "Platform",
+                    "icon": "🖥️",
+                    "dataSource": "system.browser.platform",
+                    "format": "text",
+                    "static": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "screen-res",
+                  "props": {
+                    "title": "Screen",
+                    "icon": "📺",
+                    "dataSource": "system.browser.screenWidth",
+                    "format": "text",
+                    "subtitle": "system.browser.screenHeight",
+                    "static": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "language",
+                  "props": {
+                    "title": "Language",
+                    "icon": "🌍",
+                    "dataSource": "system.browser.language",
+                    "format": "text",
+                    "static": true
+                  }
+                },
+                {
+                  "type": "metric-card",
+                  "id": "network-connections",
+                  "props": {
+                    "title": "WS Connections",
+                    "icon": "🔗",
+                    "dataSource": "system.network.connections",
+                    "format": "number",
+                    "realtime": true
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "props": {
+        "title": "Network Activity",
+        "icon": "📊"
+      },
+      "children": [
+        {
+          "type": "grid",
+          "props": {
+            "columns": 3,
+            "gap": "20px"
+          },
+          "children": [
+            {
+              "type": "metric-card",
+              "id": "download-speed",
+              "props": {
+                "title": "Download",
+                "icon": "⬇️",
+                "dataSource": "system.network.download",
+                "format": "bandwidth",
+                "realtime": true
+              }
+            },
+            {
+              "type": "metric-card",
+              "id": "upload-speed",
+              "props": {
+                "title": "Upload",
+                "icon": "⬆️",
+                "dataSource": "system.network.upload",
+                "format": "bandwidth",
+                "realtime": true
+              }
+            },
+            {
+              "type": "metric-card",
+              "id": "ping",
+              "props": {
+                "title": "Latency",
+                "icon": "📍",
+                "dataSource": "system.network.latency",
+                "format": "number",
+                "subtitle": "ms to bridge",
+                "realtime": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scripts": {
+    "onStartup": "initializeDashboard",
+    "actions": {}
   },
-  "custom": {
-    "gitway": {
-      "githubCompatible": true,
-      "standalone": true,
-      "apiEndpoint": "/gitway/api",
-      "websocketEndpoint": "ws://localhost:3001"
+  "bindings": {
+    "system": {
+      "source": "systemMonitor",
+      "refresh": 1000
     }
   }
 }

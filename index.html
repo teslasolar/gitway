@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitWay - Dynamic Gateway Interface</title>
-    <style id="dynamic-styles">
+    <title>GitWay - Kaleidoscope Interface</title>
+
+    <!-- System Monitor -->
+    <script src="gateway/system-monitor.js"></script>
+
+    <!-- Kaleidoscope Renderer -->
+    <script src="kaleidoscope/renderer.js"></script>
+
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -18,8 +25,7 @@
             overflow-x: hidden;
         }
 
-        /* Loading Screen */
-        #loading-screen {
+        #loading {
             position: fixed;
             top: 0;
             left: 0;
@@ -34,14 +40,14 @@
             transition: opacity 0.5s ease;
         }
 
-        #loading-screen h1 {
+        #loading h1 {
             color: white;
             font-size: 48px;
             margin-bottom: 20px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .loader {
+        #loading .spinner {
             width: 60px;
             height: 60px;
             border: 4px solid rgba(255,255,255,0.3);
@@ -54,390 +60,54 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Main Container */
         #app {
             opacity: 0;
             transition: opacity 0.5s ease;
         }
 
-        /* Header */
-        .header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        #app.ready {
+            opacity: 1;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            cursor: pointer;
-        }
-
-        /* Navigation */
-        .nav-tabs {
-            display: flex;
-            gap: 5px;
-        }
-
-        .nav-tab {
-            padding: 10px 20px;
-            background: transparent;
-            border: none;
-            border-radius: 8px 8px 0 0;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: #666;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-tab:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-        }
-
-        .nav-tab.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .nav-icon {
-            font-size: 18px;
-        }
-
-        /* Connection Status */
-        .connection-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .status-indicator.disconnected {
-            background: #ef4444;
-            animation: none;
-        }
-
-        /* Main Layout */
-        .main-container {
-            display: flex;
-            height: calc(100vh - 70px);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            overflow-y: auto;
-            transition: width 0.3s ease;
-        }
-
-        .sidebar.collapsed {
-            width: 60px;
-        }
-
-        .sidebar-panel {
-            padding: 20px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .panel-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Content Area */
-        .content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            background: #f9fafb;
-        }
-
-        /* View Container */
-        .view-container {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .view-container.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Component Grid */
-        .component-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        /* Component Card */
-        .component-card {
+        /* Metric Card Styles */
+        .metric-card {
             background: white;
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .component-card:hover {
+        .metric-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 12px rgba(0,0,0,0.1);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-icon {
-            font-size: 20px;
-        }
-
-        .card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-            margin: 10px 0;
-        }
-
-        .card-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Control Bar */
-        .control-bar {
-            background: white;
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-
-        .control-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-
-        .control-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .control-button {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .control-button:hover {
-            background: #5568d3;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-        }
-
-        .control-button.success {
-            background: #10b981;
-        }
-
-        .control-button.success:hover {
-            background: #0ea770;
-        }
-
-        /* Table */
-        .data-table {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .data-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th {
-            background: #f9fafb;
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: bold;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        .data-table td {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .data-table tr:hover {
-            background: #f9fafb;
-        }
-
-        /* Activity Feed */
-        .activity-feed {
-            background: white;
-            border-radius: 12px;
+        /* Grid Layout */
+        .kaleidoscope-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             padding: 20px;
-            height: 400px;
-            overflow-y: auto;
         }
 
-        .activity-item {
-            display: flex;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .activity-time {
-            font-size: 12px;
-            color: #999;
-            min-width: 60px;
-        }
-
-        .activity-message {
-            flex: 1;
-            font-size: 14px;
-            color: #333;
-        }
-
-        /* Console */
-        .console-panel {
-            background: #1f2937;
-            border-radius: 12px;
-            padding: 15px;
-            height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #10b981;
-        }
-
-        .console-line {
-            margin: 2px 0;
-            opacity: 0.8;
-        }
-
-        .console-line.error {
+        /* Error Message */
+        .error-message {
+            background: white;
             color: #ef4444;
-        }
-
-        .console-line.warning {
-            color: #f59e0b;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -280px;
-                height: 100%;
-                z-index: 999;
-                transition: left 0.3s ease;
-            }
-
-            .sidebar.open {
-                left: 0;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .component-grid {
-                grid-template-columns: 1fr;
-            }
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loading-screen">
-        <h1>GitWay</h1>
-        <div class="loader"></div>
-        <p style="color: white; margin-top: 20px;">Loading configuration...</p>
+    <div id="loading">
+        <h1>🎨 Kaleidoscope</h1>
+        <div class="spinner"></div>
+        <p style="color: white; margin-top: 20px;">Loading GitWay Interface...</p>
     </div>
 
     <!-- Main App Container -->
@@ -445,1507 +115,145 @@
 
     <script>
         /**
-         * GitWay Dynamic Assembly System
-         * Loads JSON configurations and builds UI like Perspective
-         * Also serves as API endpoint when accessed with ?api parameter
+         * GitWay Kaleidoscope Loader
+         * This is a thin pass-through layer that loads and renders Kaleidoscope projects
          */
-        class GitWay {
-            constructor() {
-                this.config = {};
-                this.views = {};
-                this.components = {};
-                this.dataSources = {};
-                this.currentView = 'dashboard';
-                this.ws = null;
-                this.bridgeUrl = 'http://localhost:3001';
-                this.activities = [];
-                this.consoleLines = [];
-                this.subscriptions = new Map();
 
-                // API data
-                this.apiData = {
-                    status: {
+        // Check for API mode
+        function checkAPIMode() {
+            const params = new URLSearchParams(window.location.search);
+            const apiPath = params.get('api');
+
+            if (apiPath) {
+                // API mode - return JSON
+                handleAPIRequest(apiPath);
+                return true;
+            }
+            return false;
+        }
+
+        // Handle API requests
+        async function handleAPIRequest(endpoint) {
+            const response = {
+                endpoint: endpoint,
+                timestamp: new Date().toISOString(),
+                data: {}
+            };
+
+            // Route API endpoints
+            switch(endpoint) {
+                case 'status':
+                    response.data = {
                         status: 'online',
-                        version: '1.0.0',
-                        name: 'GitWay API',
-                        timestamp: new Date().toISOString(),
-                        gateway: { connected: false, host: 'pred', port: 8088 }
-                    },
-                    config: {
-                        gateway: { host: 'pred', port: 8088, protocol: 'http' },
-                        bridge: { url: 'http://localhost:3001', websocket: 'ws://localhost:3001' },
-                        github: { owner: 'teslasolar', repo: 'gitway', pages: 'https://teslasolar.github.io/gitway' },
-                        features: { gitdb: true, realtime: true, discovery: true, perspective: true }
-                    },
-                    components: [
-                        { id: 'tag-monitor', name: 'Tag Monitor', type: 'monitor', version: '1.0.0' },
-                        { id: 'gitdb-manager', name: 'GitDB Manager', type: 'database', version: '1.0.0' },
-                        { id: 'history-viewer', name: 'History Viewer', type: 'analytics', version: '1.0.0' },
-                        { id: 'gateway-bridge', name: 'Gateway Bridge', type: 'connector', version: '1.0.0' }
-                    ],
-                    collections: {
-                        tags: { name: 'Tags', count: 0, schema: { tagPath: 'string', value: 'any', quality: 'string' } },
-                        alarms: { name: 'Alarms', count: 0, schema: { id: 'string', priority: 'number', state: 'string' } },
-                        history: { name: 'Historical Data', count: 0 },
-                        config: { name: 'Configuration', count: 0 }
-                    },
-                    manifest: {
-                        name: 'GitWay API',
-                        version: '1.0.0',
-                        description: 'Dynamic API served through index.html',
-                        baseUrl: location.origin + location.pathname,
-                        endpoints: ['/api/status', '/api/config', '/api/components', '/api/collections', '/api/manifest', '/api/views']
-                    }
-                };
+                        renderer: 'kaleidoscope',
+                        version: '1.0.0'
+                    };
+                    break;
+                case 'config':
+                    response.data = {
+                        project: 'GitWay',
+                        gateway: { host: 'pred', port: 8088 },
+                        bridge: { url: 'http://localhost:3001' }
+                    };
+                    break;
+                case 'views':
+                    response.data = {
+                        available: ['Dashboard', 'Gateway', 'Integration', 'Tags', 'GitDB']
+                    };
+                    break;
+                default:
+                    response.error = 'Unknown endpoint';
             }
 
-            /**
-             * Check if this is an API request and handle it
-             */
-            handleAPIRequest() {
-                const params = new URLSearchParams(window.location.search);
-                const apiPath = params.get('api');
-                const format = params.get('format') || 'json';
+            // Return JSON response
+            document.body.innerHTML = '';
+            document.body.style.background = '#1f2937';
+            document.body.style.color = '#10b981';
+            document.body.style.fontFamily = 'monospace';
+            document.body.style.padding = '20px';
 
-                // Also check hash for API requests (e.g., #api/status)
-                const hashPath = window.location.hash.replace('#', '');
-                const requestPath = apiPath || (hashPath.startsWith('api/') ? hashPath : null);
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(response, null, 2);
+            document.body.appendChild(pre);
+        }
 
-                if (requestPath) {
-                    // Parse the API path
-                    const pathParts = requestPath.replace('api/', '').split('/');
-                    const endpoint = pathParts[0];
-
-                    let responseData = null;
-
-                    // Route to appropriate data
-                    switch(endpoint) {
-                        case 'status':
-                            responseData = this.apiData.status;
-                            break;
-                        case 'config':
-                            responseData = this.apiData.config;
-                            break;
-                        case 'components':
-                            responseData = { components: this.apiData.components };
-                            break;
-                        case 'collections':
-                            responseData = { collections: this.apiData.collections };
-                            break;
-                        case 'manifest':
-                            responseData = this.apiData.manifest;
-                            break;
-                        case 'views':
-                            responseData = { views: this.views, sidebar: this.sidebar, theme: this.theme };
-                            break;
-                        case 'gateway':
-                            responseData = this.getGatewayStatus();
-                            break;
-                        case 'data':
-                            // Handle data endpoints (e.g., api/data/tags)
-                            const collection = pathParts[1];
-                            responseData = this.getCollectionData(collection);
-                            break;
-                        default:
-                            responseData = {
-                                error: 'Unknown endpoint',
-                                available: Object.keys(this.apiData.manifest.endpoints),
-                                requested: endpoint
-                            };
-                    }
-
-                    // Return JSON response
-                    if (format === 'json') {
-                        document.body.innerHTML = '';
-                        document.body.style.background = '#1f2937';
-                        document.body.style.color = '#10b981';
-                        document.body.style.fontFamily = 'monospace';
-                        document.body.style.padding = '20px';
-
-                        const pre = document.createElement('pre');
-                        pre.style.margin = '0';
-                        pre.textContent = JSON.stringify(responseData, null, 2);
-                        document.body.appendChild(pre);
-
-                        // Set content type
-                        const meta = document.createElement('meta');
-                        meta.httpEquiv = 'Content-Type';
-                        meta.content = 'application/json';
-                        document.head.appendChild(meta);
-
-                        // Add CORS headers via meta tags (limited effectiveness)
-                        const corsHeaders = [
-                            { name: 'Access-Control-Allow-Origin', content: '*' },
-                            { name: 'Access-Control-Allow-Methods', content: 'GET, POST, OPTIONS' },
-                            { name: 'Access-Control-Allow-Headers', content: 'Content-Type' }
-                        ];
-
-                        corsHeaders.forEach(header => {
-                            const meta = document.createElement('meta');
-                            meta.name = header.name;
-                            meta.content = header.content;
-                            document.head.appendChild(meta);
-                        });
-
-                        return true; // API request handled
-                    }
-                }
-
-                return false; // Not an API request
-            }
-
-            /**
-             * Get gateway status
-             */
-            getGatewayStatus() {
-                return {
-                    connected: this.ws && this.ws.readyState === WebSocket.OPEN,
-                    gateway: this.apiData.status.gateway,
-                    bridge: {
-                        url: this.bridgeUrl,
-                        websocket: this.ws ? 'connected' : 'disconnected'
-                    },
-                    timestamp: new Date().toISOString()
-                };
-            }
-
-            /**
-             * Get collection data
-             */
-            getCollectionData(collection) {
-                // This would normally fetch from the bridge server
-                // For now, return mock data
-                const mockData = {
-                    tags: {
-                        collection: 'tags',
-                        count: 0,
-                        data: []
-                    },
-                    alarms: {
-                        collection: 'alarms',
-                        count: 0,
-                        data: []
-                    }
-                };
-
-                return mockData[collection] || { error: 'Collection not found', collection: collection };
-            }
-
-            async initialize() {
-                // Check if this is an API request first
-                if (this.handleAPIRequest()) {
-                    // API request handled, don't build UI
+        // Initialize Kaleidoscope
+        async function initializeKaleidoscope() {
+            try {
+                // Check for API mode first
+                if (checkAPIMode()) {
                     return;
                 }
 
-                try {
-                    // Load configuration files
-                    await this.loadConfiguration();
-
-                    // Build the UI
-                    this.buildInterface();
-
-                    // Connect to bridge server
-                    this.connectWebSocket();
-
-                    // Hide loading screen
-                    setTimeout(() => {
-                        document.getElementById('loading-screen').style.opacity = '0';
-                        setTimeout(() => {
-                            document.getElementById('loading-screen').style.display = 'none';
-                            document.getElementById('app').style.opacity = '1';
-                        }, 500);
-                    }, 1000);
-
-                    // Start data polling
-                    this.startDataPolling();
-
-                } catch (error) {
-                    console.error('Failed to initialize GitWay:', error);
-                    this.showError('Failed to load configuration');
-                }
-            }
-
-            async loadConfiguration() {
-                try {
-                    // Try to load views.json
-                    const viewsResponse = await fetch('views.json');
-                    const viewsData = await viewsResponse.json();
-                    this.views = viewsData.views;
-                    this.sidebar = viewsData.sidebar;
-                    this.theme = viewsData.theme;
-                    this.dataSources = viewsData.dataSources;
-                    this.actions = viewsData.actions;
-
-                    // Apply theme
-                    this.applyTheme();
-
-                } catch (error) {
-                    console.error('Error loading views.json, using embedded configuration:', error);
-                    // Use embedded configuration for local file access
-                    this.loadEmbeddedConfig();
-                }
-            }
-
-            loadDefaultConfig() {
-                // Fallback configuration if JSON files are missing
-                this.views = {
-                    dashboard: {
-                        id: 'dashboard',
-                        title: 'Dashboard',
-                        icon: '🏠',
-                        layout: 'grid',
-                        components: []
-                    }
-                };
-            }
-
-            loadEmbeddedConfig() {
-                // Embedded configuration for local file access
-                const config = {
-                    "views": {
-                        "dashboard": {
-                            "id": "dashboard",
-                            "title": "Dashboard",
-                            "icon": "🏠",
-                            "layout": "grid",
-                            "components": [
-                                {
-                                    "type": "metric-card",
-                                    "id": "gateway-status",
-                                    "props": {
-                                        "title": "Gateway Status",
-                                        "icon": "🌐",
-                                        "dataSource": "gateway.status",
-                                        "format": "state"
-                                    }
-                                },
-                                {
-                                    "type": "metric-card",
-                                    "id": "active-tags",
-                                    "props": {
-                                        "title": "Active Tags",
-                                        "icon": "🏷️",
-                                        "dataSource": "tags.count",
-                                        "format": "number"
-                                    }
-                                },
-                                {
-                                    "type": "metric-card",
-                                    "id": "gitdb-records",
-                                    "props": {
-                                        "title": "GitDB Records",
-                                        "icon": "💾",
-                                        "dataSource": "gitdb.count",
-                                        "format": "number"
-                                    }
-                                },
-                                {
-                                    "type": "metric-card",
-                                    "id": "sync-status",
-                                    "props": {
-                                        "title": "Sync Status",
-                                        "icon": "🔄",
-                                        "dataSource": "sync.status",
-                                        "format": "badge"
-                                    }
-                                },
-                                {
-                                    "type": "activity-feed",
-                                    "id": "activity",
-                                    "props": {
-                                        "title": "Recent Activity",
-                                        "maxItems": 50,
-                                        "dataSource": "events.recent"
-                                    }
-                                }
-                            ]
-                        },
-                        "tags": {
-                            "id": "tags",
-                            "title": "Tag Monitor",
-                            "icon": "📊",
-                            "layout": "flex",
-                            "components": [
-                                {
-                                    "type": "control-bar",
-                                    "id": "tag-controls",
-                                    "props": {
-                                        "controls": [
-                                            {
-                                                "type": "input",
-                                                "id": "tag-path",
-                                                "placeholder": "Enter tag path (e.g., [default]Path/To/Tag)"
-                                            },
-                                            {
-                                                "type": "button",
-                                                "id": "add-tag",
-                                                "label": "Add Tag",
-                                                "action": "addTag",
-                                                "style": "primary"
-                                            },
-                                            {
-                                                "type": "button",
-                                                "id": "sync-tags",
-                                                "label": "Sync to GitDB",
-                                                "action": "syncToGitDB",
-                                                "style": "success"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "type": "tag-grid",
-                                    "id": "tag-display",
-                                    "props": {
-                                        "dataSource": "tags.all",
-                                        "columns": "auto",
-                                        "showQuality": true,
-                                        "showTimestamp": true,
-                                        "updateInterval": 1000
-                                    }
-                                }
-                            ]
-                        },
-                        "gitdb": {
-                            "id": "gitdb",
-                            "title": "GitDB Manager",
-                            "icon": "🗄️",
-                            "layout": "split",
-                            "components": [
-                                {
-                                    "type": "control-bar",
-                                    "id": "gitdb-controls",
-                                    "props": {
-                                        "controls": [
-                                            {
-                                                "type": "select",
-                                                "id": "collection",
-                                                "options": [
-                                                    { "value": "tags", "label": "Tags" },
-                                                    { "value": "alarms", "label": "Alarms" },
-                                                    { "value": "history", "label": "History" },
-                                                    { "value": "config", "label": "Configuration" }
-                                                ]
-                                            },
-                                            {
-                                                "type": "button",
-                                                "id": "load-collection",
-                                                "label": "Load",
-                                                "action": "loadCollection"
-                                            },
-                                            {
-                                                "type": "button",
-                                                "id": "create-record",
-                                                "label": "Create New",
-                                                "action": "createRecord"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "type": "data-table",
-                                    "id": "gitdb-table",
-                                    "props": {
-                                        "dataSource": "gitdb.currentCollection",
-                                        "columns": "auto",
-                                        "sortable": true,
-                                        "filterable": true,
-                                        "paginated": true,
-                                        "pageSize": 20
-                                    }
-                                }
-                            ]
-                        },
-                        "history": {
-                            "id": "history",
-                            "title": "Historical Data",
-                            "icon": "📈",
-                            "layout": "vertical",
-                            "components": [
-                                {
-                                    "type": "control-bar",
-                                    "id": "history-controls",
-                                    "props": {
-                                        "controls": [
-                                            {
-                                                "type": "input",
-                                                "id": "history-tag",
-                                                "placeholder": "Tag path"
-                                            },
-                                            {
-                                                "type": "button",
-                                                "id": "query-history",
-                                                "label": "Query",
-                                                "action": "queryHistory"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "type": "chart",
-                                    "id": "history-chart",
-                                    "props": {
-                                        "type": "line",
-                                        "dataSource": "history.data",
-                                        "xAxis": "timestamp",
-                                        "yAxis": "value",
-                                        "height": 400
-                                    }
-                                }
-                            ]
-                        },
-                        "config": {
-                            "id": "config",
-                            "title": "Configuration",
-                            "icon": "⚙️",
-                            "layout": "form",
-                            "components": [
-                                {
-                                    "type": "form-section",
-                                    "id": "github-config",
-                                    "props": {
-                                        "title": "GitHub Configuration",
-                                        "fields": [
-                                            {
-                                                "type": "input",
-                                                "id": "github-owner",
-                                                "label": "Owner",
-                                                "dataBinding": "config.github.owner"
-                                            },
-                                            {
-                                                "type": "input",
-                                                "id": "github-repo",
-                                                "label": "Repository",
-                                                "dataBinding": "config.github.repo"
-                                            },
-                                            {
-                                                "type": "password",
-                                                "id": "github-token",
-                                                "label": "Token",
-                                                "dataBinding": "config.github.token"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "type": "form-section",
-                                    "id": "ignition-config",
-                                    "props": {
-                                        "title": "Ignition Bridge",
-                                        "fields": [
-                                            {
-                                                "type": "input",
-                                                "id": "bridge-url",
-                                                "label": "Bridge URL",
-                                                "dataBinding": "config.bridge.url",
-                                                "default": "http://localhost:3001"
-                                            }
-                                        ]
-                                    }
-                                },
-                                {
-                                    "type": "button-group",
-                                    "id": "config-actions",
-                                    "props": {
-                                        "buttons": [
-                                            {
-                                                "id": "save-config",
-                                                "label": "Save Configuration",
-                                                "action": "saveConfig",
-                                                "style": "primary"
-                                            },
-                                            {
-                                                "id": "export-config",
-                                                "label": "Export",
-                                                "action": "exportConfig"
-                                            }
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "sidebar": {
-                        "panels": [
-                            {
-                                "id": "quick-actions",
-                                "title": "Quick Actions",
-                                "components": [
-                                    {
-                                        "type": "button",
-                                        "label": "Discover Components",
-                                        "action": "discoverComponents",
-                                        "icon": "🔍"
-                                    },
-                                    {
-                                        "type": "button",
-                                        "label": "Sync All Data",
-                                        "action": "syncAll",
-                                        "icon": "🔄"
-                                    },
-                                    {
-                                        "type": "button",
-                                        "label": "Export to GitHub",
-                                        "action": "exportData",
-                                        "icon": "📤"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "live-stats",
-                                "title": "Live Statistics",
-                                "components": [
-                                    {
-                                        "type": "stat",
-                                        "label": "CPU Usage",
-                                        "dataSource": "stats.cpu"
-                                    },
-                                    {
-                                        "type": "stat",
-                                        "label": "Memory",
-                                        "dataSource": "stats.memory"
-                                    },
-                                    {
-                                        "type": "stat",
-                                        "label": "API Calls",
-                                        "dataSource": "stats.apiCalls"
-                                    },
-                                    {
-                                        "type": "stat",
-                                        "label": "Uptime",
-                                        "dataSource": "stats.uptime"
-                                    }
-                                ]
-                            },
-                            {
-                                "id": "console",
-                                "title": "Console",
-                                "components": [
-                                    {
-                                        "type": "terminal",
-                                        "id": "console-output",
-                                        "height": 200,
-                                        "maxLines": 100
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "theme": {
-                        "colors": {
-                            "primary": "#667eea",
-                            "secondary": "#764ba2",
-                            "success": "#10b981",
-                            "danger": "#ef4444",
-                            "warning": "#f59e0b",
-                            "dark": "#1f2937",
-                            "light": "#f3f4f6"
-                        }
-                    },
-                    "dataSources": {
-                        "gateway": {
-                            "type": "ignition",
-                            "url": "${config.bridge.url}/api",
-                            "polling": 5000
-                        },
-                        "gitdb": {
-                            "type": "github"
-                        },
-                        "websocket": {
-                            "type": "ws",
-                            "url": "ws://localhost:3001"
-                        }
-                    },
-                    "actions": {
-                        "addTag": {
-                            "type": "function",
-                            "handler": "GitWay.addTag"
-                        },
-                        "syncToGitDB": {
-                            "type": "function",
-                            "handler": "GitWay.syncToGitDB"
-                        },
-                        "loadCollection": {
-                            "type": "function",
-                            "handler": "GitWay.loadCollection"
-                        },
-                        "createRecord": {
-                            "type": "function",
-                            "handler": "GitWay.createRecord"
-                        },
-                        "queryHistory": {
-                            "type": "function",
-                            "handler": "GitWay.queryHistory"
-                        },
-                        "saveConfig": {
-                            "type": "function",
-                            "handler": "GitWay.saveConfig"
-                        },
-                        "exportConfig": {
-                            "type": "function",
-                            "handler": "GitWay.exportConfig"
-                        },
-                        "discoverComponents": {
-                            "type": "function",
-                            "handler": "GitWay.discoverComponents"
-                        },
-                        "syncAll": {
-                            "type": "function",
-                            "handler": "GitWay.syncAll"
-                        },
-                        "exportData": {
-                            "type": "function",
-                            "handler": "GitWay.exportData"
-                        },
-                        "testConnection": {
-                            "type": "function",
-                            "handler": "GitWay.testConnection"
-                        }
-                    }
-                };
-
-                this.views = config.views;
-                this.sidebar = config.sidebar;
-                this.theme = config.theme;
-                this.dataSources = config.dataSources;
-                this.actions = config.actions;
-
-                // Apply theme
-                this.applyTheme();
-            }
-
-            applyTheme() {
-                if (this.theme && this.theme.colors) {
-                    const root = document.documentElement;
-                    Object.entries(this.theme.colors).forEach(([key, value]) => {
-                        root.style.setProperty(`--color-${key}`, value);
-                    });
-                }
-            }
-
-            buildInterface() {
-                const app = document.getElementById('app');
-
-                // Build header
-                const header = this.buildHeader();
-
-                // Build main container
-                const mainContainer = document.createElement('div');
-                mainContainer.className = 'main-container';
-
-                // Build sidebar
-                const sidebar = this.buildSidebar();
-
-                // Build content area
-                const content = this.buildContent();
-
-                mainContainer.appendChild(sidebar);
-                mainContainer.appendChild(content);
-
-                app.appendChild(header);
-                app.appendChild(mainContainer);
-
-                // Show initial view
-                this.showView('dashboard');
-            }
-
-            buildHeader() {
-                const header = document.createElement('div');
-                header.className = 'header';
-
-                const headerLeft = document.createElement('div');
-                headerLeft.className = 'header-left';
-
-                // Logo
-                const logo = document.createElement('div');
-                logo.className = 'logo';
-                logo.textContent = 'GitWay';
-                logo.onclick = () => this.showView('dashboard');
-
-                // Navigation tabs
-                const navTabs = document.createElement('div');
-                navTabs.className = 'nav-tabs';
-
-                Object.entries(this.views).forEach(([id, view]) => {
-                    const tab = document.createElement('button');
-                    tab.className = 'nav-tab';
-                    tab.dataset.view = id;
-                    tab.onclick = () => this.showView(id);
-
-                    const icon = document.createElement('span');
-                    icon.className = 'nav-icon';
-                    icon.textContent = view.icon || '📄';
-
-                    const title = document.createElement('span');
-                    title.textContent = view.title;
-
-                    tab.appendChild(icon);
-                    tab.appendChild(title);
-                    navTabs.appendChild(tab);
-                });
-
-                headerLeft.appendChild(logo);
-                headerLeft.appendChild(navTabs);
-
-                // Connection status
-                const status = document.createElement('div');
-                status.className = 'connection-status';
-                status.id = 'connection-status';
-
-                const indicator = document.createElement('div');
-                indicator.className = 'status-indicator disconnected';
-                indicator.id = 'status-indicator';
-
-                const statusText = document.createElement('span');
-                statusText.id = 'status-text';
-                statusText.textContent = 'Disconnected';
-
-                status.appendChild(indicator);
-                status.appendChild(statusText);
-
-                header.appendChild(headerLeft);
-                header.appendChild(status);
-
-                return header;
-            }
-
-            buildSidebar() {
-                const sidebar = document.createElement('div');
-                sidebar.className = 'sidebar';
-                sidebar.id = 'sidebar';
-
-                if (this.sidebar && this.sidebar.panels) {
-                    this.sidebar.panels.forEach(panel => {
-                        const panelDiv = document.createElement('div');
-                        panelDiv.className = 'sidebar-panel';
-
-                        const title = document.createElement('div');
-                        title.className = 'panel-title';
-                        title.textContent = panel.title;
-                        panelDiv.appendChild(title);
-
-                        const content = this.buildPanelContent(panel);
-                        panelDiv.appendChild(content);
-
-                        sidebar.appendChild(panelDiv);
-                    });
-                }
-
-                return sidebar;
-            }
-
-            buildPanelContent(panel) {
-                const content = document.createElement('div');
-
-                panel.components.forEach(comp => {
-                    const element = this.createComponent(comp);
-                    if (element) {
-                        content.appendChild(element);
-                    }
-                });
-
-                return content;
-            }
-
-            buildContent() {
-                const content = document.createElement('div');
-                content.className = 'content';
-                content.id = 'content';
-
-                // Build view containers
-                Object.entries(this.views).forEach(([id, view]) => {
-                    const container = document.createElement('div');
-                    container.className = 'view-container';
-                    container.id = `view-${id}`;
-
-                    const viewContent = this.buildView(view);
-                    container.appendChild(viewContent);
-
-                    content.appendChild(container);
-                });
-
-                return content;
-            }
-
-            buildView(view) {
-                const viewDiv = document.createElement('div');
-                viewDiv.className = `view-${view.layout}`;
-
-                if (view.layout === 'grid') {
-                    const grid = document.createElement('div');
-                    grid.className = 'component-grid';
-
-                    view.components.forEach(comp => {
-                        const element = this.createComponent(comp);
-                        if (element) {
-                            grid.appendChild(element);
-                        }
-                    });
-
-                    viewDiv.appendChild(grid);
-
-                } else if (view.layout === 'flex' || view.layout === 'vertical') {
-                    view.components.forEach(comp => {
-                        const element = this.createComponent(comp);
-                        if (element) {
-                            viewDiv.appendChild(element);
-                        }
-                    });
-                }
-
-                return viewDiv;
-            }
-
-            createComponent(component) {
-                switch (component.type) {
-                    case 'metric-card':
-                        return this.createMetricCard(component);
-                    case 'control-bar':
-                        return this.createControlBar(component);
-                    case 'tag-grid':
-                        return this.createTagGrid(component);
-                    case 'data-table':
-                        return this.createDataTable(component);
-                    case 'activity-feed':
-                        return this.createActivityFeed(component);
-                    case 'chart':
-                        return this.createChart(component);
-                    case 'form-section':
-                        return this.createFormSection(component);
-                    case 'button-group':
-                        return this.createButtonGroup(component);
-                    case 'button':
-                        return this.createButton(component);
-                    case 'stat':
-                        return this.createStat(component);
-                    case 'terminal':
-                        return this.createTerminal(component);
-                    default:
-                        console.warn('Unknown component type:', component.type);
-                        return null;
-                }
-            }
-
-            createMetricCard(config) {
-                const card = document.createElement('div');
-                card.className = 'component-card';
-                card.id = config.id;
-
-                const header = document.createElement('div');
-                header.className = 'card-header';
-
-                const title = document.createElement('div');
-                title.className = 'card-title';
-
-                if (config.props.icon) {
-                    const icon = document.createElement('span');
-                    icon.className = 'card-icon';
-                    icon.textContent = config.props.icon;
-                    title.appendChild(icon);
-                }
-
-                const titleText = document.createElement('span');
-                titleText.textContent = config.props.title;
-                title.appendChild(titleText);
-
-                header.appendChild(title);
-
-                const value = document.createElement('div');
-                value.className = 'card-value';
-                value.id = `${config.id}-value`;
-                value.textContent = '---';
-
-                const label = document.createElement('div');
-                label.className = 'card-label';
-                label.textContent = config.props.title;
-
-                card.appendChild(header);
-                card.appendChild(value);
-                card.appendChild(label);
-
-                // Subscribe to data source
-                if (config.props.dataSource) {
-                    this.subscribeToData(config.props.dataSource, (data) => {
-                        document.getElementById(`${config.id}-value`).textContent =
-                            this.formatValue(data, config.props.format);
-                    });
-                }
-
-                return card;
-            }
-
-            createControlBar(config) {
-                const bar = document.createElement('div');
-                bar.className = 'control-bar';
-                bar.id = config.id;
-
-                config.props.controls.forEach(control => {
-                    if (control.type === 'input') {
-                        const input = document.createElement('input');
-                        input.className = 'control-input';
-                        input.id = control.id;
-                        input.placeholder = control.placeholder || '';
-                        bar.appendChild(input);
-
-                    } else if (control.type === 'button') {
-                        const button = document.createElement('button');
-                        button.className = `control-button ${control.style || ''}`;
-                        button.id = control.id;
-                        button.textContent = control.label;
-                        button.onclick = () => this.executeAction(control.action);
-                        bar.appendChild(button);
-
-                    } else if (control.type === 'select') {
-                        const select = document.createElement('select');
-                        select.className = 'control-input';
-                        select.id = control.id;
-
-                        control.options.forEach(option => {
-                            const opt = document.createElement('option');
-                            opt.value = option.value;
-                            opt.textContent = option.label;
-                            select.appendChild(opt);
-                        });
-
-                        bar.appendChild(select);
-                    }
-                });
-
-                return bar;
-            }
-
-            createTagGrid(config) {
-                const grid = document.createElement('div');
-                grid.className = 'tag-grid';
-                grid.id = config.id;
-
-                // Subscribe to tags data
-                if (config.props.dataSource) {
-                    this.subscribeToData(config.props.dataSource, (tags) => {
-                        this.updateTagGrid(grid, tags, config.props);
-                    });
-                }
-
-                return grid;
-            }
-
-            createDataTable(config) {
-                const tableContainer = document.createElement('div');
-                tableContainer.className = 'data-table';
-                tableContainer.id = config.id;
-
-                const table = document.createElement('table');
-                tableContainer.appendChild(table);
-
-                // Subscribe to data
-                if (config.props.dataSource) {
-                    this.subscribeToData(config.props.dataSource, (data) => {
-                        this.updateTable(table, data, config.props);
-                    });
-                }
-
-                return tableContainer;
-            }
-
-            createActivityFeed(config) {
-                const feed = document.createElement('div');
-                feed.className = 'activity-feed';
-                feed.id = config.id;
-
-                const title = document.createElement('h3');
-                title.textContent = config.props.title;
-                title.style.marginBottom = '15px';
-                feed.appendChild(title);
-
-                const feedContent = document.createElement('div');
-                feedContent.id = `${config.id}-content`;
-                feed.appendChild(feedContent);
-
-                // Subscribe to events
-                if (config.props.dataSource) {
-                    this.subscribeToData(config.props.dataSource, (events) => {
-                        this.updateActivityFeed(feedContent, events);
-                    });
-                }
-
-                return feed;
-            }
-
-            createChart(config) {
-                const chart = document.createElement('div');
-                chart.className = 'chart-container';
-                chart.id = config.id;
-                chart.style.height = `${config.props.height}px`;
-
-                // Placeholder for chart
-                chart.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: white; border-radius: 12px; color: #999;">Chart: ${config.props.type}</div>`;
-
-                return chart;
-            }
-
-            createFormSection(config) {
-                const section = document.createElement('div');
-                section.className = 'form-section';
-                section.id = config.id;
-
-                const title = document.createElement('h3');
-                title.textContent = config.props.title;
-                title.style.marginBottom = '20px';
-                section.appendChild(title);
-
-                config.props.fields.forEach(field => {
-                    const fieldDiv = document.createElement('div');
-                    fieldDiv.style.marginBottom = '15px';
-
-                    const label = document.createElement('label');
-                    label.textContent = field.label;
-                    label.style.display = 'block';
-                    label.style.marginBottom = '5px';
-                    label.style.fontSize = '14px';
-                    label.style.fontWeight = 'bold';
-
-                    const input = document.createElement('input');
-                    input.type = field.type === 'password' ? 'password' : 'text';
-                    input.className = 'control-input';
-                    input.id = field.id;
-                    input.placeholder = field.label;
-
-                    if (field.default) {
-                        input.value = field.default;
-                    }
-
-                    fieldDiv.appendChild(label);
-                    fieldDiv.appendChild(input);
-                    section.appendChild(fieldDiv);
-                });
-
-                return section;
-            }
-
-            createButtonGroup(config) {
-                const group = document.createElement('div');
-                group.className = 'button-group';
-                group.id = config.id;
-                group.style.display = 'flex';
-                group.style.gap = '10px';
-                group.style.marginTop = '20px';
-
-                config.props.buttons.forEach(button => {
-                    const btn = document.createElement('button');
-                    btn.className = `control-button ${button.style || ''}`;
-                    btn.id = button.id;
-                    btn.textContent = button.label;
-                    btn.onclick = () => this.executeAction(button.action);
-                    group.appendChild(btn);
-                });
-
-                return group;
-            }
-
-            createButton(config) {
-                const button = document.createElement('button');
-                button.className = 'control-button';
-                button.textContent = config.label;
-                button.onclick = () => this.executeAction(config.action);
-
-                if (config.icon) {
-                    button.innerHTML = `${config.icon} ${config.label}`;
-                }
-
-                button.style.marginBottom = '10px';
-                button.style.width = '100%';
-
-                return button;
-            }
-
-            createStat(config) {
-                const stat = document.createElement('div');
-                stat.style.display = 'flex';
-                stat.style.justifyContent = 'space-between';
-                stat.style.marginBottom = '10px';
-                stat.style.fontSize = '14px';
-
-                const label = document.createElement('span');
-                label.textContent = config.label;
-                label.style.color = '#666';
-
-                const value = document.createElement('span');
-                value.id = `stat-${config.dataSource.replace(/\./g, '-')}`;
-                value.style.fontWeight = 'bold';
-                value.style.color = '#333';
-                value.textContent = '---';
-
-                stat.appendChild(label);
-                stat.appendChild(value);
-
-                // Subscribe to data
-                if (config.dataSource) {
-                    this.subscribeToData(config.dataSource, (data) => {
-                        value.textContent = data;
-                    });
-                }
-
-                return stat;
-            }
-
-            createTerminal(config) {
-                const terminal = document.createElement('div');
-                terminal.className = 'console-panel';
-                terminal.id = config.id;
-                terminal.style.height = `${config.height}px`;
-
-                return terminal;
-            }
-
-            showView(viewId) {
-                // Update navigation
-                document.querySelectorAll('.nav-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                    if (tab.dataset.view === viewId) {
-                        tab.classList.add('active');
-                    }
-                });
-
-                // Update view containers
-                document.querySelectorAll('.view-container').forEach(container => {
-                    container.classList.remove('active');
-                });
-
-                const targetView = document.getElementById(`view-${viewId}`);
-                if (targetView) {
-                    targetView.classList.add('active');
-                }
-
-                this.currentView = viewId;
-
-                // Log activity
-                this.logActivity(`Switched to ${this.views[viewId]?.title || viewId} view`);
-            }
-
-            connectWebSocket() {
-                try {
-                    this.ws = new WebSocket('ws://localhost:3001');
-
-                    this.ws.onopen = () => {
-                        console.log('Connected to GitWay bridge');
-                        this.updateConnectionStatus(true);
-                        this.logActivity('Connected to GitWay bridge');
-                    };
-
-                    this.ws.onmessage = (event) => {
-                        const data = JSON.parse(event.data);
-                        this.handleWebSocketMessage(data);
-                    };
-
-                    this.ws.onerror = (error) => {
-                        console.error('WebSocket error:', error);
-                        this.updateConnectionStatus(false);
-                    };
-
-                    this.ws.onclose = () => {
-                        this.updateConnectionStatus(false);
-                        this.logActivity('Disconnected from GitWay bridge');
-                        // Retry connection
-                        setTimeout(() => this.connectWebSocket(), 5000);
-                    };
-
-                } catch (error) {
-                    console.error('Failed to connect WebSocket:', error);
-                    this.updateConnectionStatus(false);
-                }
-            }
-
-            handleWebSocketMessage(data) {
-                if (data.type === 'update') {
-                    // Handle data updates
-                    const subscribers = this.subscriptions.get(data.source);
-                    if (subscribers) {
-                        subscribers.forEach(callback => callback(data.data));
-                    }
-                }
-            }
-
-            updateConnectionStatus(connected) {
-                const indicator = document.getElementById('status-indicator');
-                const text = document.getElementById('status-text');
-
-                if (indicator) {
-                    indicator.className = connected ?
-                        'status-indicator' :
-                        'status-indicator disconnected';
-                }
-
-                if (text) {
-                    text.textContent = connected ? 'Connected' : 'Disconnected';
-                }
-            }
-
-            subscribeToData(source, callback) {
-                if (!this.subscriptions.has(source)) {
-                    this.subscriptions.set(source, []);
-                }
-                this.subscriptions.get(source).push(callback);
-
-                // Request initial data
-                this.requestData(source);
-            }
-
-            requestData(source) {
-                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                    this.ws.send(JSON.stringify({
-                        type: 'subscribe',
-                        source: source
-                    }));
-                }
-            }
-
-            executeAction(actionName) {
-                const action = this.actions[actionName];
-                if (!action) {
-                    console.warn('Unknown action:', actionName);
-                    return;
-                }
-
-                // Log the action
-                this.logActivity(`Executing action: ${actionName}`);
-
-                // Handle different action types
-                if (action.type === 'function') {
-                    // Send to bridge server
-                    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                        this.ws.send(JSON.stringify({
-                            type: 'action',
-                            action: actionName,
-                            handler: action.handler
-                        }));
-                    } else {
-                        // Fallback to REST API
-                        this.executeViaRest(actionName);
-                    }
-                }
-            }
-
-            async executeViaRest(actionName) {
-                try {
-                    const response = await fetch(`${this.bridgeUrl}/api/action`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: actionName })
-                    });
-                    const result = await response.json();
-                    this.logActivity(`Action completed: ${actionName}`);
-                } catch (error) {
-                    console.error('Action failed:', error);
-                    this.logActivity(`Action failed: ${actionName}`, 'error');
-                }
-            }
-
-            formatValue(value, format) {
-                if (format === 'state') {
-                    return value ? 'Online' : 'Offline';
-                } else if (format === 'number') {
-                    return typeof value === 'number' ? value.toLocaleString() : value;
-                } else if (format === 'badge') {
-                    return value || 'Ready';
-                }
-                return value || '---';
-            }
-
-            updateTagGrid(grid, tags, props) {
-                grid.innerHTML = '';
-
-                if (Array.isArray(tags)) {
-                    tags.forEach(tag => {
-                        const tagCard = document.createElement('div');
-                        tagCard.className = 'component-card';
-                        tagCard.style.minWidth = '200px';
-
-                        const path = document.createElement('div');
-                        path.style.fontSize = '12px';
-                        path.style.color = '#666';
-                        path.textContent = tag.path;
-
-                        const value = document.createElement('div');
-                        value.style.fontSize = '24px';
-                        value.style.fontWeight = 'bold';
-                        value.style.color = '#667eea';
-                        value.textContent = tag.value;
-
-                        if (props.showQuality) {
-                            const quality = document.createElement('div');
-                            quality.style.fontSize = '11px';
-                            quality.style.color = tag.quality === 'Good' ? '#10b981' : '#ef4444';
-                            quality.textContent = tag.quality;
-                            tagCard.appendChild(quality);
-                        }
-
-                        tagCard.appendChild(path);
-                        tagCard.appendChild(value);
-
-                        grid.appendChild(tagCard);
-                    });
-                }
-            }
-
-            updateTable(table, data, props) {
-                table.innerHTML = '';
-
-                if (Array.isArray(data) && data.length > 0) {
-                    // Create header
-                    const thead = document.createElement('thead');
-                    const headerRow = document.createElement('tr');
-
-                    Object.keys(data[0]).forEach(key => {
-                        const th = document.createElement('th');
-                        th.textContent = key;
-                        headerRow.appendChild(th);
-                    });
-
-                    thead.appendChild(headerRow);
-                    table.appendChild(thead);
-
-                    // Create body
-                    const tbody = document.createElement('tbody');
-
-                    data.forEach((row, index) => {
-                        if (!props.pageSize || index < props.pageSize) {
-                            const tr = document.createElement('tr');
-
-                            Object.values(row).forEach(value => {
-                                const td = document.createElement('td');
-                                td.textContent = value;
-                                tr.appendChild(td);
-                            });
-
-                            tbody.appendChild(tr);
-                        }
-                    });
-
-                    table.appendChild(tbody);
-                }
-            }
-
-            updateActivityFeed(feed, events) {
-                feed.innerHTML = '';
-
-                const recentEvents = events || this.activities;
-                recentEvents.slice(0, 50).forEach(event => {
-                    const item = document.createElement('div');
-                    item.className = 'activity-item';
-
-                    const time = document.createElement('span');
-                    time.className = 'activity-time';
-                    time.textContent = new Date(event.timestamp).toLocaleTimeString();
-
-                    const message = document.createElement('span');
-                    message.className = 'activity-message';
-                    message.textContent = event.message;
-
-                    item.appendChild(time);
-                    item.appendChild(message);
-                    feed.appendChild(item);
-                });
-            }
-
-            logActivity(message, type = 'info') {
-                const activity = {
-                    timestamp: new Date(),
-                    message: message,
-                    type: type
-                };
-
-                this.activities.unshift(activity);
-                if (this.activities.length > 100) {
-                    this.activities.pop();
-                }
-
-                // Update activity feed if visible
-                const feedContent = document.getElementById('activity-content');
-                if (feedContent) {
-                    this.updateActivityFeed(feedContent, this.activities);
-                }
-
-                // Update console if visible
-                const terminal = document.getElementById('console-output');
-                if (terminal) {
-                    this.logToConsole(message, type);
-                }
-            }
-
-            logToConsole(message, type = 'info') {
-                const terminal = document.getElementById('console-output');
-                if (!terminal) return;
-
-                const line = document.createElement('div');
-                line.className = `console-line ${type}`;
-                line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-
-                terminal.appendChild(line);
-
-                // Keep only last 50 lines
-                while (terminal.children.length > 50) {
-                    terminal.removeChild(terminal.firstChild);
-                }
-
-                // Scroll to bottom
-                terminal.scrollTop = terminal.scrollHeight;
-            }
-
-            startDataPolling() {
-                // Poll for gateway status
-                setInterval(() => {
-                    this.pollGatewayStatus();
-                }, 5000);
-
-                // Poll for tag updates
-                setInterval(() => {
-                    this.pollTagUpdates();
-                }, 1000);
-            }
-
-            async pollGatewayStatus() {
-                try {
-                    const response = await fetch(`${this.bridgeUrl}/api/status`);
-                    const status = await response.json();
-
-                    // Update status displays
-                    const subscribers = this.subscriptions.get('gateway.status');
-                    if (subscribers) {
-                        subscribers.forEach(callback => callback(status.connected));
-                    }
-                } catch (error) {
-                    // Connection error
-                }
-            }
-
-            async pollTagUpdates() {
-                // Poll for subscribed tags
-                // This would be implemented based on actual tag subscriptions
-            }
-
-            showError(message) {
-                const loading = document.getElementById('loading-screen');
-                if (loading) {
-                    loading.innerHTML = `
-                        <h1 style="color: white;">GitWay</h1>
-                        <div style="color: white; font-size: 18px;">⚠️ ${message}</div>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Retry</button>
-                    `;
-                }
+                // Create Kaleidoscope renderer
+                const renderer = new KaleidoscopeRenderer();
+
+                // Initialize renderer
+                await renderer.initialize();
+
+                // Hide loading screen
+                const loading = document.getElementById('loading');
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    document.getElementById('app').classList.add('ready');
+                }, 500);
+
+                // Store renderer globally for debugging
+                window.kaleidoscope = renderer;
+
+                console.log('Kaleidoscope initialized successfully');
+
+            } catch (error) {
+                console.error('Failed to initialize Kaleidoscope:', error);
+                showError(error.message);
             }
         }
 
-        // Initialize GitWay when DOM is ready
+        // Show error message
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="error-message">
+                    <h2>⚠️ Initialization Error</h2>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        Retry
+                    </button>
+                </div>
+            `;
+            app.classList.add('ready');
+        }
+
+        // Handle page visibility for performance
+        document.addEventListener('visibilitychange', () => {
+            if (window.kaleidoscope) {
+                if (document.hidden) {
+                    // Pause updates when page is hidden
+                    console.log('Page hidden, pausing updates');
+                } else {
+                    // Resume updates when page is visible
+                    console.log('Page visible, resuming updates');
+                }
+            }
+        });
+
+        // Initialize on DOM ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                window.gitway = new GitWay();
-                window.gitway.initialize();
-            });
+            document.addEventListener('DOMContentLoaded', initializeKaleidoscope);
         } else {
-            window.gitway = new GitWay();
-            window.gitway.initialize();
+            initializeKaleidoscope();
         }
+
+        // Handle unload
+        window.addEventListener('beforeunload', () => {
+            if (window.kaleidoscope) {
+                window.kaleidoscope.destroy();
+            }
+        });
     </script>
 </body>
 </html>

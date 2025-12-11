@@ -1,0 +1,130 @@
+{
+  "id": "led-display",
+  "name": "LED Display",
+  "description": "Perspective-style seven-segment LED display for numeric values",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for value",
+      "example": "[default]Process/Temperature"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Display label"
+    },
+    "digits": {
+      "type": "number",
+      "required": false,
+      "default": 5,
+      "description": "Number of digits"
+    },
+    "decimals": {
+      "type": "number",
+      "required": false,
+      "default": 1,
+      "description": "Decimal places"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering units"
+    },
+    "color": {
+      "type": "string",
+      "required": false,
+      "default": "#00ff00",
+      "description": "LED color",
+      "options": ["#00ff00", "#ff0000", "#ffaa00", "#00ffff", "#ffffff"]
+    },
+    "backgroundColor": {
+      "type": "string",
+      "required": false,
+      "default": "#000000",
+      "description": "Background color"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "style": {
+        "background": "{{params.backgroundColor}}",
+        "padding": "20px",
+        "borderRadius": "8px",
+        "border": "2px solid #333"
+      }
+    },
+    "children": [
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.label}}",
+          "children": [
+            {
+              "type": "text",
+              "props": {
+                "value": "{{params.label}}",
+                "style": {
+                  "color": "{{params.color}}",
+                  "fontSize": "12px",
+                  "textAlign": "center",
+                  "marginBottom": "5px",
+                  "fontFamily": "monospace"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "ledDisplay",
+        "props": {
+          "value": "{{tags.[params.tagPath]}}",
+          "style": {
+            "fontFamily": "'Digital-7', monospace",
+            "fontSize": "48px",
+            "color": "{{params.color}}",
+            "textShadow": "0 0 10px {{params.color}}",
+            "textAlign": "right",
+            "letterSpacing": "4px",
+            "padding": "10px",
+            "background": "linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.9))",
+            "border": "1px solid #333",
+            "borderRadius": "4px"
+          },
+          "format": {
+            "digits": "{{params.digits}}",
+            "decimals": "{{params.decimals}}"
+          }
+        }
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.units}}",
+          "children": [
+            {
+              "type": "text",
+              "props": {
+                "value": "{{params.units}}",
+                "style": {
+                  "color": "{{params.color}}",
+                  "fontSize": "14px",
+                  "textAlign": "right",
+                  "marginTop": "5px",
+                  "fontFamily": "monospace"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

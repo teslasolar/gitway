@@ -1,0 +1,246 @@
+{
+  "id": "pump",
+  "name": "Pump Component",
+  "description": "Perspective-style animated pump symbol with control",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Symbols",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Base tag path for pump",
+      "example": "[default]Pumps/Pump1"
+    },
+    "name": {
+      "type": "string",
+      "required": false,
+      "default": "Pump",
+      "description": "Pump identifier"
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "horizontal",
+      "description": "Pump orientation",
+      "options": ["horizontal", "vertical"]
+    },
+    "enableControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable pump control"
+    },
+    "showFlow": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show flow rate"
+    },
+    "showStatus": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show status indicators"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.name}}",
+      "style": {
+        "width": "280px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "align": "center",
+          "gap": "15px"
+        },
+        "children": [
+          {
+            "type": "pumpSymbol",
+            "props": {
+              "running": "{{tags.[params.tagPath].running}}",
+              "fault": "{{tags.[params.tagPath].fault}}",
+              "orientation": "{{params.orientation}}",
+              "style": {
+                "width": "100px",
+                "height": "100px"
+              },
+              "config": {
+                "animation": {
+                  "enabled": "{{tags.[params.tagPath].running}}",
+                  "speed": "{{tags.[params.tagPath].speed / 100}}"
+                },
+                "colors": {
+                  "running": "#10b981",
+                  "stopped": "#6b7280",
+                  "fault": "#ef4444"
+                }
+              }
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showStatus}}",
+              "children": [
+                {
+                  "type": "grid",
+                  "props": {
+                    "columns": 2,
+                    "gap": "10px",
+                    "style": {
+                      "width": "100%"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "statusIndicator",
+                      "props": {
+                        "label": "Status",
+                        "value": "{{tags.[params.tagPath].fault ? 'FAULT' : tags.[params.tagPath].running ? 'RUNNING' : 'STOPPED'}}",
+                        "color": "{{tags.[params.tagPath].fault ? 'red' : tags.[params.tagPath].running ? 'green' : 'gray'}}"
+                      }
+                    },
+                    {
+                      "type": "statusIndicator",
+                      "props": {
+                        "label": "Mode",
+                        "value": "{{tags.[params.tagPath].mode}}",
+                        "color": "{{tags.[params.tagPath].mode === 'AUTO' ? 'blue' : 'yellow'}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showFlow}}",
+              "children": [
+                {
+                  "type": "metric",
+                  "props": {
+                    "label": "Flow Rate",
+                    "value": "{{tags.[params.tagPath].flowRate}}",
+                    "units": "GPM",
+                    "format": "0.0",
+                    "style": {
+                      "textAlign": "center"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.enableControl}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "gap": "10px",
+                    "justify": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "START",
+                        "color": "green",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPath}}.cmd.start",
+                            "value": true
+                          }
+                        },
+                        "disabled": "{{tags.[params.tagPath].running || tags.[params.tagPath].fault}}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "STOP",
+                        "color": "red",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPath}}.cmd.stop",
+                            "value": true
+                          }
+                        },
+                        "disabled": "{{!tags.[params.tagPath].running}}"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "props": {
+                        "text": "RESET",
+                        "color": "orange",
+                        "onClick": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPath}}.cmd.reset",
+                            "value": true
+                          }
+                        },
+                        "disabled": "{{!tags.[params.tagPath].fault}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "grid",
+            "props": {
+              "columns": 3,
+              "gap": "10px",
+              "style": {
+                "width": "100%",
+                "fontSize": "12px"
+              }
+            },
+            "children": [
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Speed",
+                  "value": "{{tags.[params.tagPath].speed}}",
+                  "units": "%"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Current",
+                  "value": "{{tags.[params.tagPath].current}}",
+                  "units": "A"
+                }
+              },
+              {
+                "type": "metric",
+                "props": {
+                  "label": "Runtime",
+                  "value": "{{tags.[params.tagPath].runtime}}",
+                  "units": "hrs"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

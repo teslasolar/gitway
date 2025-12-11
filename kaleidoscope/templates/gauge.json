@@ -1,0 +1,138 @@
+{
+  "id": "gauge",
+  "name": "Gauge Component",
+  "description": "Perspective-style gauge showing real-time values in a range",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Chart",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for value",
+      "example": "[default]Sensors/Pressure1"
+    },
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Gauge",
+      "description": "Display title"
+    },
+    "min": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum value"
+    },
+    "max": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum value"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering units"
+    },
+    "zones": {
+      "type": "array",
+      "required": false,
+      "default": [
+        { "min": 0, "max": 30, "color": "#10b981", "label": "Normal" },
+        { "min": 30, "max": 70, "color": "#f59e0b", "label": "Warning" },
+        { "min": 70, "max": 100, "color": "#ef4444", "label": "Critical" }
+      ],
+      "description": "Color zones"
+    },
+    "showNeedle": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show needle indicator"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show scale labels"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "300px",
+        "height": "350px"
+      }
+    },
+    "children": [
+      {
+        "type": "gauge",
+        "props": {
+          "value": "{{tags.[params.tagPath]}}",
+          "min": "{{params.min}}",
+          "max": "{{params.max}}",
+          "style": {
+            "width": "100%",
+            "height": "250px"
+          },
+          "config": {
+            "needle": {
+              "enabled": "{{params.showNeedle}}",
+              "color": "#333",
+              "width": 3
+            },
+            "arc": {
+              "width": 20,
+              "background": "#e5e7eb"
+            },
+            "labels": {
+              "enabled": "{{params.showLabels}}",
+              "count": 11,
+              "format": "0"
+            },
+            "zones": "{{params.zones}}"
+          }
+        }
+      },
+      {
+        "type": "flex",
+        "props": {
+          "justify": "center",
+          "align": "center",
+          "style": {
+            "marginTop": "10px"
+          }
+        },
+        "children": [
+          {
+            "type": "text",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "format": "0.0",
+              "style": {
+                "fontSize": "32px",
+                "fontWeight": "bold",
+                "color": "#333"
+              }
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "value": "{{params.units}}",
+              "style": {
+                "fontSize": "16px",
+                "color": "#666",
+                "marginLeft": "5px"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

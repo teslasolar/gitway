@@ -1,0 +1,183 @@
+{
+  "id": "cylindrical-tank",
+  "name": "Cylindrical Tank",
+  "description": "Perspective-style animated tank/vessel component with level display",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Symbols",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for tank level",
+      "example": "[default]Tanks/Tank1/Level"
+    },
+    "name": {
+      "type": "string",
+      "required": false,
+      "default": "Tank",
+      "description": "Tank name/identifier"
+    },
+    "capacity": {
+      "type": "number",
+      "required": false,
+      "default": 10000,
+      "description": "Tank capacity"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "gal",
+      "description": "Engineering units"
+    },
+    "showStand": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show tank stand"
+    },
+    "showAgitator": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "description": "Show agitator"
+    },
+    "agitatorRunning": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Tag path for agitator status"
+    },
+    "alarmHigh": {
+      "type": "number",
+      "required": false,
+      "default": 90,
+      "description": "High level alarm %"
+    },
+    "alarmLow": {
+      "type": "number",
+      "required": false,
+      "default": 10,
+      "description": "Low level alarm %"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.name}}",
+      "style": {
+        "width": "300px",
+        "minHeight": "400px"
+      }
+    },
+    "children": [
+      {
+        "type": "tank",
+        "props": {
+          "value": "{{tags.[params.tagPath]}}",
+          "capacity": "{{params.capacity}}",
+          "style": {
+            "width": "200px",
+            "height": "250px",
+            "margin": "0 auto"
+          },
+          "config": {
+            "type": "cylindrical",
+            "showStand": "{{params.showStand}}",
+            "showAgitator": "{{params.showAgitator}}",
+            "agitatorRunning": "{{params.agitatorRunning ? tags.[params.agitatorRunning] : false}}",
+            "liquid": {
+              "color": "{{(tags.[params.tagPath] / params.capacity * 100) > params.alarmHigh ? '#ef4444' : (tags.[params.tagPath] / params.capacity * 100) < params.alarmLow ? '#f59e0b' : '#3b82f6'}}",
+              "opacity": 0.8
+            },
+            "tank": {
+              "color": "#e5e7eb",
+              "stroke": "#9ca3af",
+              "strokeWidth": 2
+            }
+          }
+        }
+      },
+      {
+        "type": "grid",
+        "props": {
+          "columns": 2,
+          "gap": "10px",
+          "style": {
+            "marginTop": "20px"
+          }
+        },
+        "children": [
+          {
+            "type": "metric",
+            "props": {
+              "label": "Level",
+              "value": "{{(tags.[params.tagPath] / params.capacity * 100)}}",
+              "units": "%",
+              "format": "0.0"
+            }
+          },
+          {
+            "type": "metric",
+            "props": {
+              "label": "Volume",
+              "value": "{{tags.[params.tagPath]}}",
+              "units": "{{params.units}}",
+              "format": "0,0"
+            }
+          },
+          {
+            "type": "metric",
+            "props": {
+              "label": "Capacity",
+              "value": "{{params.capacity}}",
+              "units": "{{params.units}}",
+              "format": "0,0"
+            }
+          },
+          {
+            "type": "statusBadge",
+            "props": {
+              "value": "{{(tags.[params.tagPath] / params.capacity * 100) > params.alarmHigh ? 'HIGH' : (tags.[params.tagPath] / params.capacity * 100) < params.alarmLow ? 'LOW' : 'NORMAL'}}",
+              "color": "{{(tags.[params.tagPath] / params.capacity * 100) > params.alarmHigh ? 'red' : (tags.[params.tagPath] / params.capacity * 100) < params.alarmLow ? 'yellow' : 'green'}}"
+            }
+          }
+        ]
+      },
+      {
+        "type": "conditional",
+        "props": {
+          "condition": "{{params.showAgitator && params.agitatorRunning}}",
+          "children": [
+            {
+              "type": "flex",
+              "props": {
+                "justify": "center",
+                "style": {
+                  "marginTop": "15px"
+                }
+              },
+              "children": [
+                {
+                  "type": "button",
+                  "props": {
+                    "text": "{{tags.[params.agitatorRunning] ? 'Stop Agitator' : 'Start Agitator'}}",
+                    "icon": "{{tags.[params.agitatorRunning] ? 'mdi-stop' : 'mdi-play'}}",
+                    "color": "{{tags.[params.agitatorRunning] ? 'red' : 'green'}}",
+                    "onClick": {
+                      "action": "writeTag",
+                      "params": {
+                        "tagPath": "{{params.agitatorRunning}}",
+                        "value": "{{!tags.[params.agitatorRunning]}}"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

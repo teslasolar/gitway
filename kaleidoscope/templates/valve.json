@@ -1,0 +1,224 @@
+{
+  "id": "valve",
+  "name": "Valve Component",
+  "description": "Perspective-style valve symbol with open/close animation",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Symbols",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for valve position",
+      "example": "[default]Valves/Valve1/Position"
+    },
+    "name": {
+      "type": "string",
+      "required": false,
+      "default": "Valve",
+      "description": "Valve identifier"
+    },
+    "type": {
+      "type": "string",
+      "required": false,
+      "default": "ball",
+      "description": "Valve type",
+      "options": ["ball", "gate", "butterfly", "globe"]
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "horizontal",
+      "description": "Valve orientation",
+      "options": ["horizontal", "vertical"]
+    },
+    "enableControl": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Enable valve control"
+    },
+    "showPosition": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show position percentage"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.name}}",
+      "style": {
+        "width": "250px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "align": "center",
+          "gap": "15px"
+        },
+        "children": [
+          {
+            "type": "valveSymbol",
+            "props": {
+              "position": "{{tags.[params.tagPath]}}",
+              "type": "{{params.type}}",
+              "orientation": "{{params.orientation}}",
+              "style": {
+                "width": "80px",
+                "height": "80px"
+              },
+              "config": {
+                "colors": {
+                  "open": "#10b981",
+                  "closed": "#ef4444",
+                  "partial": "#f59e0b",
+                  "body": "#6b7280"
+                },
+                "animation": {
+                  "duration": 1000
+                }
+              }
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showPosition}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "direction": "column",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "{{tags.[params.tagPath]}}%",
+                        "style": {
+                          "fontSize": "24px",
+                          "fontWeight": "bold",
+                          "color": "{{tags.[params.tagPath] === 100 ? '#10b981' : tags.[params.tagPath] === 0 ? '#ef4444' : '#f59e0b'}}"
+                        }
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "{{tags.[params.tagPath] === 100 ? 'OPEN' : tags.[params.tagPath] === 0 ? 'CLOSED' : 'PARTIAL'}}",
+                        "style": {
+                          "fontSize": "12px",
+                          "color": "#666"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.enableControl}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "direction": "column",
+                    "gap": "10px",
+                    "style": {
+                      "width": "100%"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "slider",
+                      "props": {
+                        "value": "{{tags.[params.tagPath]}}",
+                        "min": 0,
+                        "max": 100,
+                        "step": 5,
+                        "label": "Position",
+                        "onChange": {
+                          "action": "writeTag",
+                          "params": {
+                            "tagPath": "{{params.tagPath}}"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "flex",
+                      "props": {
+                        "gap": "10px",
+                        "justify": "center"
+                      },
+                      "children": [
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "OPEN",
+                            "color": "green",
+                            "size": "small",
+                            "onClick": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.tagPath}}",
+                                "value": 100
+                              }
+                            },
+                            "disabled": "{{tags.[params.tagPath] === 100}}"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "props": {
+                            "text": "CLOSE",
+                            "color": "red",
+                            "size": "small",
+                            "onClick": {
+                              "action": "writeTag",
+                              "params": {
+                                "tagPath": "{{params.tagPath}}",
+                                "value": 0
+                              }
+                            },
+                            "disabled": "{{tags.[params.tagPath] === 0}}"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "type": "statusBar",
+            "props": {
+              "items": [
+                {
+                  "label": "Interlock",
+                  "value": "{{tags.[params.tagPath + '.interlock'] ? 'ACTIVE' : 'OK'}}",
+                  "color": "{{tags.[params.tagPath + '.interlock'] ? 'red' : 'green'}}"
+                },
+                {
+                  "label": "Mode",
+                  "value": "{{tags.[params.tagPath + '.mode'] || 'MANUAL'}}",
+                  "color": "blue"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

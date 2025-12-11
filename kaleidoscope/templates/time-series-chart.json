@@ -1,0 +1,266 @@
+{
+  "id": "time-series-chart",
+  "name": "Time Series Chart",
+  "description": "Perspective-style time series chart with multiple pens and real-time updates",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Chart",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "Time Series Chart",
+      "description": "Chart title"
+    },
+    "pens": {
+      "type": "array",
+      "required": true,
+      "description": "Chart pens configuration",
+      "example": [
+        {
+          "tagPath": "[default]Process/Temperature",
+          "label": "Temperature",
+          "color": "#3b82f6",
+          "units": "°F"
+        },
+        {
+          "tagPath": "[default]Process/Pressure",
+          "label": "Pressure",
+          "color": "#ef4444",
+          "units": "PSI",
+          "yAxis": "right"
+        }
+      ]
+    },
+    "timeRange": {
+      "type": "string",
+      "required": false,
+      "default": "1h",
+      "description": "Time range to display",
+      "options": ["5m", "15m", "30m", "1h", "4h", "8h", "1d", "7d"]
+    },
+    "updateRate": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Update interval in milliseconds"
+    },
+    "chartType": {
+      "type": "string",
+      "required": false,
+      "default": "line",
+      "description": "Chart type",
+      "options": ["line", "area", "bar", "scatter"]
+    },
+    "showLegend": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show chart legend"
+    },
+    "showGrid": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show grid lines"
+    },
+    "height": {
+      "type": "number",
+      "required": false,
+      "default": 400,
+      "description": "Chart height in pixels"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "title": "{{params.title}}",
+      "style": {
+        "width": "100%",
+        "minWidth": "600px"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "column",
+          "gap": "15px"
+        },
+        "children": [
+          {
+            "type": "controlBar",
+            "props": {
+              "style": {
+                "padding": "10px",
+                "background": "#f3f4f6",
+                "borderRadius": "6px"
+              }
+            },
+            "children": [
+              {
+                "type": "flex",
+                "props": {
+                  "gap": "10px",
+                  "align": "center"
+                },
+                "children": [
+                  {
+                    "type": "select",
+                    "props": {
+                      "label": "Time Range",
+                      "value": "{{params.timeRange}}",
+                      "options": [
+                        { "value": "5m", "label": "5 Minutes" },
+                        { "value": "15m", "label": "15 Minutes" },
+                        { "value": "30m", "label": "30 Minutes" },
+                        { "value": "1h", "label": "1 Hour" },
+                        { "value": "4h", "label": "4 Hours" },
+                        { "value": "8h", "label": "8 Hours" },
+                        { "value": "1d", "label": "1 Day" },
+                        { "value": "7d", "label": "7 Days" }
+                      ],
+                      "onChange": {
+                        "action": "updateChartRange"
+                      }
+                    }
+                  },
+                  {
+                    "type": "buttonGroup",
+                    "props": {
+                      "buttons": [
+                        {
+                          "text": "Line",
+                          "value": "line",
+                          "active": "{{params.chartType === 'line'}}"
+                        },
+                        {
+                          "text": "Area",
+                          "value": "area",
+                          "active": "{{params.chartType === 'area'}}"
+                        },
+                        {
+                          "text": "Bar",
+                          "value": "bar",
+                          "active": "{{params.chartType === 'bar'}}"
+                        }
+                      ],
+                      "onChange": {
+                        "action": "updateChartType"
+                      }
+                    }
+                  },
+                  {
+                    "type": "flex",
+                    "props": {
+                      "marginLeft": "auto",
+                      "gap": "10px"
+                    },
+                    "children": [
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Refresh",
+                          "icon": "mdi-refresh",
+                          "size": "small",
+                          "onClick": {
+                            "action": "refreshChart"
+                          }
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "props": {
+                          "text": "Export",
+                          "icon": "mdi-download",
+                          "size": "small",
+                          "onClick": {
+                            "action": "exportChart"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "timeSeriesChart",
+            "props": {
+              "height": "{{params.height}}",
+              "type": "{{params.chartType}}",
+              "pens": "{{params.pens}}",
+              "timeRange": "{{params.timeRange}}",
+              "updateRate": "{{params.updateRate}}",
+              "config": {
+                "legend": {
+                  "enabled": "{{params.showLegend}}",
+                  "position": "bottom"
+                },
+                "grid": {
+                  "enabled": "{{params.showGrid}}",
+                  "color": "#e5e7eb"
+                },
+                "axes": {
+                  "x": {
+                    "type": "time",
+                    "format": "HH:mm:ss"
+                  },
+                  "y": {
+                    "left": {
+                      "label": "Primary Axis"
+                    },
+                    "right": {
+                      "label": "Secondary Axis",
+                      "enabled": "{{params.pens.some(p => p.yAxis === 'right')}}"
+                    }
+                  }
+                },
+                "tooltip": {
+                  "enabled": true,
+                  "format": "{{time}}: {{value}} {{units}}"
+                }
+              }
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showLegend}}",
+              "children": [
+                {
+                  "type": "penTable",
+                  "props": {
+                    "pens": "{{params.pens}}",
+                    "style": {
+                      "marginTop": "10px"
+                    },
+                    "columns": [
+                      { "key": "label", "label": "Pen Name" },
+                      { "key": "value", "label": "Current Value" },
+                      { "key": "units", "label": "Units" },
+                      { "key": "min", "label": "Min" },
+                      { "key": "max", "label": "Max" },
+                      { "key": "avg", "label": "Average" }
+                    ],
+                    "actions": [
+                      {
+                        "icon": "mdi-eye",
+                        "action": "togglePen"
+                      },
+                      {
+                        "icon": "mdi-palette",
+                        "action": "changePenColor"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

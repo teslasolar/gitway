@@ -1,0 +1,206 @@
+{
+  "id": "linear-scale",
+  "name": "Linear Scale",
+  "description": "Perspective-style linear scale indicator with configurable ranges",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Display",
+  "parameters": {
+    "tagPath": {
+      "type": "string",
+      "required": true,
+      "description": "Tag path for value",
+      "example": "[default]Process/Level"
+    },
+    "label": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Display label"
+    },
+    "min": {
+      "type": "number",
+      "required": false,
+      "default": 0,
+      "description": "Minimum value"
+    },
+    "max": {
+      "type": "number",
+      "required": false,
+      "default": 100,
+      "description": "Maximum value"
+    },
+    "units": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "description": "Engineering units"
+    },
+    "orientation": {
+      "type": "string",
+      "required": false,
+      "default": "vertical",
+      "description": "Scale orientation",
+      "options": ["vertical", "horizontal"]
+    },
+    "majorTicks": {
+      "type": "number",
+      "required": false,
+      "default": 11,
+      "description": "Number of major tick marks"
+    },
+    "minorTicks": {
+      "type": "number",
+      "required": false,
+      "default": 5,
+      "description": "Minor ticks between major ticks"
+    },
+    "zones": {
+      "type": "array",
+      "required": false,
+      "default": [
+        { "start": 0, "end": 30, "color": "#10b981" },
+        { "start": 30, "end": 70, "color": "#f59e0b" },
+        { "start": 70, "end": 100, "color": "#ef4444" }
+      ],
+      "description": "Color zones"
+    },
+    "showValue": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show numeric value"
+    }
+  },
+  "view": {
+    "type": "card",
+    "props": {
+      "style": {
+        "width": "{{params.orientation === 'vertical' ? '150px' : '400px'}}",
+        "height": "{{params.orientation === 'vertical' ? '400px' : '150px'}}"
+      }
+    },
+    "children": [
+      {
+        "type": "flex",
+        "props": {
+          "direction": "{{params.orientation === 'vertical' ? 'column' : 'row'}}",
+          "align": "center",
+          "gap": "10px",
+          "style": {
+            "height": "100%"
+          }
+        },
+        "children": [
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.label}}",
+              "children": [
+                {
+                  "type": "text",
+                  "props": {
+                    "value": "{{params.label}}",
+                    "style": {
+                      "fontSize": "14px",
+                      "fontWeight": "bold",
+                      "color": "#333"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "linearScale",
+            "props": {
+              "value": "{{tags.[params.tagPath]}}",
+              "min": "{{params.min}}",
+              "max": "{{params.max}}",
+              "orientation": "{{params.orientation}}",
+              "style": {
+                "flex": 1,
+                "width": "{{params.orientation === 'vertical' ? '60px' : '100%'}}",
+                "height": "{{params.orientation === 'vertical' ? '100%' : '60px'}}"
+              },
+              "config": {
+                "scale": {
+                  "majorTicks": "{{params.majorTicks}}",
+                  "minorTicks": "{{params.minorTicks}}",
+                  "tickLength": 8,
+                  "minorTickLength": 4,
+                  "tickColor": "#6b7280",
+                  "labelColor": "#333",
+                  "labelFont": "12px sans-serif"
+                },
+                "track": {
+                  "width": 20,
+                  "background": "#e5e7eb",
+                  "border": "1px solid #9ca3af"
+                },
+                "indicator": {
+                  "type": "arrow",
+                  "color": "#333",
+                  "size": 12
+                },
+                "zones": "{{params.zones}}",
+                "fill": {
+                  "enabled": true,
+                  "color": "{{tags.[params.tagPath] > 70 ? '#ef4444' : tags.[params.tagPath] > 30 ? '#f59e0b' : '#10b981'}}",
+                  "opacity": 0.8
+                }
+              }
+            }
+          },
+          {
+            "type": "conditional",
+            "props": {
+              "condition": "{{params.showValue}}",
+              "children": [
+                {
+                  "type": "flex",
+                  "props": {
+                    "direction": "column",
+                    "align": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "props": {
+                        "value": "{{tags.[params.tagPath]}}",
+                        "format": "0.0",
+                        "style": {
+                          "fontSize": "20px",
+                          "fontWeight": "bold",
+                          "color": "{{tags.[params.tagPath] > 70 ? '#ef4444' : tags.[params.tagPath] > 30 ? '#f59e0b' : '#10b981'}}"
+                        }
+                      }
+                    },
+                    {
+                      "type": "conditional",
+                      "props": {
+                        "condition": "{{params.units}}",
+                        "children": [
+                          {
+                            "type": "text",
+                            "props": {
+                              "value": "{{params.units}}",
+                              "style": {
+                                "fontSize": "12px",
+                                "color": "#666"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

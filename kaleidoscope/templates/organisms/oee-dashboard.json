@@ -1,0 +1,414 @@
+{
+  "id": "oee-dashboard",
+  "name": "OEE Dashboard",
+  "description": "Overall Equipment Effectiveness dashboard with availability, performance, quality metrics",
+  "version": "1.0.0",
+  "author": "GitWay",
+  "category": "Pages",
+  "parameters": {
+    "title": {
+      "type": "string",
+      "required": false,
+      "default": "OEE Dashboard",
+      "description": "Page title"
+    },
+    "lineNames": {
+      "type": "array",
+      "required": false,
+      "default": ["Line 1", "Line 2", "Line 3", "Line 4"],
+      "description": "Production line names"
+    },
+    "targetOEE": {
+      "type": "number",
+      "required": false,
+      "default": 85,
+      "description": "Target OEE percentage"
+    },
+    "targetAvailability": {
+      "type": "number",
+      "required": false,
+      "default": 90,
+      "description": "Target availability percentage"
+    },
+    "targetPerformance": {
+      "type": "number",
+      "required": false,
+      "default": 95,
+      "description": "Target performance percentage"
+    },
+    "targetQuality": {
+      "type": "number",
+      "required": false,
+      "default": 99,
+      "description": "Target quality percentage"
+    },
+    "showRealtime": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show realtime indicators"
+    },
+    "showTrends": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show trend charts"
+    },
+    "showDowntime": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "description": "Show downtime analysis"
+    },
+    "updateRate": {
+      "type": "number",
+      "required": false,
+      "default": 5000,
+      "description": "Update rate in milliseconds"
+    },
+    "tagPrefix": {
+      "type": "string",
+      "required": false,
+      "default": "[default]Production/OEE",
+      "description": "Base tag path for OEE data"
+    }
+  },
+  "view": {
+    "type": "dock-layout",
+    "props": {
+      "params": {
+        "title": "{{params.title}}",
+        "showNorth": true,
+        "showSouth": true,
+        "showEast": false,
+        "showWest": true,
+        "mainContent": {
+          "template": "oee-main-content",
+          "params": {
+            "lineNames": "{{params.lineNames}}",
+            "targetOEE": "{{params.targetOEE}}",
+            "targetAvailability": "{{params.targetAvailability}}",
+            "targetPerformance": "{{params.targetPerformance}}",
+            "targetQuality": "{{params.targetQuality}}",
+            "showRealtime": "{{params.showRealtime}}",
+            "showTrends": "{{params.showTrends}}",
+            "showDowntime": "{{params.showDowntime}}",
+            "updateRate": "{{params.updateRate}}",
+            "tagPrefix": "{{params.tagPrefix}}"
+          }
+        }
+      }
+    }
+  },
+  "content": {
+    "id": "oee-main-content",
+    "view": {
+      "type": "container",
+      "props": {
+        "style": {
+          "padding": "20px",
+          "background": "#f9fafb",
+          "minHeight": "100%"
+        }
+      },
+      "children": [
+        {
+          "type": "grid",
+          "props": {
+            "columns": 4,
+            "gap": "20px",
+            "style": {
+              "marginBottom": "30px"
+            }
+          },
+          "children": [
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Overall OEE",
+                "value": "{{tags.[params.tagPrefix]/Overall}}",
+                "unit": "%",
+                "icon": "mdi-chart-line",
+                "target": "{{params.targetOEE}}",
+                "color": "{{tags.[params.tagPrefix]/Overall >= params.targetOEE ? '#10b981' : tags.[params.tagPrefix]/Overall >= params.targetOEE * 0.9 ? '#f59e0b' : '#ef4444'}}",
+                "showTrend": true,
+                "trendData": "{{tags.[params.tagPrefix]/Overall/History}}"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Availability",
+                "value": "{{tags.[params.tagPrefix]/Availability}}",
+                "unit": "%",
+                "icon": "mdi-clock-check",
+                "target": "{{params.targetAvailability}}",
+                "color": "{{tags.[params.tagPrefix]/Availability >= params.targetAvailability ? '#10b981' : tags.[params.tagPrefix]/Availability >= params.targetAvailability * 0.9 ? '#f59e0b' : '#ef4444'}}",
+                "showTrend": true,
+                "trendData": "{{tags.[params.tagPrefix]/Availability/History}}"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Performance",
+                "value": "{{tags.[params.tagPrefix]/Performance}}",
+                "unit": "%",
+                "icon": "mdi-speedometer",
+                "target": "{{params.targetPerformance}}",
+                "color": "{{tags.[params.tagPrefix]/Performance >= params.targetPerformance ? '#10b981' : tags.[params.tagPrefix]/Performance >= params.targetPerformance * 0.9 ? '#f59e0b' : '#ef4444'}}",
+                "showTrend": true,
+                "trendData": "{{tags.[params.tagPrefix]/Performance/History}}"
+              }
+            },
+            {
+              "type": "metric-card",
+              "props": {
+                "title": "Quality",
+                "value": "{{tags.[params.tagPrefix]/Quality}}",
+                "unit": "%",
+                "icon": "mdi-quality-high",
+                "target": "{{params.targetQuality}}",
+                "color": "{{tags.[params.tagPrefix]/Quality >= params.targetQuality ? '#10b981' : tags.[params.tagPrefix]/Quality >= params.targetQuality * 0.9 ? '#f59e0b' : '#ef4444'}}",
+                "showTrend": true,
+                "trendData": "{{tags.[params.tagPrefix]/Quality/History}}"
+              }
+            }
+          ]
+        },
+        {
+          "type": "flex",
+          "props": {
+            "gap": "20px",
+            "style": {
+              "marginBottom": "30px"
+            }
+          },
+          "children": [
+            {
+              "type": "conditional",
+              "props": {
+                "condition": "{{params.showTrends}}",
+                "children": [
+                  {
+                    "type": "card",
+                    "props": {
+                      "title": "OEE Trends",
+                      "style": {
+                        "flex": 2
+                      }
+                    },
+                    "children": [
+                      {
+                        "type": "time-series-chart",
+                        "props": {
+                          "height": 300,
+                          "pens": [
+                            {
+                              "name": "OEE",
+                              "tagPath": "{{params.tagPrefix}}/Overall",
+                              "color": "#667eea"
+                            },
+                            {
+                              "name": "Availability",
+                              "tagPath": "{{params.tagPrefix}}/Availability",
+                              "color": "#10b981"
+                            },
+                            {
+                              "name": "Performance",
+                              "tagPath": "{{params.tagPrefix}}/Performance",
+                              "color": "#f59e0b"
+                            },
+                            {
+                              "name": "Quality",
+                              "tagPath": "{{params.tagPrefix}}/Quality",
+                              "color": "#3b82f6"
+                            }
+                          ],
+                          "timeRange": "8h",
+                          "updateRate": "{{params.updateRate}}"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "type": "conditional",
+              "props": {
+                "condition": "{{params.showDowntime}}",
+                "children": [
+                  {
+                    "type": "card",
+                    "props": {
+                      "title": "Downtime Pareto",
+                      "style": {
+                        "flex": 1
+                      }
+                    },
+                    "children": [
+                      {
+                        "type": "pie-chart",
+                        "props": {
+                          "height": 300,
+                          "data": [
+                            {"name": "Changeover", "value": 25, "color": "#ef4444"},
+                            {"name": "Breakdown", "value": 20, "color": "#f59e0b"},
+                            {"name": "Material", "value": 15, "color": "#3b82f6"},
+                            {"name": "Quality", "value": 10, "color": "#8b5cf6"},
+                            {"name": "Other", "value": 5, "color": "#6b7280"}
+                          ],
+                          "showLabels": true,
+                          "showLegend": true,
+                          "legendPosition": "bottom"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "props": {
+            "title": "Production Lines OEE",
+            "style": {
+              "marginBottom": "30px"
+            }
+          },
+          "children": [
+            {
+              "type": "flex-repeater",
+              "props": {
+                "instances": "{{params.lineNames.map((line, i) => ({ line, index: i })}}",
+                "direction": "row",
+                "wrap": true,
+                "gap": "15px",
+                "template": {
+                  "type": "flex",
+                  "props": {
+                    "direction": "row",
+                    "align": "center",
+                    "style": {
+                      "padding": "15px",
+                      "background": "white",
+                      "borderRadius": "8px",
+                      "border": "1px solid #e5e7eb",
+                      "minWidth": "250px"
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "gauge",
+                      "props": {
+                        "value": "{{tags.[params.tagPrefix]/Lines/[instance.line]/OEE}}",
+                        "min": 0,
+                        "max": 100,
+                        "size": 80,
+                        "label": "{{instance.line}}",
+                        "thresholds": [
+                          {"value": 0, "color": "#ef4444"},
+                          {"value": 70, "color": "#f59e0b"},
+                          {"value": 85, "color": "#10b981"}
+                        ]
+                      }
+                    },
+                    {
+                      "type": "flex",
+                      "props": {
+                        "direction": "column",
+                        "gap": "5px",
+                        "style": {
+                          "marginLeft": "15px"
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "label",
+                          "props": {
+                            "text": "{{instance.line}}",
+                            "style": {
+                              "fontWeight": "bold",
+                              "fontSize": "14px"
+                            }
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "props": {
+                            "text": "A: {{tags.[params.tagPrefix]/Lines/[instance.line]/Availability}}%",
+                            "style": {
+                              "fontSize": "12px",
+                              "color": "#6b7280"
+                            }
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "props": {
+                            "text": "P: {{tags.[params.tagPrefix]/Lines/[instance.line]/Performance}}%",
+                            "style": {
+                              "fontSize": "12px",
+                              "color": "#6b7280"
+                            }
+                          }
+                        },
+                        {
+                          "type": "label",
+                          "props": {
+                            "text": "Q: {{tags.[params.tagPrefix]/Lines/[instance.line]/Quality}}%",
+                            "style": {
+                              "fontSize": "12px",
+                              "color": "#6b7280"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "conditional",
+          "props": {
+            "condition": "{{params.showRealtime}}",
+            "children": [
+              {
+                "type": "card",
+                "props": {
+                  "title": "Real-time Production Status"
+                },
+                "children": [
+                  {
+                    "type": "table",
+                    "props": {
+                      "columns": [
+                        {"field": "line", "header": "Line", "width": "150px"},
+                        {"field": "status", "header": "Status", "width": "100px"},
+                        {"field": "product", "header": "Product", "width": "200px"},
+                        {"field": "rate", "header": "Rate", "width": "100px"},
+                        {"field": "goodCount", "header": "Good", "width": "100px"},
+                        {"field": "rejectCount", "header": "Reject", "width": "100px"},
+                        {"field": "downtime", "header": "Downtime", "width": "100px"}
+                      ],
+                      "data": "{{params.lineNames.map(line => ({ line, status: tags.[params.tagPrefix]/Lines/[line]/Status, product: tags.[params.tagPrefix]/Lines/[line]/Product, rate: tags.[params.tagPrefix]/Lines/[line]/Rate, goodCount: tags.[params.tagPrefix]/Lines/[line]/GoodCount, rejectCount: tags.[params.tagPrefix]/Lines/[line]/RejectCount, downtime: tags.[params.tagPrefix]/Lines/[line]/Downtime })}}",
+                      "striped": true,
+                      "sortable": true,
+                      "pageable": false
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

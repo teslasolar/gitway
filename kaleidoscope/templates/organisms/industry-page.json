@@ -1,0 +1,52 @@
+{
+  "id": "industry-page",
+  "name": "Universal Industry Page",
+  "description": "Configurable page for any industrial application",
+  "version": "1.0.0",
+  "parameters": {
+    "title": {"type": "string", "default": "Production"},
+    "metrics": {
+      "type": "array",
+      "default": [
+        {"label": "OEE", "tag": "OEE", "unit": "%", "icon": "chart", "target": 85},
+        {"label": "Rate", "tag": "Rate", "unit": "/hr", "icon": "speed", "target": 100},
+        {"label": "Quality", "tag": "Quality", "unit": "%", "icon": "check", "target": 99},
+        {"label": "Uptime", "tag": "Uptime", "unit": "%", "icon": "clock", "target": 95}
+      ]
+    },
+    "equipment": {
+      "type": "array",
+      "default": [
+        {"name": "Line 1", "type": "pump", "tag": "L1"},
+        {"name": "Line 2", "type": "valve", "tag": "L2"},
+        {"name": "Line 3", "type": "motor", "tag": "L3"},
+        {"name": "Line 4", "type": "tank", "tag": "L4"}
+      ]
+    },
+    "charts": {
+      "type": "array",
+      "default": [
+        {"type": "trend", "tags": ["OEE", "Rate"], "span": "8h"},
+        {"type": "pie", "data": "downtime", "title": "Downtime"}
+      ]
+    },
+    "layout": {"type": "string", "default": "metrics-charts-equipment"},
+    "tagPrefix": {"type": "string", "default": "[default]Production"},
+    "updateRate": {"type": "number", "default": 5000},
+    "showAlarms": {"type": "boolean", "default": true},
+    "showTable": {"type": "boolean", "default": true}
+  },
+  "view": {
+    "type": "flex",
+    "props": {
+      "direction": "column",
+      "gap": "20px"
+    },
+    "children": [
+      {"type": "metrics-row", "props": {"data": "{{params.metrics}}"}},
+      {"type": "charts-row", "props": {"charts": "{{params.charts}}"}},
+      {"type": "equipment-grid", "props": {"items": "{{params.equipment}}"}},
+      {"type": "alarms-table", "props": {"show": "{{params.showAlarms}}"}}
+    ]
+  }
+}
